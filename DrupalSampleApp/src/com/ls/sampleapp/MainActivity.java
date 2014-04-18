@@ -1,18 +1,22 @@
 package com.ls.sampleapp;
 
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
+import java.util.HashMap;
+import java.util.Map;
+
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.os.Build;
+
+import com.google.gson.Gson;
 
 public class MainActivity extends ActionBarActivity {
-
+		
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,9 +26,22 @@ public class MainActivity extends ActionBarActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
-        }
+        }   
+        
+
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("Integer", Integer.valueOf(1));
+        map.put("String", null);
+        map.put("Custom Item", new Test());
+        
+        Gson gson = new Gson();
+        String json = gson.toJson(map);
+        Log.e("test",json);
     }
 
+    private class Test{
+    	String test = "test";
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -60,6 +77,5 @@ public class MainActivity extends ActionBarActivity {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
             return rootView;
         }
-    }
-
+    }    
 }
