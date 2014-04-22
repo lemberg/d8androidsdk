@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
@@ -59,13 +60,14 @@ public class DrupalClient implements OnResponseListener{
 		}
 		request.setTag(tag);
 		this.loginManager.applyLoginDataToRequest(request);
-		this.listeners.put(request, listener);				
+		this.listeners.put(request, listener);		
+		Log.d("DrupalClient","Performing request:"+request.getUrl());
 		return request.performRequest(synchronous, queue);		
 	}
 	
 	public ResponseData getObject(DrupalEntity entity,Class resultClass,Object tag, OnResponseListener listener,boolean synchronous)
 	{		
-		BaseRequest request = BaseRequest.newBaseRequest(RequestMethod.GET,entity.getPath(), this.requestFormat, resultClass);		
+		BaseRequest request = BaseRequest.newBaseRequest(RequestMethod.GET,getURLForEntity(entity), this.requestFormat, resultClass);		
 		request.setGetParameters(entity.getItemRequestGetParameters(RequestMethod.GET));
 		
 		return this.performRequest(request, tag, listener, synchronous);
@@ -73,7 +75,7 @@ public class DrupalClient implements OnResponseListener{
 	
 	public ResponseData postObject(DrupalEntity entity, Class resultClass, Object tag, OnResponseListener listener,boolean synchronous)
 	{		
-		BaseRequest request = BaseRequest.newBaseRequest(RequestMethod.POST,entity.getPath(), this.requestFormat, resultClass);
+		BaseRequest request = BaseRequest.newBaseRequest(RequestMethod.POST,getURLForEntity(entity), this.requestFormat, resultClass);
 		request.setObjectToPost(entity);
 		request.setPostParameters(entity.getItemRequestPostParameters());
 		request.setGetParameters(entity.getItemRequestGetParameters(RequestMethod.POST));
@@ -83,7 +85,7 @@ public class DrupalClient implements OnResponseListener{
 	
 	public ResponseData patchObject(DrupalEntity entity, Class resultClass, Object tag, OnResponseListener listener,boolean synchronous)
 	{		
-		BaseRequest request = BaseRequest.newBaseRequest(RequestMethod.PATCH,entity.getPath(), this.requestFormat, resultClass);		
+		BaseRequest request = BaseRequest.newBaseRequest(RequestMethod.PATCH,getURLForEntity(entity), this.requestFormat, resultClass);		
 		request.setGetParameters(entity.getItemRequestGetParameters(RequestMethod.PATCH));
 		request.setObjectToPost(entity);
 		return this.performRequest(request, tag, listener, synchronous);
@@ -91,9 +93,14 @@ public class DrupalClient implements OnResponseListener{
 	
 	public ResponseData deleteObject(DrupalEntity entity,Class resultClass,Object tag, OnResponseListener listener,boolean synchronous)
 	{		
-		BaseRequest request = BaseRequest.newBaseRequest(RequestMethod.DELETE,entity.getPath(), this.requestFormat, resultClass);		
+		BaseRequest request = BaseRequest.newBaseRequest(RequestMethod.DELETE,getURLForEntity(entity), this.requestFormat, resultClass);		
 		request.setGetParameters(entity.getItemRequestGetParameters(RequestMethod.DELETE));		
 		return this.performRequest(request, tag, listener, synchronous);
+	}
+	
+	private String getURLForEntity(DrupalEntity entity)
+	{
+		return this.baseURL+entity.getPath();
 	}
 
 	/**

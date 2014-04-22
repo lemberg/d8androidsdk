@@ -18,6 +18,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.ls.http.base.SharedGson;
 
 public class ObjectComparator
 {
@@ -26,7 +27,7 @@ public class ObjectComparator
 	private Gson converter ;
 	
 	public ObjectComparator(){
-		converter = new Gson();
+		converter = SharedGson.getGson();
 	}
 			
 	public static class FootPrint

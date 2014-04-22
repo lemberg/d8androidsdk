@@ -256,7 +256,7 @@ public abstract class DrupalEntity extends PostableItem implements DrupalClient.
 		Object difference = this.getDifference(origin, current, comparator);
 		if(difference != null)
 		{
-			DrupalEntityContainer container = new DrupalEntityContainer(drupalClient, difference, getPath(),getCharset());
+			DrupalEntityPostContainer container = new DrupalEntityPostContainer(drupalClient, difference, getPath(),getCharset());
 			return this.drupalClient.patchObject(container,
 					this.getClass(), RequestMethod.PATCH, this, synchronous);
 		}else{

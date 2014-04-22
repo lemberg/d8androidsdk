@@ -4,19 +4,20 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 import com.ls.http.base.BaseRequest.RequestMethod;
+import com.ls.http.base.SharedGson;
 /**
  * Class, used in order to post data to server only. Fetch/remove operations aren't supported.
  * @author lemberg
  *
  */
-public class  DrupalEntityContainer extends DrupalEntity
+public class  DrupalEntityPostContainer extends DrupalEntity
 {		
 	private final Object data;
 	private final String path;
 	private Map<String, String> getParameters;
 	private final String charset;
 
-	public DrupalEntityContainer(DrupalClient client,Object theData, String thePath, String theCharset)
+	public DrupalEntityPostContainer(DrupalClient client,Object theData, String thePath, String theCharset)
 	{
 		super(client);		
 		this.path = thePath;
@@ -32,7 +33,7 @@ public class  DrupalEntityContainer extends DrupalEntity
 	@Override
 	public String toJsonString()
 	{
-		Gson gson = new Gson();
+		Gson gson = SharedGson.getGson();;
 		return gson.toJson(this.data);
 	}
 

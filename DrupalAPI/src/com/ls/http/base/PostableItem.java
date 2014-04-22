@@ -16,7 +16,7 @@ public class PostableItem implements IPostableItem{
 	
 	public String toJsonString()
 	{
-		Gson gson = new Gson();
+		Gson gson = SharedGson.getGson();
 		return gson.toJson(this);
 	}
 	
