@@ -14,12 +14,14 @@ public class  DrupalEntityContainer extends DrupalEntity
 	private final Object data;
 	private final String path;
 	private Map<String, String> getParameters;
+	private final String charset;
 
-	public DrupalEntityContainer(DrupalClient client,Object theData, String thePath)
+	public DrupalEntityContainer(DrupalClient client,Object theData, String thePath, String theCharset)
 	{
 		super(client);		
 		this.path = thePath;
 		this.data = theData;
+		this.charset = theCharset;
 	}
 
 	public void setGetParameters(Map<String, String> getParameters)
@@ -61,6 +63,12 @@ public class  DrupalEntityContainer extends DrupalEntity
 		}else{
 			return null;
 		}
+	}
+	
+	@Override
+	public String getCharset()
+	{		
+		return this.charset;
 	}
 	
 }

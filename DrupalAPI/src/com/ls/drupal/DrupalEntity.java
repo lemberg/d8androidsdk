@@ -1,18 +1,20 @@
 package com.ls.drupal;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Type;
-import java.util.Currency;
+import java.util.Comparator;
 import java.util.Map;
 
 import junit.framework.Assert;
 
+import org.eclipse.jdt.annotation.NonNull;
+
 import com.android.volley.VolleyError;
 import com.google.gson.annotations.Expose;
-import com.ls.http.base.BaseRequest;
 import com.ls.http.base.BaseRequest.RequestMethod;
 import com.ls.http.base.PostableItem;
 import com.ls.http.base.ResponseData;
+import com.ls.utiles.ObjectComparator;
+import com.ls.utiles.ObjectComparator.FootPrint;
 
 public abstract class DrupalEntity extends PostableItem implements DrupalClient.OnResponseListener
 {
@@ -21,6 +23,9 @@ public abstract class DrupalEntity extends PostableItem implements DrupalClient.
 										// server or fetched from there.
 	@Expose
 	private OnEntityRequestListener listener;
+	
+	@Expose
+	private FootPrint footprint;
 
 	
 	/**
@@ -93,19 +98,7 @@ public abstract class DrupalEntity extends PostableItem implements DrupalClient.
 		return this.drupalClient.deleteObject(this, this.getClass(), RequestMethod.DELETE, this, synchronous);
 	}
 	
-	/**
-	 * @param synchronous
-	 *            if true - request will be performed synchronously.
-	 * @param resultClass class of result or null if no result needed.
-	 * @return @class ResponseData entity, containing server response or error
-	 *         in case of synchronous request, null otherwise
-	 */
-	public ResponseData patchDataOnServer(boolean synchronous, Class resultClass)
-	{		
-		Assert.assertNotNull("You have to specify drupal client in order to perform requests", this.drupalClient);	
-		return this.drupalClient.patchObject(this, this.getClass(), RequestMethod.PATCH, this, synchronous);//TODO implement patch calculation
-	}
-
+	
 	// OnResponceListener methods
 	public void onResponceReceived(ResponseData data, Object tag)
 	{
@@ -197,4 +190,103 @@ public abstract class DrupalEntity extends PostableItem implements DrupalClient.
 	{
 		this.listener = listener;
 	}
+	
+	//Patch method management
+	
+	/**
+	 * Creates footprint to be used later in order to calculate differences for patch request.
+	 */
+	public void createFootPrint()
+	{
+		ObjectComparator comparator = new ObjectComparator();
+		this.footprint = comparator.createFootPrint(this);
+	}
+	
+	/**
+	 * Creates footprint to be used later in order to calculate differences for patch request.
+	 */
+	public void createFootPrint(ObjectComparator comparator)
+	{
+		this.footprint = comparator.createFootPrint(this);
+	}
+	
+		
+	/**
+	 * 
+	 * @param synchronous if true - request will be performed synchronously.
+	 * @param resultClass class of result or null if no result needed.	 	 
+	 * @return @class ResponseData entity, containing server response or error
+	 *         in case of synchronous request, null otherwise
+	 * @throws IllegalStateException in case if there are no changes to post. You can check if there are ones, calling <code>canPatch()</code> method.
+	 */	
+	public ResponseData patchDataOnServer(boolean synchronous, Class resultClass) throws IllegalStateException
+	{		
+		ObjectComparator comparator = new ObjectComparator();
+		return patchDataOnServer(synchronous, resultClass, this.footprint, comparator.createFootPrint(this), comparator);
+	}
+	
+	/**
+	 * 
+	 * @param synchronous if true - request will be performed synchronously.
+	 * @param resultClass class of result or null if no result needed.	 
+	 * @param comparator
+	  @return @class ResponseData entity, containing server response or error
+	 *         in case of synchronous request, null otherwise
+	 * @throws IllegalStateException in case if there are no changes to post. You can check if there are ones, calling <code>canPatch()</code> method.
+	 */	
+	@SuppressWarnings("null")
+	public ResponseData patchDataOnServer(boolean synchronous, Class resultClass,@NonNull ObjectComparator comparator) throws IllegalStateException
+	{		
+		return patchDataOnServer(synchronous, resultClass, this.footprint, comparator.createFootPrint(this), comparator);
+	}
+	
+	/**
+	 * 
+	 * @param synchronous if true - request will be performed synchronously.
+	 * @param resultClass class of result or null if no result needed.
+	 * @param origin
+	 * @param current
+	 * @param comparator
+	  @return @class ResponseData entity, containing server response or error
+	 *         in case of synchronous request, null otherwise
+	 * @throws IllegalStateException in case if there are no changes to post. You can check if there are ones, calling <code>canPatch()</code> method.
+	 */	
+	private ResponseData patchDataOnServer(boolean synchronous, Class resultClass, FootPrint origin,@NonNull FootPrint current,ObjectComparator comparator) throws IllegalStateException
+	{		
+		Object difference = this.getDifference(origin, current, comparator);
+		if(difference != null)
+		{
+			DrupalEntityContainer container = new DrupalEntityContainer(drupalClient, difference, getPath(),getCharset());
+			return this.drupalClient.patchObject(container,
+					this.getClass(), RequestMethod.PATCH, this, synchronous);
+		}else{
+			throw new IllegalStateException("There are no changes to patch, check canPatch() call before");
+		}		
+	}
+	
+	public boolean canPatch()
+	{
+		return this.canPatch(new ObjectComparator());
+	}
+	
+	@SuppressWarnings("null")
+	public boolean canPatch(@NonNull ObjectComparator comparator)
+	{
+		return this.canPatch(this.footprint, comparator.createFootPrint(this), comparator);
+	}
+	
+	private boolean canPatch(@NonNull FootPrint origin,@NonNull FootPrint current,@NonNull ObjectComparator comparator)
+	{
+		Object difference = this.getDifference(origin, current, comparator);
+		return (difference != null);
+	}
+	
+
+	private Object getDifference(@NonNull FootPrint origin,@NonNull FootPrint current,ObjectComparator comparator)
+	{
+		Assert.assertNotNull("You have to specify drupal client in order to perform requests", this.drupalClient);	
+		Assert.assertNotNull("You have to make initial objects footprint in order to calculate changes",origin);
+		return comparator.getDifferencesJSON(origin, current);
+	}
+
 }

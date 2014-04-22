@@ -10,5 +10,6 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/DrupalAPI/libs/gson-2.2.4-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="org.eclipse.jdt.annotation_1.0.1.v20130111-135246.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

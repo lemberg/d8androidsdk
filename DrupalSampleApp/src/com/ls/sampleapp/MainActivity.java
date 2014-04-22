@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 
 public class MainActivity extends ActionBarActivity {
 		
@@ -33,10 +34,20 @@ public class MainActivity extends ActionBarActivity {
         map.put("Integer", Integer.valueOf(1));
         map.put("String", null);
         map.put("Custom Item", new Test());
+        String[]array = new String[]{"test1","test2"};
+//        List<String> array = new LinkedList<String>();
+//        array.add("test1");
+//        array.add("test2");
+        map.put("array", array);
         
         Gson gson = new Gson();
+        JsonElement obj = gson.toJsonTree(map);
         String json = gson.toJson(map);
         Log.e("test",json);
+        
+//        Gson gson2 = new Gson();
+//        Map map2 = gson2.fromJson(json, HashMap.class);
+//        Log.e("result:",((List<String>) map2.get("array")).get(0).toString());
     }
 
     private class Test{
