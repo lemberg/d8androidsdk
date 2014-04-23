@@ -78,7 +78,7 @@ public abstract class DrupalEntity implements DrupalClient.OnResponseListener, I
 	 * @return @class ResponseData entity, containing server response or error
 	 *         in case of synchronous request, null otherwise
 	 */
-	public ResponseData getDataFromServer(boolean synchronous, Class resultClass)
+	public ResponseData getDataFromServer(boolean synchronous)
 	{		
 		Assert.assertNotNull("You have to specify drupal client in order to perform requests", this.drupalClient);	
 		return this.drupalClient.getObject(this, this.getClass(), RequestMethod.GET, this, synchronous);
@@ -94,7 +94,7 @@ public abstract class DrupalEntity implements DrupalClient.OnResponseListener, I
 	public ResponseData deleteDataFromServer(boolean synchronous, Class resultClass)
 	{		
 		Assert.assertNotNull("You have to specify drupal client in order to perform requests", this.drupalClient);	
-		return this.drupalClient.deleteObject(this, this.getClass(), RequestMethod.DELETE, this, synchronous);
+		return this.drupalClient.deleteObject(this, resultClass, RequestMethod.DELETE, this, synchronous);
 	}
 	
 	
@@ -138,7 +138,7 @@ public abstract class DrupalEntity implements DrupalClient.OnResponseListener, I
 		{
 			Field field = fields[counter];
 			Expose expose = field.getAnnotation(Expose.class);
-			if(expose == null)
+			if(expose != null)
 			{
 				continue;//We don't have to copy ignored fields.
 			}
@@ -147,10 +147,10 @@ public abstract class DrupalEntity implements DrupalClient.OnResponseListener, I
 			try
 			{
 				value = field.get(entity);
-				if(value != null)
-				{
+//				if(value != null)
+//				{
 					field.set(this, value);
-				}
+//				}
 			} catch (IllegalAccessException e)
 			{
 				e.printStackTrace();
@@ -257,7 +257,7 @@ public abstract class DrupalEntity implements DrupalClient.OnResponseListener, I
 		{
 			DrupalEntityPostContainer container = new DrupalEntityPostContainer(drupalClient, difference, getPath(),getCharset());
 			return this.drupalClient.patchObject(container,
-					this.getClass(), RequestMethod.PATCH, this, synchronous);
+					resultClass, RequestMethod.PATCH, this, synchronous);
 		}else{
 			throw new IllegalStateException("There are no changes to post, check canPatch() call before");
 		}		
