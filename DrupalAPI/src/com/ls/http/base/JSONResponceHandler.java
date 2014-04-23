@@ -4,10 +4,10 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 
-class JSONResponceHandler extends ResponceHandler
+class JSONResponceHandler implements IResponceHandler
 {
 	
-	protected Object itemFromResponce(String json, Class theClass)
+	public Object itemFromResponce(String json, Class theClass)
 	{				
 		Log.e("Response:",json);
 		Object result = null;		

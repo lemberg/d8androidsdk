@@ -10,12 +10,12 @@ import org.eclipse.jdt.annotation.NonNull;
 import com.android.volley.VolleyError;
 import com.google.gson.annotations.Expose;
 import com.ls.http.base.BaseRequest.RequestMethod;
-import com.ls.http.base.PostableItem;
+import com.ls.http.base.ICharsetItem;
 import com.ls.http.base.ResponseData;
 import com.ls.utiles.ObjectComparator;
 import com.ls.utiles.ObjectComparator.FootPrint;
 
-public abstract class DrupalEntity extends PostableItem implements DrupalClient.OnResponseListener
+public abstract class DrupalEntity implements DrupalClient.OnResponseListener, ICharsetItem
 {
 	@Expose
 	private DrupalClient drupalClient; // Prevent entity from beeng posted to
@@ -288,4 +288,13 @@ public abstract class DrupalEntity extends PostableItem implements DrupalClient.
 		return comparator.getDifferencesJSON(origin, current);
 	}
 
+	
+	/**
+	 * Method can be overriden in order to specify non-default charset for Entity.
+	 */
+	@Override
+	public String getCharset()
+	{		
+		return null;
+	}
 }

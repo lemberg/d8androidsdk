@@ -40,15 +40,17 @@ public class BaseRequest extends StringRequest
 	private final RequestFormat format;	
 	private final RequestFuture<String> syncLock;
 	private final Class responceClass;
+	private String defaultCharset;
 	
 	private OnResponseListener responceListener;
 
 	private Map<String, String> requestHeaders;
 	private Map<String, String> postParameters;
 	private Map<String, String> getParameters;
-	private IPostableItem objectToPost;
+	private Object objectToPost;
 	
 	private ResponseData result;
+	
 	
 /**
  * 
@@ -269,19 +271,21 @@ public class BaseRequest extends StringRequest
 	{
 		if (this.objectToPost != null && this.postParameters == null)
 		{
-			String content;
+			RequestHandler handler;			
 			switch (this.format) {
 			case XML:
-				content = this.objectToPost.toXMLString();
+				handler = new XMLRequestHandler(this.objectToPost);				
 				break;
-			case JSON:
+			case JSON:			
+				handler = new JSONRequestHandler(this.objectToPost);
+				break;
 			default:
-				content = this.objectToPost.toJsonString();
-				break;
+				throw new IllegalArgumentException("Unrecognised request format");
 			}
 			try
-			{
-				return content.getBytes(this.objectToPost.getCharset());
+			{				
+				String content = handler.stringBodyFromItem();
+				return content.getBytes(handler.getCharset(this.defaultCharset));
 			} catch (UnsupportedEncodingException e)
 			{
 				e.printStackTrace();
@@ -298,23 +302,28 @@ public class BaseRequest extends StringRequest
 	{
 		if (this.objectToPost != null)
 		{
+			RequestHandler handler;
 			switch (this.format) {
 			case XML:
-				return PROTOCOL_CONTENT_TYPE_XML + this.objectToPost.getCharset();
+				handler = new XMLRequestHandler(objectToPost);
+				return PROTOCOL_CONTENT_TYPE_XML + handler.getCharset(this.defaultCharset);
 			case JSON:
-				return PROTOCOL_CONTENT_TYPE_JSON + this.objectToPost.getCharset();
+				handler = new JSONRequestHandler(objectToPost);
+				return PROTOCOL_CONTENT_TYPE_JSON + handler.getCharset(this.defaultCharset);
+			default:
+				throw new IllegalArgumentException("Unrecognised request format");
 			}
 		}
 
 		return super.getBodyContentType();
 	}
 	
-	public IPostableItem getObjectToPost()
+	public Object getObjectToPost()
 	{
 		return objectToPost;
 	}
 
-	public void setObjectToPost(IPostableItem objectToPost)
+	public void setObjectToPost(Object objectToPost)
 	{
 		this.objectToPost = objectToPost;
 	}
@@ -372,4 +381,14 @@ public class BaseRequest extends StringRequest
 			this.getParameters.put(key, value);
 		}	
 	}
+
+	public String getDefaultCharset()
+	{
+		return defaultCharset;
+	}
+
+	public void setDefaultCharset(String defaultCharset)
+	{
+		this.defaultCharset = defaultCharset;
+	}	
 }

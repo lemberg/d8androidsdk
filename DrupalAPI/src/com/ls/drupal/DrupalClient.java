@@ -18,11 +18,12 @@ import com.ls.http.base.BaseRequest.RequestMethod;
 import com.ls.http.base.ResponseData;
 
 public class DrupalClient implements OnResponseListener{
-
+	
 	private final String baseURL;
 	private final RequestFormat requestFormat;
 	private RequestQueue queue;
 	private Map<BaseRequest,OnResponseListener> listeners;
+	private String defaultCharset;	
 	
 	private ILoginManager loginManager;
 		
@@ -38,7 +39,7 @@ public class DrupalClient implements OnResponseListener{
 		this.listeners = new HashMap<BaseRequest, DrupalClient.OnResponseListener>();
 		this.queue = Volley.newRequestQueue(theContext.getApplicationContext());		
 		this.baseURL = theBaseURL;
-		this.requestFormat = theFormat;
+		this.requestFormat = theFormat;		
 		if(theLoginManager != null)
 		{
 			this.setLoginManager(theLoginManager);
@@ -174,5 +175,15 @@ public class DrupalClient implements OnResponseListener{
 		void onResponceReceived(ResponseData data, Object tag);
 
 		void onError(VolleyError error, Object tag);
+	}
+
+	public String getDefaultCharset()
+	{
+		return defaultCharset;
+	}
+
+	public void setDefaultCharset(String defaultCharset)
+	{
+		this.defaultCharset = defaultCharset;
 	}
 }

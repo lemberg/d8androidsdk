@@ -1,7 +1,7 @@
 package com.ls.http.base;
 
 
-	class XMLResponceHandler extends ResponceHandler{
+	class XMLResponceHandler implements IResponceHandler{
 	public Object itemFromResponce(String responce, Class theClass)
 	{
 		Object result = null;

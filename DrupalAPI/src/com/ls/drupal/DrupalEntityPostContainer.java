@@ -4,13 +4,14 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 import com.ls.http.base.BaseRequest.RequestMethod;
+import com.ls.http.base.IPostableItem;
 import com.ls.http.base.SharedGson;
 /**
  * Class, used in order to post data to server only. Fetch/remove operations aren't supported.
  * @author lemberg
  *
  */
-public class  DrupalEntityPostContainer extends DrupalEntity
+public class  DrupalEntityPostContainer extends DrupalEntity implements IPostableItem
 {		
 	private final Object data;
 	private final String path;
@@ -40,7 +41,7 @@ public class  DrupalEntityPostContainer extends DrupalEntity
 	@Override
 	public String toXMLString()
 	{		
-		return null;
+		return null;//TODO implement in future;
 	}
 
 	@Override
