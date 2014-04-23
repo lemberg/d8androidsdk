@@ -187,8 +187,7 @@ public class ObjectComparator
 			return result;
 		}
 	}	
-	
-	@SuppressWarnings("unchecked")
+
 	private static Object getDifferencesForArrays(JsonArray origin,JsonArray patched)
 	{	
 		if(origin.equals(patched))
