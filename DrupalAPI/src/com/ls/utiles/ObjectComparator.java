@@ -106,14 +106,19 @@ public class ObjectComparator
 	
 	private static @Nullable Object getDifferencesObject(JsonElement origin,JsonElement patched)
 	{
-		if(origin.equals(patched))
+		if(origin != null && origin.equals(patched))
 		{
 			return UNCHANGED;
 		}
 		
-		if(patched.isJsonNull())
+		if(patched == null || patched.isJsonNull())
 		{
 			return null;
+		}
+		
+		if(origin == null||origin.isJsonNull())
+		{
+			return  convertElementToStringRepresentation(patched);	
 		}
 			
 		if(origin.isJsonArray())
@@ -150,11 +155,11 @@ public class ObjectComparator
 	}	
 	
 	private static Object getDifferencesMapForObjects(JsonObject origin,JsonObject patched)
-	{						
+	{				
 		final Map<String,Object> result = new HashMap<String, Object>();
 		
 		//Create origin entry set
-		Set<String> originKeySet = new HashSet<String>();
+		Set<String> originKeySet = new HashSet<String>();//Later here will be only keys, removed in patched version.
 		for(Entry<String, JsonElement> entry: origin.entrySet())
 		{
 			originKeySet.add(entry.getKey());
@@ -170,6 +175,10 @@ public class ObjectComparator
 			}
 		}
 		
+		for(String key:originKeySet)
+		{
+			result.put(key, null);
+		}
 		
 		if(result.isEmpty())
 		{
@@ -187,7 +196,7 @@ public class ObjectComparator
 			return UNCHANGED;
 		}
 		//TODO improve differences calculation for arrays.
-		return (List<Object>) convertElementToStringRepresentation(patched);		
+		return convertElementToStringRepresentation(patched);		
 	}	
 	
 	private static Object getDifferencesForPrimitives(JsonPrimitive origin,JsonPrimitive patched)
