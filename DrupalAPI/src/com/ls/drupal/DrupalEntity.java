@@ -1,7 +1,6 @@
 package com.ls.drupal;
 
 import java.lang.reflect.Field;
-import java.util.Comparator;
 import java.util.Map;
 
 import junit.framework.Assert;
@@ -215,7 +214,7 @@ public abstract class DrupalEntity extends PostableItem implements DrupalClient.
 	 * 
 	 * @param synchronous if true - request will be performed synchronously.
 	 * @param resultClass class of result or null if no result needed.	 	 
-	 * @return @class ResponseData entity, containing server response or error
+	 * @return @class ResponseData entity, containing server response and resultClass instance or error
 	 *         in case of synchronous request, null otherwise
 	 * @throws IllegalStateException in case if there are no changes to post. You can check if there are ones, calling <code>canPatch()</code> method.
 	 */	
@@ -230,7 +229,7 @@ public abstract class DrupalEntity extends PostableItem implements DrupalClient.
 	 * @param synchronous if true - request will be performed synchronously.
 	 * @param resultClass class of result or null if no result needed.	 
 	 * @param comparator
-	  @return @class ResponseData entity, containing server response or error
+	  @return @class ResponseData entity, containing server response and resultClass instance or error
 	 *         in case of synchronous request, null otherwise
 	 * @throws IllegalStateException in case if there are no changes to post. You can check if there are ones, calling <code>canPatch()</code> method.
 	 */	
@@ -251,7 +250,7 @@ public abstract class DrupalEntity extends PostableItem implements DrupalClient.
 	 *         in case of synchronous request, null otherwise
 	 * @throws IllegalStateException in case if there are no changes to post. You can check if there are ones, calling <code>canPatch()</code> method.
 	 */	
-	private ResponseData patchDataOnServer(boolean synchronous, Class resultClass, FootPrint origin,@NonNull FootPrint current,ObjectComparator comparator) throws IllegalStateException
+	private ResponseData patchDataOnServer(boolean synchronous, Class resultClass,@NonNull FootPrint origin,@NonNull FootPrint current,ObjectComparator comparator) throws IllegalStateException
 	{		
 		Object difference = this.getDifference(origin, current, comparator);
 		if(difference != null)
@@ -260,7 +259,7 @@ public abstract class DrupalEntity extends PostableItem implements DrupalClient.
 			return this.drupalClient.patchObject(container,
 					this.getClass(), RequestMethod.PATCH, this, synchronous);
 		}else{
-			throw new IllegalStateException("There are no changes to patch, check canPatch() call before");
+			throw new IllegalStateException("There are no changes to post, check canPatch() call before");
 		}		
 	}
 	
