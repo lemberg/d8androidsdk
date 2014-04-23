@@ -34,7 +34,7 @@ public class MainActivity extends ActionBarActivity {
 //    			return null;
     			
     			Page page = new Page(new DrupalClient("http://vh324.dev-ls.co.uk/",MainActivity.this), 1);
-    	    	ResponseData response = page.getDataFromServer(true, Article.class);
+    	    	ResponseData response = page.getDataFromServer(true);
     	    	Article article = page.get(0);
     	    	Log.e("Article body:",article.getBody());
     	      	Log.e("Article coment:",article.getComent().toString());

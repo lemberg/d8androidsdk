@@ -66,7 +66,7 @@ public class DrupalClient implements OnResponseListener{
 		return request.performRequest(synchronous, queue);		
 	}
 	
-	public ResponseData getObject(DrupalEntity entity,Class resultClass,Object tag, OnResponseListener listener,boolean synchronous)
+	public ResponseData getObject(AbstractDrupalEntity entity,@SuppressWarnings("rawtypes") Class resultClass,Object tag, OnResponseListener listener,boolean synchronous)
 	{		
 		BaseRequest request = BaseRequest.newBaseRequest(RequestMethod.GET,getURLForEntity(entity), this.requestFormat, resultClass);		
 		request.setGetParameters(entity.getItemRequestGetParameters(RequestMethod.GET));
@@ -74,32 +74,32 @@ public class DrupalClient implements OnResponseListener{
 		return this.performRequest(request, tag, listener, synchronous);
 	}
 	
-	public ResponseData postObject(DrupalEntity entity, Class resultClass, Object tag, OnResponseListener listener,boolean synchronous)
+	public ResponseData postObject(AbstractDrupalEntity entity, @SuppressWarnings("rawtypes") Class resultClass, Object tag, OnResponseListener listener,boolean synchronous)
 	{		
 		BaseRequest request = BaseRequest.newBaseRequest(RequestMethod.POST,getURLForEntity(entity), this.requestFormat, resultClass);
-		request.setObjectToPost(entity);
+		request.setObjectToPost(entity.getManagedData());
 		request.setPostParameters(entity.getItemRequestPostParameters());
 		request.setGetParameters(entity.getItemRequestGetParameters(RequestMethod.POST));
 		
 		return this.performRequest(request, tag, listener, synchronous);
 	}
 	
-	public ResponseData patchObject(DrupalEntity entity, Class resultClass, Object tag, OnResponseListener listener,boolean synchronous)
+	public ResponseData patchObject(AbstractDrupalEntity entity, @SuppressWarnings("rawtypes") Class resultClass, Object tag, OnResponseListener listener,boolean synchronous)
 	{		
 		BaseRequest request = BaseRequest.newBaseRequest(RequestMethod.PATCH,getURLForEntity(entity), this.requestFormat, resultClass);		
 		request.setGetParameters(entity.getItemRequestGetParameters(RequestMethod.PATCH));
-		request.setObjectToPost(entity);
+		request.setObjectToPost(entity.getPatchObject());
 		return this.performRequest(request, tag, listener, synchronous);
 	}
 	
-	public ResponseData deleteObject(DrupalEntity entity,Class resultClass,Object tag, OnResponseListener listener,boolean synchronous)
+	public ResponseData deleteObject(AbstractDrupalEntity entity,@SuppressWarnings("rawtypes") Class resultClass,Object tag, OnResponseListener listener,boolean synchronous)
 	{		
 		BaseRequest request = BaseRequest.newBaseRequest(RequestMethod.DELETE,getURLForEntity(entity), this.requestFormat, resultClass);		
 		request.setGetParameters(entity.getItemRequestGetParameters(RequestMethod.DELETE));		
 		return this.performRequest(request, tag, listener, synchronous);
 	}
 	
-	private String getURLForEntity(DrupalEntity entity)
+	private String getURLForEntity(AbstractDrupalEntity entity)
 	{
 		return this.baseURL+entity.getPath();
 	}
