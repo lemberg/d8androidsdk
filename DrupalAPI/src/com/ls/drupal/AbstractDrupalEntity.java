@@ -1,6 +1,7 @@
 package com.ls.drupal;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Map;
 
 import junit.framework.Assert;
@@ -16,15 +17,12 @@ import com.ls.utiles.ObjectComparator;
 import com.ls.utiles.ObjectComparator.FootPrint;
 
 public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseListener, ICharsetItem
-{
-	@Expose
-	private DrupalClient drupalClient; // Prevent entity from being posted to
-										// server or fetched from there.
-	@Expose
-	private OnEntityRequestListener listener;
-	
-	@Expose
-	private FootPrint footprint;
+{	
+	transient private DrupalClient drupalClient; // Prevent entity from being posted to
+												// server or fetched from there.	
+	transient private OnEntityRequestListener listener;
+		
+	transient private FootPrint footprint;
 
 	/**
 	 * @return path to resource. Shouldn't include base URL(domain).
@@ -137,8 +135,8 @@ public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseLis
 		for(int counter = 0; counter < fields.length;counter++)
 		{
 			Field field = fields[counter];
-			Expose expose = field.getAnnotation(Expose.class);
-			if(expose != null)
+			Expose expose = field.getAnnotation(Expose.class);			
+			if(expose != null && !expose.deserialize() || Modifier.isTransient(field.getModifiers()))
 			{
 				continue;//We don't have to copy ignored fields.
 			}

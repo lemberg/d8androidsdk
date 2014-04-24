@@ -4,12 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import com.google.gson.annotations.Expose;
-
 public abstract class DrupalItemsArray<T> extends DrupalEntity implements Collection<T>
 {		
-	@Expose
-	private ArrayList<T>items;
+	transient private ArrayList<T>items;
 	
 	public DrupalItemsArray(DrupalClient client, int itemCount)
 	{

@@ -1,4 +1,4 @@
-package com.ls.sampleapp;
+package com.ls.sampleapp.adapters;
 
 import java.util.List;
 
@@ -8,11 +8,11 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 import com.ls.sampleapp.article.Page;
 
-public class ArticlesPageAdapter extends FragmentPagerAdapter
+public class ArticlesAdapter extends FragmentPagerAdapter
 {
 	private List<Page> pages;
 
-	public ArticlesPageAdapter(FragmentManager fm)
+	public ArticlesAdapter(FragmentManager fm)
 	{
 		super(fm);
 		// TODO Auto-generated constructor stub

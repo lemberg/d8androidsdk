@@ -10,10 +10,9 @@ import android.support.v7.app.ActionBar.TabListener;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 
-import com.ls.drupal.DrupalClient;
-import com.ls.http.base.ResponseData;
-import com.ls.sampleapp.article.Article;
-import com.ls.sampleapp.article.Page;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
+import com.ls.sampleapp.adapters.ArticlesCategoryAdapter;
 
 public class MainActivity extends ActionBarActivity implements TabListener {
 		
@@ -30,7 +29,7 @@ public class MainActivity extends ActionBarActivity implements TabListener {
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
                
         this.mViewPager = (ViewPager)this.findViewById(R.id.pager);   
-        this.mViewPager.setAdapter(new ArticlesPageAdapter(this.getSupportFragmentManager()));
+        this.mViewPager.setAdapter(new ArticlesCategoryAdapter(this.getSupportFragmentManager()));
         this.mViewPager.setOnPageChangeListener(
                 new ViewPager.SimpleOnPageChangeListener() {
                     @Override
@@ -45,6 +44,8 @@ public class MainActivity extends ActionBarActivity implements TabListener {
                             .setText("Tab " + (i + 1))
                             .setTabListener(this));
         }
+        
+        Log.e("test",new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().toJson(new Test()));
     }
 
     private void requestArticle()
@@ -86,6 +87,10 @@ public class MainActivity extends ActionBarActivity implements TabListener {
 		
 	}
     
-    
+    private class Test
+    {
+    	@Expose(serialize = false,deserialize = false) String field1 = "f1";
+    	String field2 = "f2";
+    }
     
 }
