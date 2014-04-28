@@ -1,36 +1,29 @@
 package com.ls.sampleapp.article;
 
-import java.util.HashMap;
 import java.util.Map;
 
+import junit.framework.Assert;
+
 import com.ls.drupal.DrupalClient;
-import com.ls.drupal.DrupalItemsArray;
+import com.ls.drupal.DrupalEntity;
 import com.ls.http.base.BaseRequest.RequestMethod;
 
-public class Page extends DrupalItemsArray<Article>
-{	
-	private int pageId;
-				
-	public int getPageId()
-	{
-		return pageId;
-	}
+public class Page extends DrupalEntity
+{
 
-	public void setPageId(int pageId)
+	private DrupalValueArrayWrapper<Integer> nid;
+	
+	public Page(DrupalClient client, int nodeNumber)
 	{
-		this.pageId = pageId;
-	}
-
-	public Page(DrupalClient client, int pageId)
-	{
-		super(client,5);		
-		this.pageId = pageId;
-	}
-
+		super(client);	
+		this.nid = new DrupalValueArrayWrapper<Integer>(nodeNumber);
+	}	
+	
 	@Override
 	protected String getPath()
-	{		
-		return "/entity/views/articles";
+	{
+		Assert.assertNotNull("Node id can't be null while requesting item", this.nid);
+		return "/node"+"/"+this.nid;
 	}
 
 	@Override
@@ -41,9 +34,7 @@ public class Page extends DrupalItemsArray<Article>
 
 	@Override
 	protected Map<String, String> getItemRequestGetParameters(RequestMethod method)
-	{
-		HashMap<String, String> parameters = new HashMap<String, String>();
-		parameters.put("page", Integer.toString(this.pageId));
-		return parameters;
-	}	
+	{		
+		return null;
+	}
 }
