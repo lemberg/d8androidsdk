@@ -8,6 +8,8 @@ import junit.framework.Assert;
 
 import org.eclipse.jdt.annotation.NonNull;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.google.gson.annotations.Expose;
 import com.ls.http.base.BaseRequest.RequestMethod;
@@ -63,7 +65,7 @@ public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseLis
 	 * @return @class ResponseData entity, containing server response string and code or error
 	 *         in case of synchronous request, null otherwise
 	 */
-	public ResponseData postDataToServer(boolean synchronous, @SuppressWarnings("rawtypes") Class resultClass)
+	public ResponseData postDataToServer(boolean synchronous, Class<?> resultClass)
 	{
 		Assert.assertNotNull("You have to specify drupal client in order to perform requests", this.drupalClient);
 		return this.drupalClient.postObject(this, resultClass, RequestMethod.POST, this, synchronous);
@@ -88,7 +90,7 @@ public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseLis
 	 * @return @class ResponseData entity, containing server response or error
 	 *         in case of synchronous request, null otherwise
 	 */
-	public ResponseData deleteDataFromServer(boolean synchronous, @SuppressWarnings("rawtypes") Class resultClass)
+	public ResponseData deleteDataFromServer(boolean synchronous, Class<?> resultClass)
 	{		
 		Assert.assertNotNull("You have to specify drupal client in order to perform requests", this.drupalClient);	
 		return this.drupalClient.deleteObject(this, resultClass, RequestMethod.DELETE, this, synchronous);
@@ -188,6 +190,12 @@ public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseLis
 		this.listener = listener;
 	}
 	
+	//Request canceling
+	public void cancellAllRequests()
+	{
+		this.drupalClient.cancelAllRequestsForListener(this, null);
+	}
+	
 	//Patch method management
 	
 	/**
@@ -212,7 +220,7 @@ public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseLis
 	 *         in case of synchronous request, null otherwise
 	 * @throws IllegalStateException in case if there are no changes to post. You can check if there are ones, calling <code>canPatch()</code> method.
 	 */	
-	public ResponseData patchDataOnServer(boolean synchronous, @SuppressWarnings("rawtypes") Class resultClass) throws IllegalStateException
+	public ResponseData patchDataOnServer(boolean synchronous,Class<?> resultClass) throws IllegalStateException
 	{			
 		return this.drupalClient.patchObject(this,resultClass, RequestMethod.PATCH, this, synchronous);
 	}
@@ -255,7 +263,6 @@ public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseLis
 		Assert.assertNotNull("You have to make initial objects footprint in order to calculate changes",origin);
 		return comparator.getDifferencesJSON(origin, current);
 	}
-
 	
 	/**
 	 * Method can be overriden in order to specify non-default charset for Entity.
@@ -265,6 +272,6 @@ public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseLis
 	{		
 		return null;
 	}
-
+		
 	abstract @NonNull Object getManagedData();	
 }

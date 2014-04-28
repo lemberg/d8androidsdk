@@ -3,9 +3,13 @@ package com.ls.drupal;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
+
 import android.content.Context;
 import android.util.Log;
 
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
@@ -17,117 +21,127 @@ import com.ls.http.base.BaseRequest.RequestFormat;
 import com.ls.http.base.BaseRequest.RequestMethod;
 import com.ls.http.base.ResponseData;
 
-public class DrupalClient implements OnResponseListener{
-	
+public class DrupalClient implements OnResponseListener
+{
+
 	private final String baseURL;
 	private final RequestFormat requestFormat;
 	private RequestQueue queue;
-	private Map<BaseRequest,OnResponseListener> listeners;
-	private String defaultCharset;	
-	
+	private Map<BaseRequest, OnResponseListener> listeners;
+	private String defaultCharset;
+
 	private ILoginManager loginManager;
-		
-	public DrupalClient(String theBaseURL,Context theContext) {
-		this(theBaseURL,theContext,RequestFormat.JSON);
+
+	public DrupalClient(String theBaseURL, Context theContext)
+	{
+		this(theBaseURL, theContext, RequestFormat.JSON);
 	}
-	
-	public DrupalClient(String theBaseURL,Context theContext, RequestFormat theFormat) {
-		this(theBaseURL,theContext,theFormat,null);
+
+	public DrupalClient(String theBaseURL, Context theContext, RequestFormat theFormat)
+	{
+		this(theBaseURL, theContext, theFormat, null);
 	}
-	
-	public DrupalClient(String theBaseURL,Context theContext,RequestFormat theFormat ,ILoginManager theLoginManager) {
+
+	public DrupalClient(String theBaseURL, Context theContext, RequestFormat theFormat, ILoginManager theLoginManager)
+	{
 		this.listeners = new HashMap<BaseRequest, DrupalClient.OnResponseListener>();
-		this.queue = Volley.newRequestQueue(theContext.getApplicationContext());		
+		this.queue = Volley.newRequestQueue(theContext.getApplicationContext());
 		this.baseURL = theBaseURL;
-		this.requestFormat = theFormat;		
-		if(theLoginManager != null)
+		this.requestFormat = theFormat;
+		if (theLoginManager != null)
 		{
 			this.setLoginManager(theLoginManager);
-		}else{
+		} else
+		{
 			this.setLoginManager(new AnonymousLoginManager());
 		}
 	}
-	
-	public ResponseData performRequest(BaseRequest request,boolean synchronous)
-	{		
-		return performRequest(request, null, null, synchronous);		
-	}
-	
-	public ResponseData performRequest(BaseRequest request,Object tag, OnResponseListener listener,boolean synchronous)
+
+	public ResponseData performRequest(BaseRequest request, boolean synchronous)
 	{
-		if(!this.loginManager.isLogged())
+		return performRequest(request, null, null, synchronous);
+	}
+
+	public ResponseData performRequest(BaseRequest request, Object tag, OnResponseListener listener, boolean synchronous)
+	{
+		if (!this.loginManager.isLogged())
 		{
 			throw new IllegalStateException("User isnt logged in");
 		}
 		request.setTag(tag);
 		this.loginManager.applyLoginDataToRequest(request);
-		this.listeners.put(request, listener);		
-		Log.d("DrupalClient","Performing request:"+request.getUrl());
-		return request.performRequest(synchronous, queue);		
+		this.listeners.put(request, listener);
+		Log.d("DrupalClient", "Performing request:" + request.getUrl());
+		return request.performRequest(synchronous, queue);
 	}
-	
-	public ResponseData getObject(AbstractDrupalEntity entity,@SuppressWarnings("rawtypes") Class resultClass,Object tag, OnResponseListener listener,boolean synchronous)
-	{		
-		BaseRequest request = BaseRequest.newBaseRequest(RequestMethod.GET,getURLForEntity(entity), this.requestFormat, resultClass);		
+
+	public ResponseData getObject(AbstractDrupalEntity entity, Class<?> resultClass, Object tag, OnResponseListener listener,
+			boolean synchronous)
+	{
+		BaseRequest request = BaseRequest.newBaseRequest(RequestMethod.GET, getURLForEntity(entity), this.requestFormat, resultClass);
 		request.setGetParameters(entity.getItemRequestGetParameters(RequestMethod.GET));
-		
+
 		return this.performRequest(request, tag, listener, synchronous);
 	}
-	
-	public ResponseData postObject(AbstractDrupalEntity entity, @SuppressWarnings("rawtypes") Class resultClass, Object tag, OnResponseListener listener,boolean synchronous)
-	{		
-		BaseRequest request = BaseRequest.newBaseRequest(RequestMethod.POST,getURLForEntity(entity), this.requestFormat, resultClass);
+
+	public ResponseData postObject(AbstractDrupalEntity entity, Class<?> resultClass, Object tag, OnResponseListener listener,
+			boolean synchronous)
+	{
+		BaseRequest request = BaseRequest.newBaseRequest(RequestMethod.POST, getURLForEntity(entity), this.requestFormat, resultClass);
 		request.setObjectToPost(entity.getManagedData());
 		request.setPostParameters(entity.getItemRequestPostParameters());
 		request.setGetParameters(entity.getItemRequestGetParameters(RequestMethod.POST));
-		
+
 		return this.performRequest(request, tag, listener, synchronous);
 	}
-	
-	public ResponseData patchObject(AbstractDrupalEntity entity, @SuppressWarnings("rawtypes") Class resultClass, Object tag, OnResponseListener listener,boolean synchronous)
-	{		
-		BaseRequest request = BaseRequest.newBaseRequest(RequestMethod.PATCH,getURLForEntity(entity), this.requestFormat, resultClass);		
+
+	public ResponseData patchObject(AbstractDrupalEntity entity, Class<?> resultClass, Object tag, OnResponseListener listener,
+			boolean synchronous)
+	{
+		BaseRequest request = BaseRequest.newBaseRequest(RequestMethod.PATCH, getURLForEntity(entity), this.requestFormat, resultClass);
 		request.setGetParameters(entity.getItemRequestGetParameters(RequestMethod.PATCH));
 		request.setObjectToPost(entity.getPatchObject());
 		return this.performRequest(request, tag, listener, synchronous);
 	}
-	
-	public ResponseData deleteObject(AbstractDrupalEntity entity,@SuppressWarnings("rawtypes") Class resultClass,Object tag, OnResponseListener listener,boolean synchronous)
-	{		
-		BaseRequest request = BaseRequest.newBaseRequest(RequestMethod.DELETE,getURLForEntity(entity), this.requestFormat, resultClass);		
-		request.setGetParameters(entity.getItemRequestGetParameters(RequestMethod.DELETE));		
+
+	public ResponseData deleteObject(AbstractDrupalEntity entity, Class<?> resultClass, Object tag, OnResponseListener listener,
+			boolean synchronous)
+	{
+		BaseRequest request = BaseRequest.newBaseRequest(RequestMethod.DELETE, getURLForEntity(entity), this.requestFormat, resultClass);
+		request.setGetParameters(entity.getItemRequestGetParameters(RequestMethod.DELETE));
 		return this.performRequest(request, tag, listener, synchronous);
 	}
-	
+
 	private String getURLForEntity(AbstractDrupalEntity entity)
 	{
-		return this.baseURL+entity.getPath();
+		return this.baseURL + entity.getPath();
 	}
 
 	/**
 	 * This request is always synchronous
+	 * 
 	 * @param userName
 	 * @param password
 	 */
 	public final void login(final String userName, final String password)
 	{
-		if(!this.loginManager.isLogged())
+		if (!this.loginManager.isLogged())
 		{
 			this.loginManager.login(userName, password, queue);
 		}
 	}
-	
+
 	/**
-	 * This request is always synchronous	
+	 * This request is always synchronous
 	 */
 	public final void logout()
 	{
-		if(this.loginManager.isLogged())
+		if (this.loginManager.isLogged())
 		{
 			this.loginManager.logout(queue);
 		}
 	}
-	
+
 	public boolean isLogged()
 	{
 		return this.loginManager.isLogged();
@@ -141,7 +155,7 @@ public class DrupalClient implements OnResponseListener{
 	public void setLoginManager(ILoginManager loginManager)
 	{
 		this.loginManager = loginManager;
-		if(!this.loginManager.isLogged())
+		if (!this.loginManager.isLogged())
 		{
 			this.loginManager.restoreLoginData();
 		}
@@ -151,7 +165,7 @@ public class DrupalClient implements OnResponseListener{
 	public void onResponceReceived(ResponseData data, BaseRequest request)
 	{
 		OnResponseListener listener = this.listeners.get(request);
-		if(listener!=null)
+		if (listener != null)
 		{
 			listener.onResponceReceived(data, request.getTag());
 		}
@@ -162,13 +176,12 @@ public class DrupalClient implements OnResponseListener{
 	public void onError(VolleyError error, BaseRequest request)
 	{
 		OnResponseListener listener = this.listeners.get(request);
-		if(listener!=null)
+		if (listener != null)
 		{
 			listener.onError(error, request.getTag());
 		}
 		this.listeners.remove(request);
-	}	
-	
+	}
 
 	public static interface OnResponseListener
 	{
@@ -185,5 +198,66 @@ public class DrupalClient implements OnResponseListener{
 	public void setDefaultCharset(String defaultCharset)
 	{
 		this.defaultCharset = defaultCharset;
+	}
+
+	public void cancelByTag(final @NonNull Object tag)
+	{
+		this.queue.cancelAll(new RequestQueue.RequestFilter()
+		{
+			
+			@Override
+			public boolean apply(Request<?> request)
+			{
+				if(tag.equals(request.getTag()))
+				{
+					listeners.remove(request);
+					return true;
+				}else{
+					return false;
+				}
+			}
+		});		
+	}
+		
+	public void cancelAll()
+	{
+		this.queue.cancelAll(new RequestQueue.RequestFilter()
+		{
+			
+			@Override
+			public boolean apply(Request<?> request)
+			{
+				return true;
+			}
+		});
+		
+		this.listeners.clear();
+	}
+	
+	/**
+	 * Cancel all requests for given listener with tag
+	 * @param listener listener to cancel requests for
+	 * @param tag to cancel requests for, in case if null passed- all requests for given listener will be canceled
+	 */
+	public void cancelAllRequestsForListener(final @NonNull OnResponseListener theListener, final @Nullable Object theTag)
+	{
+		this.queue.cancelAll(new RequestQueue.RequestFilter()
+		{			
+			@Override
+			public boolean apply(Request<?> request)
+			{
+				if(theTag == null||theTag.equals(request.getTag()))
+				{
+					OnResponseListener listener = listeners.get(request);
+					if(listener != null && listener.equals(theListener))
+					{
+						listeners.remove(request);					
+						return true;
+					}
+				}
+				
+				return false;
+			}
+		});		
 	}
 }

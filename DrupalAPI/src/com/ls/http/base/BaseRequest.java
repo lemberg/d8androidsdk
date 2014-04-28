@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import android.net.Uri;
+import android.util.Log;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -37,46 +38,47 @@ public class BaseRequest extends StringRequest
 		JSON, XML
 	};
 
-	private final RequestFormat format;	
+	private final RequestFormat format;
 	private final RequestFuture<String> syncLock;
-	private final Class responceClass;
+	private final Class<?> responceClass;
 	private String defaultCharset;
-	
+
 	private OnResponseListener responceListener;
 
 	private Map<String, String> requestHeaders;
 	private Map<String, String> postParameters;
 	private Map<String, String> getParameters;
 	private Object objectToPost;
-	
+
 	private ResponseData result;
-	
-	
-/**
- * 
- * @param requestMethod
- * @param requestUrl
- * @param requestFormat
- * @param responseClass Class, returned as data field of ResultData object, can be null if you djn't need one.
- * @return
- */
-	public static BaseRequest newBaseRequest(RequestMethod requestMethod, String requestUrl, RequestFormat requestFormat, Class responseClass)
+
+	/**
+	 * 
+	 * @param requestMethod
+	 * @param requestUrl
+	 * @param requestFormat
+	 * @param responseClass
+	 *            Class, returned as data field of ResultData object, can be
+	 *            null if you djn't need one.
+	 * @return
+	 */
+	public static BaseRequest newBaseRequest(RequestMethod requestMethod, String requestUrl, RequestFormat requestFormat, Class<?> responseClass)
 	{
 		RequestFuture<String> lock = RequestFuture.newFuture();
 		BaseRequest result = new BaseRequest(requestMethod, requestUrl, requestFormat, responseClass, lock);
 		return result;
 	};
 
-	private BaseRequest(RequestMethod requestMethod, String requestUrl, RequestFormat requestFormat,Class theResponseClass,RequestFuture<String> lock)
+	private BaseRequest(RequestMethod requestMethod, String requestUrl, RequestFormat requestFormat, Class<?> theResponseClass, RequestFuture<String> lock)
 	{
 		super(requestMethod.methodCode, requestUrl, lock, lock);
 		this.format = requestFormat;
-		this.syncLock = lock;		
-		this.initRequestHeaders();	
+		this.syncLock = lock;
+		this.initRequestHeaders();
 		this.responceClass = theResponseClass;
 	}
 
-	public Class getResponceClass()
+	public Class<?> getResponceClass()
 	{
 		return responceClass;
 	}
@@ -106,8 +108,10 @@ public class BaseRequest extends StringRequest
 														// thread
 			} catch (InterruptedException e)
 			{
+				e.printStackTrace();
 			} catch (ExecutionException e)
 			{
+				e.printStackTrace();
 			}
 		}
 
@@ -118,45 +122,52 @@ public class BaseRequest extends StringRequest
 	protected Response<String> parseNetworkResponse(NetworkResponse response)
 	{
 		Response<String> requestResult = super.parseNetworkResponse(response);
-		this.result = new ResponseData();
-		this.result.error = requestResult.error;
-		this.result.statusCode = response.statusCode;
-		this.result.headers = new HashMap<String, String>(response.headers);
-		this.result.responceString = requestResult.result;
-		if (requestResult.result != null)
+		if (!this.isCanceled())
 		{
+			this.result = new ResponseData();
+			this.result.error = requestResult.error;
+			this.result.statusCode = response.statusCode;
+			this.result.headers = new HashMap<String, String>(response.headers);
+			this.result.responceString = requestResult.result;
+			if (requestResult.result != null)
+			{
 
-			switch (this.format) {
-			case XML:
-				this.result.data = new XMLResponceHandler().itemFromResponce(requestResult.result,responceClass);
-				break;
-			case JSON:
-			default:
-				this.result.data = new JSONResponceHandler().itemFromResponce(requestResult.result,responceClass);
+				switch (this.format) {
+				case XML:
+					this.result.data = new XMLResponceHandler().itemFromResponce(requestResult.result, responceClass);
+					break;
+				case JSON:
+				default:
+					this.result.data = new JSONResponceHandler().itemFromResponce(requestResult.result, responceClass);
+				}
+
 			}
-
 		}
 		return requestResult;
 	}
 
 	@Override
 	protected void deliverResponse(String response)
-	{
+	{		
+		Log.e("BaseRequest","DElivering responce");
 		if (this.responceListener != null)
 		{
 			this.responceListener.onResponceReceived(result, this);
 		}
+		this.syncLock.onResponse(response);
 	}
 
 	@Override
 	public void deliverError(VolleyError error)
 	{
+		Log.e("BaseRequest","DElivering error");
 		if (this.responceListener != null)
 		{
 			this.responceListener.onError(error, this);
 		}
+		this.syncLock.onErrorResponse(error);
 	}
-	
+
 	public static interface OnResponseListener
 	{
 		void onResponceReceived(ResponseData data, BaseRequest request);
@@ -178,9 +189,9 @@ public class BaseRequest extends StringRequest
 	{
 		return format;
 	}
-	
-	//Header parameters handling
-	
+
+	// Header parameters handling
+
 	@Override
 	public Map<String, String> getHeaders() throws AuthFailureError
 	{
@@ -192,7 +203,7 @@ public class BaseRequest extends StringRequest
 			return super.getHeaders();
 		}
 	}
-	
+
 	public Map<String, String> getRequestHeaders()
 	{
 		return requestHeaders;
@@ -202,7 +213,7 @@ public class BaseRequest extends StringRequest
 	{
 		this.requestHeaders = requestHeaders;
 	}
-	
+
 	public void addRequestHeaders(Map<String, String> theRequestHeaders)
 	{
 		this.requestHeaders.putAll(theRequestHeaders);
@@ -212,9 +223,9 @@ public class BaseRequest extends StringRequest
 	{
 		this.requestHeaders.put(key, value);
 	}
-	
-	//Post parameters handling
-	
+
+	// Post parameters handling
+
 	@Override
 	protected Map<String, String> getParams() throws AuthFailureError
 	{
@@ -226,9 +237,7 @@ public class BaseRequest extends StringRequest
 			return super.getParams();
 		}
 	}
-	
-	
-	
+
 	public Map<String, String> getPostParameters()
 	{
 		return postParameters;
@@ -238,7 +247,7 @@ public class BaseRequest extends StringRequest
 	{
 		this.postParameters = postParameters;
 	}
-	
+
 	public void addPostParameters(Map<String, String> postParameters)
 	{
 		if (this.postParameters == null)
@@ -249,41 +258,42 @@ public class BaseRequest extends StringRequest
 			this.postParameters.putAll(postParameters);
 		}
 	}
-	
-	public void addPostParameter(String key,String value)
+
+	public void addPostParameter(String key, String value)
 	{
 		if (this.postParameters == null)
 		{
 			this.postParameters = new HashMap<String, String>();
 		}
-		if(value == null)
+		if (value == null)
 		{
 			this.postParameters.remove(key);
-		}else{
+		} else
+		{
 			this.postParameters.put(key, value);
-		}	
+		}
 	}
-	
-	//Post Body handling
-	
+
+	// Post Body handling
+
 	@Override
 	public byte[] getBody() throws AuthFailureError
 	{
 		if (this.objectToPost != null && this.postParameters == null)
 		{
-			RequestHandler handler;			
+			RequestHandler handler;
 			switch (this.format) {
 			case XML:
-				handler = new XMLRequestHandler(this.objectToPost);				
+				handler = new XMLRequestHandler(this.objectToPost);
 				break;
-			case JSON:			
+			case JSON:
 				handler = new JSONRequestHandler(this.objectToPost);
 				break;
 			default:
 				throw new IllegalArgumentException("Unrecognised request format");
 			}
 			try
-			{				
+			{
 				String content = handler.stringBodyFromItem();
 				return content.getBytes(handler.getCharset(this.defaultCharset));
 			} catch (UnsupportedEncodingException e)
@@ -316,8 +326,9 @@ public class BaseRequest extends StringRequest
 		}
 
 		return super.getBodyContentType();
+
 	}
-	
+
 	public Object getObjectToPost()
 	{
 		return objectToPost;
@@ -327,26 +338,27 @@ public class BaseRequest extends StringRequest
 	{
 		this.objectToPost = objectToPost;
 	}
-	
-	//Get parameters handling
-	
+
+	// Get parameters handling
+
 	@Override
 	public String getUrl()
 	{
-		if(this.getParameters != null && !this.getParameters.isEmpty())
-		{			
+		if (this.getParameters != null && !this.getParameters.isEmpty())
+		{
 			Uri.Builder builder = Uri.parse(super.getUrl()).buildUpon();
-			for(Map.Entry<String, String> entry:this.getParameters.entrySet())
+			for (Map.Entry<String, String> entry : this.getParameters.entrySet())
 			{
-				builder.appendQueryParameter(entry.getKey(), entry.getValue());				
+				builder.appendQueryParameter(entry.getKey(), entry.getValue());
 			}
-			
+
 			return builder.build().toString();
-		}else{		
+		} else
+		{
 			return super.getUrl();
 		}
 	}
-	
+
 	public Map<String, String> getGetParameters()
 	{
 		return getParameters;
@@ -356,7 +368,7 @@ public class BaseRequest extends StringRequest
 	{
 		this.getParameters = getParameters;
 	}
-	
+
 	public void addGetParameters(Map<String, String> getParameters)
 	{
 		if (this.getParameters == null)
@@ -367,19 +379,20 @@ public class BaseRequest extends StringRequest
 			this.getParameters.putAll(getParameters);
 		}
 	}
-	
-	public void addGetParameter(String key,String value)
+
+	public void addGetParameter(String key, String value)
 	{
 		if (this.getParameters == null)
 		{
 			this.getParameters = new HashMap<String, String>();
 		}
-		if(value == null)
+		if (value == null)
 		{
 			this.getParameters.remove(key);
-		}else{
+		} else
+		{
 			this.getParameters.put(key, value);
-		}	
+		}
 	}
 
 	public String getDefaultCharset()
@@ -390,5 +403,12 @@ public class BaseRequest extends StringRequest
 	public void setDefaultCharset(String defaultCharset)
 	{
 		this.defaultCharset = defaultCharset;
-	}	
+	}
+
+	@Override
+	public void cancel()
+	{
+		this.syncLock.onResponse(null);
+		super.cancel();
+	}
 }
