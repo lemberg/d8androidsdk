@@ -8,15 +8,13 @@ import junit.framework.Assert;
 
 import org.eclipse.jdt.annotation.NonNull;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.google.gson.annotations.Expose;
 import com.ls.http.base.BaseRequest.RequestMethod;
 import com.ls.http.base.ICharsetItem;
 import com.ls.http.base.ResponseData;
-import com.ls.utiles.ObjectComparator;
-import com.ls.utiles.ObjectComparator.FootPrint;
+import com.ls.util.ObjectComparator;
+import com.ls.util.ObjectComparator.FootPrint;
 
 public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseListener, ICharsetItem
 {	
@@ -99,7 +97,7 @@ public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseLis
 	
 	// OnResponceListener methods
 	public void onResponceReceived(ResponseData data, Object tag)
-	{
+	{			
 		RequestMethod method = (RequestMethod)tag;
 		
 		if(method == RequestMethod.GET)
@@ -133,13 +131,13 @@ public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseLis
 	private void consumeObject(AbstractDrupalEntity entity)
 	{
 		Object consumer = this.getManagedData();
-		Field[] fields = consumer.getClass().getFields();
+		Field[] fields = consumer.getClass().getDeclaredFields();
 		for(int counter = 0; counter < fields.length;counter++)
 		{
-			Field field = fields[counter];
+			Field field = fields[counter];			
 			Expose expose = field.getAnnotation(Expose.class);			
 			if(expose != null && !expose.deserialize() || Modifier.isTransient(field.getModifiers()))
-			{
+			{				
 				continue;//We don't have to copy ignored fields.
 			}
 			field.setAccessible(true);

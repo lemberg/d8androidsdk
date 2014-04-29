@@ -1,35 +1,30 @@
 package com.ls.sampleapp.adapters;
 
-import java.util.List;
+import com.ls.sampleapp.AppConstants;
+import com.ls.sampleapp.ArticleFragment;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.ls.sampleapp.article.Page;
-
 public class ArticlesAdapter extends FragmentPagerAdapter
 {
-	private List<Page> pages;
-
 	public ArticlesAdapter(FragmentManager fm)
 	{
-		super(fm);
-		// TODO Auto-generated constructor stub
+		super(fm);		
 	}
 
 	@Override
 	public Fragment getItem(int arg0)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		
+		return ArticleFragment.newInstance(AppConstants.NODE_IDS[arg0]);
 	}
 
 	@Override
 	public int getCount()
-	{
-		// TODO Auto-generated method stub
-		return 0;
+	{		
+		return AppConstants.NODE_IDS.length;
 	}
 	
 }

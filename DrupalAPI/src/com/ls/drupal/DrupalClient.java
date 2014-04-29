@@ -7,7 +7,6 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -69,9 +68,10 @@ public class DrupalClient implements OnResponseListener
 			throw new IllegalStateException("User isnt logged in");
 		}
 		request.setTag(tag);
+		request.setResponceListener(this);
 		this.loginManager.applyLoginDataToRequest(request);
 		this.listeners.put(request, listener);
-		Log.d("DrupalClient", "Performing request:" + request.getUrl());
+//		Log.d("DrupalClient", "Performing request:" + request.getUrl());
 		return request.performRequest(synchronous, queue);
 	}
 
@@ -163,7 +163,7 @@ public class DrupalClient implements OnResponseListener
 
 	@Override
 	public void onResponceReceived(ResponseData data, BaseRequest request)
-	{
+	{		
 		OnResponseListener listener = this.listeners.get(request);
 		if (listener != null)
 		{

@@ -1,13 +1,14 @@
 package com.ls.sampleapp.article;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
-public class DrupalValueArrayWrapper<T> extends LinkedList<DrupalValueContainer<T>>
+public class DrupalValueArrayWrapper<T> extends ArrayList<DrupalValueContainer<T>>
 {		
 	private static final long serialVersionUID = 9137776045434777936L;
 
 	public DrupalValueArrayWrapper(T value)
 	{
+		super(1);
 		this.setValue(value);
 	}
 	
@@ -23,7 +24,8 @@ public class DrupalValueArrayWrapper<T> extends LinkedList<DrupalValueContainer<
 	
 	public void setValue(T value)
 	{
-		this.set(0, new DrupalValueContainer<T>(value));
+		this.clear();
+		this.add(new DrupalValueContainer<T>(value));
 	}
 	
 	

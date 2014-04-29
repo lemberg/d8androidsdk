@@ -1,12 +1,7 @@
 package com.ls.http.base;
 
-import java.io.ObjectInputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
-import android.util.Log;
-
 import com.google.gson.Gson;
+import com.ls.util.ObjectsFactory;
 
 class JSONResponceHandler implements IResponceHandler
 {
@@ -18,27 +13,11 @@ class JSONResponceHandler implements IResponceHandler
 		if (theClass != null)
 		{
 			if (IResponceItem.class.isAssignableFrom(theClass))
-			{
-				try
-				{
+			{				
 					IResponceItem item;
-					item = (IResponceItem) this.newInstance(theClass);
+					item = (IResponceItem) ObjectsFactory.newInstance(theClass);
 					item.initWithJSON(json);
 					result = item;
-				} catch (IllegalAccessException e)
-				{
-					e.printStackTrace();
-				} catch (IllegalArgumentException e)
-				{
-					e.printStackTrace();
-				} catch (InvocationTargetException e)
-				{
-					e.printStackTrace();
-				} catch (NoSuchMethodException e)
-				{
-					e.printStackTrace();
-				}
-
 			} else
 			{
 				Gson gson = SharedGson.getGson();
@@ -60,10 +39,5 @@ class JSONResponceHandler implements IResponceHandler
 	// return o;
 	// }
 
-	private Object newInstance(Class<?> theClass) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException
-	{
-		Method newInstance = ObjectInputStream.class.getDeclaredMethod("newInstance", Class.class, Class.class);
-		newInstance.setAccessible(true);
-		return newInstance.invoke(null, theClass, Object.class);
-	}
+	
 }

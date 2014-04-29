@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import android.net.Uri;
-import android.util.Log;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -76,6 +75,7 @@ public class BaseRequest extends StringRequest
 		this.syncLock = lock;
 		this.initRequestHeaders();
 		this.responceClass = theResponseClass;
+		this.result = new ResponseData();
 	}
 
 	public Class<?> getResponceClass()
@@ -117,14 +117,13 @@ public class BaseRequest extends StringRequest
 
 		return this.result;
 	}
-
+		
 	@Override
 	protected Response<String> parseNetworkResponse(NetworkResponse response)
 	{
-		Response<String> requestResult = super.parseNetworkResponse(response);
+		Response<String> requestResult = super.parseNetworkResponse(response);	
 		if (!this.isCanceled())
-		{
-			this.result = new ResponseData();
+		{			
 			this.result.error = requestResult.error;
 			this.result.statusCode = response.statusCode;
 			this.result.headers = new HashMap<String, String>(response.headers);
@@ -145,11 +144,19 @@ public class BaseRequest extends StringRequest
 		}
 		return requestResult;
 	}
+	
+	@Override
+	protected VolleyError parseNetworkError(VolleyError volleyError)
+	{
+		this.result.error = volleyError;
+		this.result.statusCode = volleyError.networkResponse.statusCode;
+		return super.parseNetworkError(volleyError);
+	}
 
 	@Override
 	protected void deliverResponse(String response)
 	{		
-		Log.e("BaseRequest","DElivering responce");
+//		Log.e(this.getClass().getName(),"Delivering responce");
 		if (this.responceListener != null)
 		{
 			this.responceListener.onResponceReceived(result, this);
@@ -160,7 +167,7 @@ public class BaseRequest extends StringRequest
 	@Override
 	public void deliverError(VolleyError error)
 	{
-		Log.e("BaseRequest","DElivering error");
+//		Log.e(this.getClass().getName(),"Delivering error");
 		if (this.responceListener != null)
 		{
 			this.responceListener.onError(error, this);

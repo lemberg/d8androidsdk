@@ -1,14 +1,7 @@
 package com.ls.drupal.view;
 
-import java.util.Map;
-
-import junit.framework.Assert;
-
-import com.android.volley.VolleyError;
 import com.ls.drupal.DrupalClient;
 import com.ls.drupal.DrupalEntity;
-import com.ls.http.base.BaseRequest.RequestMethod;
-import com.ls.http.base.ResponseData;
 
 public abstract class DrupalView extends DrupalEntity
 {	

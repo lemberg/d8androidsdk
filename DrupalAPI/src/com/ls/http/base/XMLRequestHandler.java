@@ -2,8 +2,6 @@ package com.ls.http.base;
 
 import org.eclipse.jdt.annotation.NonNull;
 
-import com.google.gson.Gson;
-
 
 class XMLRequestHandler extends RequestHandler
 {

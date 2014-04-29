@@ -2,8 +2,6 @@ package com.ls.drupal;
 
 import org.eclipse.jdt.annotation.NonNull;
 
-import com.google.gson.annotations.Expose;
-
 public abstract class DrupalEntityContainer extends AbstractDrupalEntity
 {		
 	transient private final Object data;

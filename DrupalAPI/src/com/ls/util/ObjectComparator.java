@@ -1,4 +1,4 @@
-package com.ls.utiles;
+package com.ls.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,10 +8,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import junit.framework.Assert;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
-
-import junit.framework.Assert;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -34,7 +34,7 @@ public class ObjectComparator
 	{
 		private final JsonElement data;
 		private FootPrint(Object dataSource, Gson converter)
-		{
+		{			
 			this.data = converter.toJsonTree(dataSource);
 		}
 		
