@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import com.ls.drupal.DrupalClient;
 import com.ls.sampleapp.adapters.CategorieArticlesListAdapter;
 
 public class CategorieFragment extends Fragment
@@ -28,8 +29,10 @@ public class CategorieFragment extends Fragment
 	{
 		String categorieId = this.getArguments().getString(CATEGORIE_ID_KEY);
 		ViewGroup result = (ViewGroup) inflater.inflate(R.layout.fragment_categorie, container, false);
-		ListView list = (ListView) result.findViewById(R.id.listView);		
-		list.setAdapter(new CategorieArticlesListAdapter(categorieId));
+		ListView list = (ListView) result.findViewById(R.id.listView);	
+		
+		DrupalClient client = new DrupalClient(AppConstants.SERVER_BASE_URL, this.getActivity());
+		list.setAdapter(new CategorieArticlesListAdapter(categorieId,client,this.getActivity()));
 		return result;
 	}
 }
