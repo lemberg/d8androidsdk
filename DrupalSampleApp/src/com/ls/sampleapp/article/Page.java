@@ -1,48 +1,27 @@
 package com.ls.sampleapp.article;
 
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.Assert;
-
 import com.ls.drupal.DrupalClient;
-import com.ls.drupal.DrupalEntity;
+import com.ls.drupal.DrupalItemsArray;
 import com.ls.http.base.BaseRequest.RequestMethod;
 
-public class Page extends DrupalEntity
+public class Page extends DrupalItemsArray<ArticlePreview>
 {
 
-//	private DrupalValueArrayWrapper<String> nid;	
-//	private DrupalValueArrayWrapper<String> uuid;
-//	private DrupalValueArrayWrapper<String> langcode;
-//	private DrupalValueArrayWrapper<String> title;
-//	private DrupalValueArrayWrapper<String> uid;
-//	private DrupalValueArrayWrapper<String> status;
-//	private DrupalValueArrayWrapper<String> created;
-//	private DrupalValueArrayWrapper<String> changed;
-//	private DrupalValueArrayWrapper<String> promote;
-//	private DrupalValueArrayWrapper<String> sticky;
-//	private DrupalValueArrayWrapper<String> revision_timestamp;
-//	private DrupalValueArrayWrapper<String> revision_uid;
-//	private DrupalValueArrayWrapper<String> log;
-//	private DrupalValueArrayWrapper<String> vid;
-//	private DrupalValueArrayWrapper<String> body;
-
-	private List<DrupalValueContainer<String>> nid;
-	private List<DrupalValueContainer<String>> body;
-	private List<DrupalValueContainer<String>> title;
+	transient private int pageNumber;
 	
-	public Page(DrupalClient client, int nodeNumber)
+	public Page(DrupalClient client, int thePageNumber)
 	{
-		super(client);	
-		this.nid = new DrupalValueArrayWrapper<String>(Integer.toString(nodeNumber));
-	}	
-	
+		super(client, 5);	
+		this.pageNumber = thePageNumber;
+	}
+
 	@Override
 	protected String getPath()
-	{
-		Assert.assertNotNull("Node id can't be null while requesting item", this.nid);
-		return "node"+"/"+this.getNid();
+	{		
+		return "blog-rest";
 	}
 
 	@Override
@@ -53,37 +32,19 @@ public class Page extends DrupalEntity
 
 	@Override
 	protected Map<String, String> getItemRequestGetParameters(RequestMethod method)
-	{		
-		return null;
-	}
-
-	public String getBody()
 	{
-		return getValue(this.body);
-	}
-	
-	public String getTitle()
-	{
-		return getValue(this.title);
-	}
-	
-	public String getNid()
-	{
-		return getValue(this.nid);
-	}
-
-	public void setBody(String body)
-	{
-		this.body = new DrupalValueArrayWrapper<String>(body);
-	}
-	
-	private <T> T getValue(List<DrupalValueContainer<T>> list)
-	{
-		if(list!=null && !list.isEmpty())
-		{
-			return list.get(0).value;
-		}else{
-			return null;
+		switch (method) {
+		case GET:
+			Map result = new HashMap<String, String>();
+			result.put("page", Integer.toString(pageNumber));
+			return result;			
+		default:
+			return null;			
 		}
+	}
+
+	public int getPageNumber()
+	{
+		return pageNumber;
 	}
 }

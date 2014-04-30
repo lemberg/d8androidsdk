@@ -1,8 +1,8 @@
-package com.ls.sampleapp.article;
+package com.ls.sampleapp.drupal;
 
 public class DrupalValueContainer<T>
 {
-	protected T value;
+	public T value;
 	public DrupalValueContainer(T theValue)
 	{
 		value = theValue;

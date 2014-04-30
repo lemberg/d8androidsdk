@@ -14,13 +14,13 @@ import com.android.volley.VolleyError;
 import com.ls.drupal.AbstractDrupalEntity;
 import com.ls.drupal.AbstractDrupalEntity.OnEntityRequestListener;
 import com.ls.drupal.DrupalClient;
-import com.ls.sampleapp.article.Page;
+import com.ls.sampleapp.article.Article;
 
 public class ArticleFragment extends Fragment implements OnEntityRequestListener
 {
 	final static String PROGRESS_DIALOG_TAG = "progress_dialog";
 	private final static String PAGE_ID_KEY = "page_id";
-	private Page page;
+	private Article page;
 
 	private TextView title;
 	private WebView content;
@@ -41,7 +41,7 @@ public class ArticleFragment extends Fragment implements OnEntityRequestListener
 	{
 		super.onCreate(savedInstanceState);
 		int pageId = this.getArguments().getInt(PAGE_ID_KEY);
-		this.page = new Page(new DrupalClient(AppConstants.SERVER_BASE_URL, this.getActivity()), pageId);
+		this.page = new Article(new DrupalClient(AppConstants.SERVER_BASE_URL, this.getActivity()), pageId);
 		this.page.setRequestListener(this);
 //		this.page.setProgressListener(this);
 		this.page.getDataFromServer(false);

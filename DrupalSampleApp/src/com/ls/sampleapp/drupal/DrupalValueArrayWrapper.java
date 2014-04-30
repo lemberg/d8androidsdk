@@ -1,4 +1,4 @@
-package com.ls.sampleapp.article;
+package com.ls.sampleapp.drupal;
 
 import java.util.ArrayList;
 
