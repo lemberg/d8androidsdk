@@ -40,22 +40,40 @@ public class DrupalClient implements OnResponseListener
 		void onCancel(Object tag);
 	}
 	
-	public DrupalClient(String theBaseURL, Context theContext)
+	public DrupalClient(@NonNull String theBaseURL,@NonNull Context theContext)
 	{
-		this(theBaseURL, theContext, RequestFormat.JSON);
+		this(theBaseURL, theContext,null);
 	}
 
-	public DrupalClient(String theBaseURL, Context theContext, RequestFormat theFormat)
+	public DrupalClient(@NonNull String theBaseURL,@NonNull Context theContext,@Nullable RequestFormat theFormat)
 	{
 		this(theBaseURL, theContext, theFormat, null);
 	}
 
-	public DrupalClient(String theBaseURL, Context theContext, RequestFormat theFormat, ILoginManager theLoginManager)
+	public DrupalClient(@NonNull String theBaseURL,@NonNull Context theContext,@Nullable RequestFormat theFormat,@Nullable ILoginManager theLoginManager)
+	{
+		this(theBaseURL,getDefaultQueue(theContext),theFormat,theLoginManager);		
+	}
+	
+	@SuppressWarnings("null")
+	private static @NonNull RequestQueue getDefaultQueue(@NonNull Context theContext)
+	{
+		return Volley.newRequestQueue(theContext.getApplicationContext());
+	}
+	
+	public DrupalClient(@NonNull String theBaseURL,@NonNull RequestQueue theQueue,@Nullable RequestFormat theFormat,@Nullable ILoginManager theLoginManager)
 	{
 		this.listeners = new HashMap<BaseRequest, DrupalClient.OnResponseListener>();
-		this.queue = Volley.newRequestQueue(theContext.getApplicationContext());
+		this.queue = theQueue;
 		this.baseURL = theBaseURL;
-		this.requestFormat = theFormat;
+		
+		if(theFormat != null)
+		{
+			this.requestFormat = theFormat;
+		}else{
+			this.requestFormat =  RequestFormat.JSON;
+		}
+		
 		if (theLoginManager != null)
 		{
 			this.setLoginManager(theLoginManager);

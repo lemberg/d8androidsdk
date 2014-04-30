@@ -146,6 +146,7 @@ public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseLis
 	// OnResponceListener methods
 	public void onResponceReceived(ResponseData data, Object tag)
 	{
+		this.onNewRequestComplete();
 		RequestMethod method = (RequestMethod) tag;
 
 		if (method == RequestMethod.GET)
@@ -169,8 +170,7 @@ public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseLis
 				this.requestListener.onEntityFetched(this);
 				break;
 			}
-		}
-		this.onNewRequestComplete();
+		}		
 	}
 
 	/**

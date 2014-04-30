@@ -13,7 +13,6 @@ import android.widget.Toast;
 import com.android.volley.VolleyError;
 import com.ls.drupal.AbstractDrupalEntity;
 import com.ls.drupal.AbstractDrupalEntity.OnEntityRequestListener;
-import com.ls.drupal.AbstractDrupalEntity.RequestProgressListener;
 import com.ls.drupal.DrupalClient;
 import com.ls.sampleapp.article.Page;
 
