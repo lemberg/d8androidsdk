@@ -104,6 +104,7 @@ public class BaseRequest extends StringRequest
 		{
 			try
 			{
+				@SuppressWarnings("unused")
 				String response = this.syncLock.get(); // this call will block
 														// thread
 			} catch (InterruptedException e)
@@ -148,9 +149,13 @@ public class BaseRequest extends StringRequest
 	@Override
 	protected VolleyError parseNetworkError(VolleyError volleyError)
 	{
-		this.result.error = volleyError;
-		this.result.statusCode = volleyError.networkResponse.statusCode;
-		return super.parseNetworkError(volleyError);
+		VolleyError error = super.parseNetworkError(volleyError);
+		if(volleyError.networkResponse != null)
+		{
+			this.result.statusCode = volleyError.networkResponse.statusCode;
+		}
+		this.result.error = error;
+		return error;
 	}
 
 	@Override

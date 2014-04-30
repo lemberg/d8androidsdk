@@ -45,5 +45,4 @@ public class DrupalNode extends DrupalEntity
 	{		
 		return null;
 	}	
-	
 }

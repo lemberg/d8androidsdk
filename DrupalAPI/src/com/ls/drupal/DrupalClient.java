@@ -31,6 +31,15 @@ public class DrupalClient implements OnResponseListener
 
 	private ILoginManager loginManager;
 
+	public static interface OnResponseListener
+	{
+		void onResponceReceived(ResponseData data, Object tag);
+
+		void onError(VolleyError error, Object tag);
+		
+		void onCancel(Object tag);
+	}
+	
 	public DrupalClient(String theBaseURL, Context theContext)
 	{
 		this(theBaseURL, theContext, RequestFormat.JSON);
@@ -163,10 +172,10 @@ public class DrupalClient implements OnResponseListener
 
 	@Override
 	public void onResponceReceived(ResponseData data, BaseRequest request)
-	{		
+	{			
 		OnResponseListener listener = this.listeners.get(request);
 		if (listener != null)
-		{
+		{			
 			listener.onResponceReceived(data, request.getTag());
 		}
 		this.listeners.remove(request);
@@ -182,14 +191,7 @@ public class DrupalClient implements OnResponseListener
 		}
 		this.listeners.remove(request);
 	}
-
-	public static interface OnResponseListener
-	{
-		void onResponceReceived(ResponseData data, Object tag);
-
-		void onError(VolleyError error, Object tag);
-	}
-
+	
 	public String getDefaultCharset()
 	{
 		return defaultCharset;
@@ -202,44 +204,20 @@ public class DrupalClient implements OnResponseListener
 
 	public void cancelByTag(final @NonNull Object tag)
 	{
-		this.queue.cancelAll(new RequestQueue.RequestFilter()
-		{
-			
-			@Override
-			public boolean apply(Request<?> request)
-			{
-				if(tag.equals(request.getTag()))
-				{
-					listeners.remove(request);
-					return true;
-				}else{
-					return false;
-				}
-			}
-		});		
+		this.cancelAllRequestsForListener(null, tag);
 	}
 		
 	public void cancelAll()
 	{
-		this.queue.cancelAll(new RequestQueue.RequestFilter()
-		{
-			
-			@Override
-			public boolean apply(Request<?> request)
-			{
-				return true;
-			}
-		});
-		
-		this.listeners.clear();
+		this.cancelAllRequestsForListener(null, null);
 	}
 	
 	/**
 	 * Cancel all requests for given listener with tag
-	 * @param listener listener to cancel requests for
+	 * @param listener listener to cancel requests for in case if null passed- all requests for given tag will be canceled
 	 * @param tag to cancel requests for, in case if null passed- all requests for given listener will be canceled
 	 */
-	public void cancelAllRequestsForListener(final @NonNull OnResponseListener theListener, final @Nullable Object theTag)
+	public void cancelAllRequestsForListener(final @Nullable OnResponseListener theListener, final @Nullable Object theTag)
 	{
 		this.queue.cancelAll(new RequestQueue.RequestFilter()
 		{			
@@ -249,9 +227,13 @@ public class DrupalClient implements OnResponseListener
 				if(theTag == null||theTag.equals(request.getTag()))
 				{
 					OnResponseListener listener = listeners.get(request);
-					if(listener != null && listener.equals(theListener))
-					{
-						listeners.remove(request);					
+					if(theListener == null||listener.equals(theListener))
+					{				
+						if(listener != null)
+						{							
+							listeners.remove(request);		
+							listener.onCancel(request.getTag());
+						}
 						return true;
 					}
 				}

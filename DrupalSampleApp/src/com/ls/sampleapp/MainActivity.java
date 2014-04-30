@@ -19,10 +19,9 @@ public class MainActivity extends ActionBarActivity implements TabListener{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);    
-        
-//        requestArticle();
+
         final ActionBar bar = this.getSupportActionBar();
-        bar.setTitle("Test");
+        bar.setTitle(R.string.app_name);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
                
         this.mViewPager = (ViewPager)this.findViewById(R.id.pager);   
@@ -35,33 +34,15 @@ public class MainActivity extends ActionBarActivity implements TabListener{
                     }
                 });
                
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < AppConstants.NODE_IDS.length; i++) {
         	bar.addTab(
         			bar.newTab()
-                            .setText("Article " + (i + 1))
+                            .setText("Article " + AppConstants.NODE_IDS[i])
                             .setTabListener(this));
         }               
            
        
     }
-
-//    private void requestArticle()
-//    {
-//    	final DrupalClient client = new DrupalClient(AppConstants.SERVER_BASE_URL,MainActivity.this);
-//    	AsyncTask<Void, Void, Void> request = new AsyncTask<Void, Void, Void>()
-//		{
-//    		@Override
-//    		protected Void doInBackground(Void... params)
-//    		{      			
-//    			Page page = new Page(client, AppConstants.NODE_IDS[0]);
-//    	    	ResponseData response = page.getDataFromServer(true);    	    	
-////    	    	Log.e("Error:",response.getError().toString());
-//    			return null;
-//    		}
-//		};    	
-//		request.execute();	
-//					
-//    }
 
 	@Override
 	public void onTabReselected(Tab arg0, FragmentTransaction arg1)
