@@ -1,95 +1,100 @@
 package com.ls.drupal;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.eclipse.jdt.annotation.NonNull;
+
+import android.util.Log;
+
 public abstract class DrupalItemsArray<T> extends DrupalEntity implements Collection<T>
 {		
-	transient private ArrayList<T>items;
+	private final ArrayList<T>innerItems;
 	
 	public DrupalItemsArray(DrupalClient client, int itemCount)
 	{
 		super(client);	
-		items = new ArrayList<T>(itemCount);
+		innerItems = new ArrayList<T>(itemCount);
 	}
 
 	@Override
 	public boolean add(T object)
 	{
-		return items.add(object);
+		return innerItems.add(object);
 	}
 
 	@Override
 	public boolean addAll(Collection<? extends T> collection)
 	{
-		return this.items.addAll(collection);
+		return this.innerItems.addAll(collection);
 	}
 
 	@Override
 	public void clear()
 	{
-		this.items.clear();
+		this.innerItems.clear();
 	}
 
 	@Override
 	public boolean contains(Object object)
 	{
-		return items.contains(object);
+		return innerItems.contains(object);
 	}
 
 	@Override
 	public boolean containsAll(Collection<?> collection)
 	{
-		return items.containsAll(collection);
+		return innerItems.containsAll(collection);
 	}
 
 	@Override
 	public boolean isEmpty()
 	{		
-		return items.isEmpty();
+		return innerItems.isEmpty();
 	}
 
 	@Override
 	public Iterator<T> iterator()
 	{		
-		return items.iterator();
+		return innerItems.iterator();
 	}
 
 	@Override
 	public boolean remove(Object object)
 	{		
-		return items.remove(object);
+		return innerItems.remove(object);
 	}
 
 	@Override
 	public boolean removeAll(Collection<?> collection)
 	{		
-		return items.removeAll(collection);
+		return innerItems.removeAll(collection);
 	}
 
 	@Override
 	public boolean retainAll(Collection<?> collection)
 	{		
-		return items.retainAll(collection);
+		return innerItems.retainAll(collection);
 	}
 
 	@Override
 	public int size()
 	{		
-		return items.size();
+		return innerItems.size();
 	}
 
 	@Override
 	public Object[] toArray()
 	{		
-		return items.toArray();
+		return innerItems.toArray();
 	}
 
 	@Override
 	public <T> T[] toArray(T[] array)
 	{		
-		return items.toArray(array);
+		return innerItems.toArray(array);
 	}	
 	
 	/**
@@ -99,7 +104,7 @@ public abstract class DrupalItemsArray<T> extends DrupalEntity implements Collec
 	 */
 	public T get(int index)
 	{
-		return items.get(index);
+		return innerItems.get(index);
 	}
 	
 	/**
@@ -111,7 +116,7 @@ public abstract class DrupalItemsArray<T> extends DrupalEntity implements Collec
 	 */
 	public T set(int index,T object)
 	{
-		return items.set(index, object);
+		return innerItems.set(index, object);
 	}
 	
 	/**
@@ -122,6 +127,40 @@ public abstract class DrupalItemsArray<T> extends DrupalEntity implements Collec
 	 */
 	public T remove(int index)
 	{
-		return items.remove(index);
+		return innerItems.remove(index);
 	}
+	
+	//Replacing this with items set
+	
+	@Override
+	public @NonNull
+	Object getManagedData()
+	{		
+		return this.innerItems;
+	}
+	
+	@Override
+	protected void consumeObject(Object entity)
+	{
+		this.addAll((Collection<? extends T>) entity);
+//		super.consumeObject(entity);
+	}
+	
+//	@Override
+//	protected Object getManagedDataClassSpecifyer()
+//	{			
+//		try
+//		{
+//			Field[]fields =  DrupalItemsArray.class.getDeclaredFields();
+//			for(int counter =0;counter <fields.length;counter++)
+//			{
+//				Log.d(this.getClass().getName(),"fields name:"+fields[0].getName());
+//			}
+//			return this.getClass().getDeclaredField("innerItems").getGenericType();
+//		} catch (NoSuchFieldException e)
+//		{
+//			e.printStackTrace();
+//			return super.getManagedDataClassSpecifyer();
+//		}
+//	}
 }

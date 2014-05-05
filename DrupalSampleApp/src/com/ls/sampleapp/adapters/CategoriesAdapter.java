@@ -5,7 +5,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.ls.sampleapp.AppConstants;
-import com.ls.sampleapp.CategorieFragment;
+import com.ls.sampleapp.CategoryFragment;
 
 public class CategoriesAdapter extends FragmentPagerAdapter
 {
@@ -18,7 +18,7 @@ public class CategoriesAdapter extends FragmentPagerAdapter
 	public Fragment getItem(int arg0)
 	{
 		
-		return CategorieFragment.newInstance(AppConstants.CATEGORIES_LIST[arg0]);
+		return CategoryFragment.newInstance(AppConstants.CATEGORIES_LIST[arg0]);
 	}
 
 	@Override

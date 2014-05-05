@@ -17,6 +17,8 @@ public class Article extends DrupalEntity
 	private List<DrupalValueContainer<String>> nid;
 	private List<DrupalValueContainer<String>> body;
 	private List<DrupalValueContainer<String>> title;
+	private List<DrupalValueContainer<String>> field_blog_date;
+	private List<DrupalValueContainer<String>> field_blog_author;
 	
 	public Article(DrupalClient client, int nodeNumber)
 	{
@@ -53,11 +55,21 @@ public class Article extends DrupalEntity
 		return getValue(this.title);
 	}
 	
+	public String getAuthor()
+	{
+		return getTargetId(this.field_blog_author);
+	}
+	
+	public String getDate()
+	{
+		return getTargetId(this.field_blog_date);
+	}
+	
 	public String getNid()
 	{
 		return getValue(this.nid);
 	}
-
+	
 	public void setBody(String body)
 	{
 		this.body = new DrupalValueArrayWrapper<String>(body);
@@ -65,9 +77,31 @@ public class Article extends DrupalEntity
 	
 	private <T> T getValue(List<DrupalValueContainer<T>> list)
 	{
+		DrupalValueContainer<T> item = getItem(list);
+		if(item!= null)
+		{
+			return item.value;
+		}else{
+			return null;
+		}
+	}
+	
+	private <T> T getTargetId(List<DrupalValueContainer<T>> list)
+	{
+		DrupalValueContainer<T> item = getItem(list);
+		if(item!= null)
+		{
+			return item.target_id;
+		}else{
+			return null;
+		}
+	}
+	
+	private <T> DrupalValueContainer<T> getItem(List<DrupalValueContainer<T>> list)
+	{
 		if(list!=null && !list.isEmpty())
 		{
-			return list.get(0).value;
+			return list.get(0);
 		}else{
 			return null;
 		}

@@ -8,18 +8,18 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.ls.drupal.DrupalClient;
-import com.ls.sampleapp.adapters.CategorieArticlesListAdapter;
+import com.ls.sampleapp.adapters.CategoryArticlesListAdapter;
 
-public class CategorieFragment extends Fragment
+public class CategoryFragment extends Fragment
 {
-	private final static String CATEGORIE_ID_KEY = "categorie_id";
+	private final static String CATEGORY_ID_KEY = "category_id";
 	
 
-	public static CategorieFragment newInstance(String categorieId)
+	public static CategoryFragment newInstance(String categoryId)
 	{
-		CategorieFragment fragment = new CategorieFragment();
+		CategoryFragment fragment = new CategoryFragment();
 		Bundle args = new Bundle();
-		args.putString(CATEGORIE_ID_KEY, categorieId);
+		args.putString(CATEGORY_ID_KEY, categoryId);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -27,12 +27,12 @@ public class CategorieFragment extends Fragment
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
-		String categorieId = this.getArguments().getString(CATEGORIE_ID_KEY);
-		ViewGroup result = (ViewGroup) inflater.inflate(R.layout.fragment_categorie, container, false);
+		String categoryId = this.getArguments().getString(CATEGORY_ID_KEY);
+		ViewGroup result = (ViewGroup) inflater.inflate(R.layout.fragment_category, container, false);
 		ListView list = (ListView) result.findViewById(R.id.listView);	
 		
 		DrupalClient client = new DrupalClient(AppConstants.SERVER_BASE_URL, this.getActivity());
-		list.setAdapter(new CategorieArticlesListAdapter(categorieId,client,this.getActivity()));
+		list.setAdapter(new CategoryArticlesListAdapter(categoryId,client,this.getActivity()));
 		return result;
 	}
 }

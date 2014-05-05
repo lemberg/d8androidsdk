@@ -9,7 +9,7 @@ import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBar.TabListener;
 import android.support.v7.app.ActionBarActivity;
 
-import com.ls.sampleapp.adapters.ArticlesAdapter;
+import com.ls.sampleapp.adapters.CategoriesAdapter;
 
 public class MainActivity extends ActionBarActivity implements TabListener{
 		
@@ -25,7 +25,7 @@ public class MainActivity extends ActionBarActivity implements TabListener{
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
                
         this.mViewPager = (ViewPager)this.findViewById(R.id.pager);   
-        this.mViewPager.setAdapter(new ArticlesAdapter(this.getSupportFragmentManager()));
+        this.mViewPager.setAdapter(new CategoriesAdapter(this.getSupportFragmentManager()));
         this.mViewPager.setOnPageChangeListener(
                 new ViewPager.SimpleOnPageChangeListener() {
                     @Override

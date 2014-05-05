@@ -39,7 +39,7 @@ public class BaseRequest extends StringRequest
 
 	private final RequestFormat format;
 	private final RequestFuture<String> syncLock;
-	private final Class<?> responceClass;
+	private final Object responceClasSpecifier;
 	private String defaultCharset;
 
 	private OnResponseListener responceListener;
@@ -56,31 +56,31 @@ public class BaseRequest extends StringRequest
 	 * @param requestMethod
 	 * @param requestUrl
 	 * @param requestFormat
-	 * @param responseClass
-	 *            Class, returned as data field of ResultData object, can be
-	 *            null if you djn't need one.
+	 * @param responseClassSpecifier
+	 *            Class or Type, returned as data field of ResultData object, can be
+	 *            null if you don't need one.
 	 * @return
 	 */
-	public static BaseRequest newBaseRequest(RequestMethod requestMethod, String requestUrl, RequestFormat requestFormat, Class<?> responseClass)
+	public static BaseRequest newBaseRequest(RequestMethod requestMethod, String requestUrl, RequestFormat requestFormat, Object responseClassSpecifier)
 	{
 		RequestFuture<String> lock = RequestFuture.newFuture();
-		BaseRequest result = new BaseRequest(requestMethod, requestUrl, requestFormat, responseClass, lock);
+		BaseRequest result = new BaseRequest(requestMethod, requestUrl, requestFormat, responseClassSpecifier, lock);
 		return result;
 	};
 
-	private BaseRequest(RequestMethod requestMethod, String requestUrl, RequestFormat requestFormat, Class<?> theResponseClass, RequestFuture<String> lock)
+	private BaseRequest(RequestMethod requestMethod, String requestUrl, RequestFormat requestFormat,Object theResponseClass, RequestFuture<String> lock)
 	{
 		super(requestMethod.methodCode, requestUrl, lock, lock);
 		this.format = requestFormat;
 		this.syncLock = lock;
 		this.initRequestHeaders();
-		this.responceClass = theResponseClass;
+		this.responceClasSpecifier = theResponseClass;
 		this.result = new ResponseData();
 	}
 
-	public Class<?> getResponceClass()
+	public Object getResponceClasSpecifier()
 	{
-		return responceClass;
+		return responceClasSpecifier;
 	}
 
 	private void initRequestHeaders()
@@ -134,11 +134,11 @@ public class BaseRequest extends StringRequest
 
 				switch (this.format) {
 				case XML:
-					this.result.data = new XMLResponceHandler().itemFromResponce(requestResult.result, responceClass);
+					this.result.data = new XMLResponceHandler().itemFromResponceWithSpecifier(requestResult.result, responceClasSpecifier);
 					break;
 				case JSON:
 				default:
-					this.result.data = new JSONResponceHandler().itemFromResponce(requestResult.result, responceClass);
+					this.result.data = new JSONResponceHandler().itemFromResponceWithSpecifier(requestResult.result, responceClasSpecifier);
 				}
 
 			}

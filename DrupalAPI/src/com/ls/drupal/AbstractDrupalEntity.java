@@ -48,7 +48,7 @@ public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseLis
 
 	abstract @NonNull
 	Object getManagedData();
-
+			
 	/**
 	 * Method can be overriden in order to specify non-default charset for
 	 * Entity.
@@ -62,9 +62,7 @@ public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseLis
 	public AbstractDrupalEntity(DrupalClient client)
 	{
 		this.drupalClient = client;
-		this.activeRequestCount = new AtomicInteger(0);
-
-		Assert.assertNotNull("You have to specify non null data object", this.getManagedData());
+		this.activeRequestCount = new AtomicInteger(0);		
 	}
 
 	/**
@@ -122,7 +120,7 @@ public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseLis
 	public ResponseData getDataFromServer(boolean synchronous)
 	{
 		Assert.assertNotNull("You have to specify drupal client in order to perform requests", this.drupalClient);	
-		ResponseData result = this.drupalClient.getObject(this, this.getManagedData().getClass(), RequestMethod.GET, this, synchronous);;
+		ResponseData result = this.drupalClient.getObject(this, this.getManagedDataClassSpecifyer(), RequestMethod.GET, this, synchronous);;
 		this.onNewRequestStarted();		
 		return result;
 	}
@@ -151,7 +149,7 @@ public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseLis
 
 		if (method == RequestMethod.GET)
 		{
-			this.consumeObject((AbstractDrupalEntity) data.getData());
+			this.consumeObject(data.getData());
 		}
 
 		if (this.requestListener != null)
@@ -175,13 +173,13 @@ public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseLis
 
 	/**
 	 * Clone all fields of object specified to current one
-	 * 
+	 * You can override this method in order to perform custom one
 	 * @param entity
 	 *            object to be consumed
 	 */
-	private void consumeObject(AbstractDrupalEntity entity)
+	protected void consumeObject(Object entity)
 	{
-		Object consumer = this.getManagedData();
+		Object consumer = this.getManagedDataChecked();
 		Field[] fields = consumer.getClass().getDeclaredFields();
 		for (int counter = 0; counter < fields.length; counter++)
 		{
@@ -208,6 +206,15 @@ public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseLis
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	/**
+	 * You can override this method in order to Parse custom classes from "get" request response.
+	 * @return Class or type of managed object.
+	 */
+	protected Object getManagedDataClassSpecifyer()
+	{
+		return this.getManagedData().getClass();
 	}
 
 	public void onError(VolleyError error, Object tag)
@@ -275,7 +282,7 @@ public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseLis
 	protected FootPrint getCurrentStateFootprint()
 	{
 		ObjectComparator comparator = new ObjectComparator();
-		return comparator.createFootPrint(this.getManagedData());
+		return comparator.createFootPrint(this.getManagedDataChecked());
 	}
 
 	/**
@@ -301,7 +308,7 @@ public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseLis
 	public Object getPatchObject()
 	{
 		ObjectComparator comparator = new ObjectComparator();
-		FootPrint currentState = comparator.createFootPrint(this.getManagedData());
+		FootPrint currentState = comparator.createFootPrint(this.getManagedDataChecked());
 
 		@SuppressWarnings("null")
 		Object difference = this.getDifference(this.footprint, currentState, comparator);
@@ -372,5 +379,12 @@ public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseLis
 		}else{
 			this.activeRequestCount.decrementAndGet();
 		}
+	}
+	
+	@NonNull
+	private Object getManagedDataChecked()
+	{
+		Assert.assertNotNull("You have to specify non null data object", this.getManagedData());
+		return getManagedData();
 	}
 }
