@@ -1,10 +1,7 @@
 package com.ls.sampleapp.article;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
-
-import android.util.Log;
 
 import com.ls.drupal.DrupalClient;
 import com.ls.drupal.DrupalItemsArray;
@@ -51,21 +48,4 @@ public class Page extends DrupalItemsArray<Article>
 		return pageNumber;
 	}
 	
-	@Override
-	protected Object getManagedDataClassSpecifyer()
-	{			
-		try
-		{
-			Field[]fields =  this.getClass().getDeclaredFields();
-			for(int counter =0;counter <fields.length;counter++)
-			{
-				Log.d(this.getClass().getName(),"fields name:"+fields[0].getName());
-			}
-			return this.getClass().getDeclaredField("innerItems").getGenericType();
-		} catch (NoSuchFieldException e)
-		{
-			e.printStackTrace();
-			return super.getManagedDataClassSpecifyer();
-		}
-	}
 }
