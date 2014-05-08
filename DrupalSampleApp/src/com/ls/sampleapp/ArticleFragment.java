@@ -27,11 +27,11 @@ public class ArticleFragment extends Fragment implements OnEntityRequestListener
 	
 	private View progressView;
 
-	public static ArticleFragment newInstance(int pageId)
+	public static ArticleFragment newInstance(String pageId)
 	{
 		ArticleFragment fragment = new ArticleFragment();
 		Bundle args = new Bundle();
-		args.putInt(PAGE_ID_KEY, pageId);
+		args.putString(PAGE_ID_KEY, pageId);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -40,7 +40,7 @@ public class ArticleFragment extends Fragment implements OnEntityRequestListener
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		int pageId = this.getArguments().getInt(PAGE_ID_KEY);
+		String pageId = this.getArguments().getString(PAGE_ID_KEY);
 		this.page = new Article(new DrupalClient(AppConstants.SERVER_BASE_URL, this.getActivity()), pageId);
 		this.page.setRequestListener(this);
 //		this.page.setProgressListener(this);

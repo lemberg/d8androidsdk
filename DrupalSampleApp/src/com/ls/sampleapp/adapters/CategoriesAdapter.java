@@ -18,13 +18,13 @@ public class CategoriesAdapter extends FragmentPagerAdapter
 	public Fragment getItem(int arg0)
 	{
 		
-		return CategoryFragment.newInstance(AppConstants.CATEGORIES_LIST[arg0]);
+		return CategoryFragment.newInstance(AppConstants.CATEGORIE.values()[arg0].id);
 	}
 
 	@Override
 	public int getCount()
 	{		
-		return AppConstants.CATEGORIES_LIST.length;
+		return AppConstants.CATEGORIE.values().length;
 	}
 	
 }

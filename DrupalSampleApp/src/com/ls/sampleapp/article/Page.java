@@ -7,21 +7,28 @@ import com.ls.drupal.DrupalClient;
 import com.ls.drupal.DrupalItemsArray;
 import com.ls.http.base.BaseRequest.RequestMethod;
 
-public class Page extends DrupalItemsArray<Article>
+public class Page extends DrupalItemsArray<ArticlePreview>
 {
 
 	transient private int pageNumber;
+	transient private String categoryId;
 	
-	public Page(DrupalClient client, int thePageNumber)
+	public Page(DrupalClient client, int thePageNumber,String theCategoryId)
 	{
 		super(client, 5);	
 		this.pageNumber = thePageNumber;
+		this.categoryId = theCategoryId;
 	}
 
 	@Override
 	protected String getPath()
 	{		
-		return "blog-rest";
+		if(categoryId == null)
+		{
+			return "blog-rest";
+		}else{
+			return "category/"+categoryId;
+		}
 	}
 
 	@Override
@@ -35,7 +42,7 @@ public class Page extends DrupalItemsArray<Article>
 	{
 		switch (method) {
 		case GET:
-			Map result = new HashMap<String, String>();
+			Map<String, String> result = new HashMap<String, String>();
 			result.put("page", Integer.toString(pageNumber));
 			return result;			
 		default:

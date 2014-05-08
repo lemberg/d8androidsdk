@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +17,7 @@ import com.ls.drupal.AbstractDrupalEntity;
 import com.ls.drupal.AbstractDrupalEntity.OnEntityRequestListener;
 import com.ls.drupal.DrupalClient;
 import com.ls.sampleapp.R;
-import com.ls.sampleapp.article.Article;
+import com.ls.sampleapp.article.ArticlePreview;
 import com.ls.sampleapp.article.Page;
 
 public class CategoryArticlesListAdapter extends BaseAdapter implements OnEntityRequestListener
@@ -29,15 +30,17 @@ public class CategoryArticlesListAdapter extends BaseAdapter implements OnEntity
 	private Page currentLoadingPage;
 	private final DrupalClient client;
 	private final LayoutInflater inflater;
+	private String categoryId;
 	
-	private final List<Article> data;
+	private final List<ArticlePreview> data;
 	
-	public CategoryArticlesListAdapter(String categoryId, DrupalClient theClient, Context theContext)
+	public CategoryArticlesListAdapter(String theCategoryId, DrupalClient theClient, Context theContext)
 	{
-		this.data = new ArrayList<Article>();
+		this.data = new ArrayList<ArticlePreview>();
 		this.inflater = LayoutInflater.from(theContext);
 		this.client = theClient;
 		this.canLoadMore = true;
+		this.categoryId = theCategoryId;
 		this.loadNextPage();
 	}
 	
@@ -48,7 +51,7 @@ public class CategoryArticlesListAdapter extends BaseAdapter implements OnEntity
 	}
 
 	@Override
-	public Object getItem(int position)
+	public ArticlePreview getItem(int position)
 	{		
 		return data.get(position);
 	}
@@ -72,11 +75,11 @@ public class CategoryArticlesListAdapter extends BaseAdapter implements OnEntity
 			convertView = this.inflater.inflate(R.layout.list_item_article, null);
 		}
 		
-		Article item = this.data.get(position);
+		ArticlePreview item = this.data.get(position);
 		if(item != null)
 		{
 			TextView title = (TextView)convertView.findViewById(R.id.title);
-			title.setText(item.getTitle());
+			title.setText(Html.fromHtml(item.getTitle()));
 			
 			TextView author = (TextView)convertView.findViewById(R.id.author);
 			author.setText(item.getAuthor());
@@ -94,7 +97,7 @@ public class CategoryArticlesListAdapter extends BaseAdapter implements OnEntity
 	{
 		if(this.canLoadMore && this.currentLoadingPage == null)
 		{
-			this.currentLoadingPage = new Page(this.client, this.pagesLoaded);
+			this.currentLoadingPage = new Page(this.client, this.pagesLoaded,this.categoryId);
 			this.currentLoadingPage.setRequestListener(this);
 			this.currentLoadingPage.getDataFromServer(false);			
 		}

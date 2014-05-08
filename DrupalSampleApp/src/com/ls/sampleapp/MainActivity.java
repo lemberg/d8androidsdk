@@ -34,10 +34,10 @@ public class MainActivity extends ActionBarActivity implements TabListener{
                     }
                 });
                
-        for (int i = 0; i < AppConstants.NODE_IDS.length; i++) {
+        for (int i = 0; i < AppConstants.CATEGORIE.values().length; i++) {
         	bar.addTab(
         			bar.newTab()
-                            .setText("Article " + AppConstants.NODE_IDS[i])
+                            .setText(AppConstants.CATEGORIE.values()[i].name)
                             .setTabListener(this));
         }               
            

@@ -20,10 +20,10 @@ public class Article extends DrupalEntity
 	private List<DrupalValueContainer<String>> field_blog_date;
 	private List<DrupalValueContainer<String>> field_blog_author;
 	
-	public Article(DrupalClient client, int nodeNumber)
+	public Article(DrupalClient client, String nodeId)
 	{
 		super(client);	
-		this.nid = new DrupalValueArrayWrapper<String>(Integer.toString(nodeNumber));
+		this.nid = new DrupalValueArrayWrapper<String>(nodeId);
 	}	
 	
 	@Override

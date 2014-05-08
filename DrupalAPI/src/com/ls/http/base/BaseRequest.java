@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import android.net.Uri;
+import android.util.Log;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -357,13 +358,12 @@ public class BaseRequest extends StringRequest
 	public String getUrl()
 	{
 		if (this.getParameters != null && !this.getParameters.isEmpty())
-		{
+		{			
 			Uri.Builder builder = Uri.parse(super.getUrl()).buildUpon();
 			for (Map.Entry<String, String> entry : this.getParameters.entrySet())
 			{
 				builder.appendQueryParameter(entry.getKey(), entry.getValue());
-			}
-
+			}					
 			return builder.build().toString();
 		} else
 		{

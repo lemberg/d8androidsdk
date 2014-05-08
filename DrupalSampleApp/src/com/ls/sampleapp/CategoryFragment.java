@@ -1,16 +1,20 @@
 package com.ls.sampleapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import com.ls.drupal.DrupalClient;
 import com.ls.sampleapp.adapters.CategoryArticlesListAdapter;
+import com.ls.sampleapp.article.ArticlePreview;
 
-public class CategoryFragment extends Fragment
+public class CategoryFragment extends Fragment implements OnItemClickListener
 {
 	private final static String CATEGORY_ID_KEY = "category_id";
 	
@@ -30,9 +34,19 @@ public class CategoryFragment extends Fragment
 		String categoryId = this.getArguments().getString(CATEGORY_ID_KEY);
 		ViewGroup result = (ViewGroup) inflater.inflate(R.layout.fragment_category, container, false);
 		ListView list = (ListView) result.findViewById(R.id.listView);	
+		list.setOnItemClickListener(this);
 		
 		DrupalClient client = new DrupalClient(AppConstants.SERVER_BASE_URL, this.getActivity());
 		list.setAdapter(new CategoryArticlesListAdapter(categoryId,client,this.getActivity()));
 		return result;
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+	{		
+		ArticlePreview article = (ArticlePreview)parent.getItemAtPosition(position);
+		
+		Intent intent = ArticleActivity.getExecutionIntent(getActivity(), article.getNid());
+		this.getActivity().startActivity(intent);
 	}
 }
