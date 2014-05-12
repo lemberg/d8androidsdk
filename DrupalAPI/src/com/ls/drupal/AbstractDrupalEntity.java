@@ -185,6 +185,11 @@ public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseLis
 	protected void consumeObject(Object entity)
 	{
 		Object consumer = this.getManagedDataChecked();
+		AbstractDrupalEntity.consumeObject(consumer, entity);
+	}
+	
+	protected static void consumeObject(Object consumer,Object entity)
+	{
 		Class<?> currentClass = consumer.getClass();
 		while (!Object.class.equals(currentClass))
 		{

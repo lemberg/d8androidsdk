@@ -20,6 +20,12 @@ public abstract class AbstractDrupalEntityContainer<T> extends AbstractDrupalEnt
 	}	
 	
 	@Override
+	protected void consumeObject(Object entity)
+	{
+		AbstractDrupalEntity.consumeObject(this.data, entity);
+	}
+	
+	@Override
 	protected Object getManagedDataClassSpecifyer()
 	{
 		Class<?> itemsArrayClass = this.getClass();
