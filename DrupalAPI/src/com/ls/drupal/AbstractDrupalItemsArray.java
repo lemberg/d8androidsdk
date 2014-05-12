@@ -8,6 +8,8 @@ import java.util.Iterator;
 
 import org.eclipse.jdt.annotation.NonNull;
 
+import android.util.Log;
+
 public abstract class AbstractDrupalItemsArray<T> extends DrupalEntity implements Collection<T>
 {
 	private transient final ArrayList<T> innerItems;
@@ -174,9 +176,14 @@ public abstract class AbstractDrupalItemsArray<T> extends DrupalEntity implement
 
 		Type genericArgType = ((ParameterizedType) classType).getActualTypeArguments()[0];
 
-		@SuppressWarnings("unchecked")
-		T[] array = (T[]) java.lang.reflect.Array.newInstance((Class<?>) (genericArgType), 0);
-		return array.getClass();
 
+			if(genericArgType instanceof Class)
+			{
+				Class<?> genericArgClass = (Class<?>) (genericArgType);
+				T[] array = (T[]) java.lang.reflect.Array.newInstance(genericArgClass, 0);
+				return array.getClass();	
+			}else{
+				throw new IllegalArgumentException(AbstractDrupalItemsArray.class.getName()+" doesn't support RAW types deserialization");
+			}
 	}
 }
