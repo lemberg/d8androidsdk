@@ -48,7 +48,7 @@ public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseLis
 
 	abstract @NonNull
 	Object getManagedData();
-			
+
 	/**
 	 * Method can be overriden in order to specify non-default charset for
 	 * Entity.
@@ -62,13 +62,14 @@ public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseLis
 	public AbstractDrupalEntity(DrupalClient client)
 	{
 		this.drupalClient = client;
-		this.activeRequestCount = new AtomicInteger(0);		
+		this.activeRequestCount = new AtomicInteger(0);
 	}
 
 	/**
 	 * In case of request canceling - no method will be triggered.
+	 * 
 	 * @author lemberg
-	 *
+	 * 
 	 */
 	public interface OnEntityRequestListener
 	{
@@ -84,9 +85,11 @@ public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseLis
 	}
 
 	/**
-	 * Can be used in order to react on request count changes (start/completition/failure or canceling).
+	 * Can be used in order to react on request count changes
+	 * (start/completition/failure or canceling).
+	 * 
 	 * @author lemberg
-	 *
+	 * 
 	 */
 	public interface RequestProgressListener
 	{
@@ -105,9 +108,9 @@ public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseLis
 	 */
 	public ResponseData postDataToServer(boolean synchronous, Class<?> resultClass)
 	{
-		Assert.assertNotNull("You have to specify drupal client in order to perform requests", this.drupalClient);				
-		ResponseData result =  this.drupalClient.postObject(this, resultClass, RequestMethod.POST, this, synchronous);
-		this.onNewRequestStarted();		
+		Assert.assertNotNull("You have to specify drupal client in order to perform requests", this.drupalClient);
+		ResponseData result = this.drupalClient.postObject(this, resultClass, RequestMethod.POST, this, synchronous);
+		this.onNewRequestStarted();
 		return result;
 	}
 
@@ -119,9 +122,10 @@ public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseLis
 	 */
 	public ResponseData getDataFromServer(boolean synchronous)
 	{
-		Assert.assertNotNull("You have to specify drupal client in order to perform requests", this.drupalClient);	
-		ResponseData result = this.drupalClient.getObject(this, this.getManagedDataClassSpecifyer(), RequestMethod.GET, this, synchronous);;
-		this.onNewRequestStarted();		
+		Assert.assertNotNull("You have to specify drupal client in order to perform requests", this.drupalClient);
+		ResponseData result = this.drupalClient.getObject(this, this.getManagedDataClassSpecifyer(), RequestMethod.GET, this, synchronous);
+		;
+		this.onNewRequestStarted();
 		return result;
 	}
 
@@ -135,9 +139,9 @@ public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseLis
 	 */
 	public ResponseData deleteDataFromServer(boolean synchronous, Class<?> resultClass)
 	{
-		Assert.assertNotNull("You have to specify drupal client in order to perform requests", this.drupalClient);		
+		Assert.assertNotNull("You have to specify drupal client in order to perform requests", this.drupalClient);
 		ResponseData result = this.drupalClient.deleteObject(this, resultClass, RequestMethod.DELETE, this, synchronous);
-		this.onNewRequestStarted();		
+		this.onNewRequestStarted();
 		return result;
 	}
 
@@ -168,48 +172,56 @@ public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseLis
 				this.requestListener.onEntityFetched(this);
 				break;
 			}
-		}		
+		}
 	}
 
 	/**
-	 * Clone all fields of object specified to current one
-	 * You can override this method in order to perform custom one
+	 * Clone all fields of object specified to current one You can override this
+	 * method in order to perform custom one
+	 * 
 	 * @param entity
 	 *            object to be consumed
 	 */
 	protected void consumeObject(Object entity)
 	{
 		Object consumer = this.getManagedDataChecked();
-		Field[] fields = consumer.getClass().getDeclaredFields();
-		for (int counter = 0; counter < fields.length; counter++)
+		Class<?> currentClass = consumer.getClass();
+		while (!Object.class.equals(currentClass))
 		{
-			Field field = fields[counter];
-			Expose expose = field.getAnnotation(Expose.class);
-			if (expose != null && !expose.deserialize() || Modifier.isTransient(field.getModifiers()))
+			Field[] fields = currentClass.getDeclaredFields();
+			for (int counter = 0; counter < fields.length; counter++)
 			{
-				continue;// We don't have to copy ignored fields.
+				Field field = fields[counter];
+				Expose expose = field.getAnnotation(Expose.class);
+				if (expose != null && !expose.deserialize() || Modifier.isTransient(field.getModifiers()))
+				{
+					continue;// We don't have to copy ignored fields.
+				}
+				field.setAccessible(true);
+				Object value;
+				try
+				{
+					value = field.get(entity);
+					// if(value != null)
+					// {
+					field.set(consumer, value);
+					// }
+				} catch (IllegalAccessException e)
+				{
+					e.printStackTrace();
+				} catch (IllegalArgumentException e)
+				{
+					e.printStackTrace();
+				}
 			}
-			field.setAccessible(true);
-			Object value;
-			try
-			{
-				value = field.get(entity);
-				// if(value != null)
-				// {
-				field.set(consumer, value);
-				// }
-			} catch (IllegalAccessException e)
-			{
-				e.printStackTrace();
-			} catch (IllegalArgumentException e)
-			{
-				e.printStackTrace();
-			}
+			currentClass = currentClass.getSuperclass();
 		}
 	}
-	
+
 	/**
-	 * You can override this method in order to Parse custom classes from "get" request response.
+	 * You can override this method in order to Parse custom classes from "get"
+	 * request response.
+	 * 
 	 * @return Class or type of managed object.
 	 */
 	protected Object getManagedDataClassSpecifyer()
@@ -241,7 +253,7 @@ public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseLis
 	{
 		this.drupalClient = drupalClient;
 	}
-	
+
 	public RequestProgressListener getProgressListener()
 	{
 		return progressListener;
@@ -299,9 +311,9 @@ public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseLis
 	 *             there are ones, calling <code>canPatch()</code> method.
 	 */
 	public ResponseData patchDataOnServer(boolean synchronous, Class<?> resultClass) throws IllegalStateException
-	{	
+	{
 		ResponseData result = this.drupalClient.patchObject(this, resultClass, RequestMethod.PATCH, this, synchronous);
-		this.onNewRequestStarted();		
+		this.onNewRequestStarted();
 		return result;
 	}
 
@@ -346,8 +358,6 @@ public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseLis
 
 	// Manage request progress
 
-		
-		
 	public int getActiveRequestCount()
 	{
 		return activeRequestCount.get();
@@ -362,8 +372,9 @@ public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseLis
 				int requestCount = this.activeRequestCount.incrementAndGet();
 				this.progressListener.onRequestStarted(this, requestCount);
 			}
-		}else{
-			 this.activeRequestCount.incrementAndGet();
+		} else
+		{
+			this.activeRequestCount.incrementAndGet();
 		}
 	}
 
@@ -376,11 +387,12 @@ public abstract class AbstractDrupalEntity implements DrupalClient.OnResponseLis
 				int requestCount = this.activeRequestCount.decrementAndGet();
 				this.progressListener.onRequestFinished(this, requestCount);
 			}
-		}else{
+		} else
+		{
 			this.activeRequestCount.decrementAndGet();
 		}
 	}
-	
+
 	@NonNull
 	private Object getManagedDataChecked()
 	{

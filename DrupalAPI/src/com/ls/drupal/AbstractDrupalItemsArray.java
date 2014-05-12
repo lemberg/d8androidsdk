@@ -8,11 +8,11 @@ import java.util.Iterator;
 
 import org.eclipse.jdt.annotation.NonNull;
 
-public abstract class DrupalItemsArray<T> extends DrupalEntity implements Collection<T>
+public abstract class AbstractDrupalItemsArray<T> extends DrupalEntity implements Collection<T>
 {
 	private transient final ArrayList<T> innerItems;
 
-	public DrupalItemsArray(DrupalClient client, int itemCount)
+	public AbstractDrupalItemsArray(DrupalClient client, int itemCount)
 	{
 		super(client);
 		innerItems = new ArrayList<T>(itemCount);
@@ -165,7 +165,7 @@ public abstract class DrupalItemsArray<T> extends DrupalEntity implements Collec
 
 		while (classType == null)
 		{
-			if (itemsArrayClass.getSuperclass().equals(DrupalItemsArray.class))
+			if (itemsArrayClass.getSuperclass().equals(AbstractDrupalItemsArray.class))
 			{
 				classType = itemsArrayClass.getGenericSuperclass();
 			}

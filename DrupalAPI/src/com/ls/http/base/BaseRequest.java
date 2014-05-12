@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import android.net.Uri;
-import android.util.Log;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -18,9 +17,13 @@ import com.android.volley.toolbox.StringRequest;
 
 public class BaseRequest extends StringRequest
 {
+	private static String ACCEPT_HEADER_KEY = "Accept";
+	
+	private static final String PROTOCOL_REQUEST_APP_TYPE_JSON = "application/json";
+	private static final String PROTOCOL_REQUEST_APP_TYPE_XML = "application/xml";
+	private static final String PROTOCOL_REQUEST_APP_TYPE_JSON_HAL = "application/hal+json";
 
-	private static final String PROTOCOL_CONTENT_TYPE_JSON = "application/json; charset=";
-	private static final String PROTOCOL_CONTENT_TYPE_XML = "application/xml; charset=";
+	private static final String CONTENT_TYPE_CHARSET_PREFIX ="; charset=";
 
 	public static enum RequestMethod
 	{
@@ -35,7 +38,7 @@ public class BaseRequest extends StringRequest
 
 	public static enum RequestFormat
 	{
-		JSON, XML
+		JSON, XML, JSON_HAL
 	};
 
 	private final RequestFormat format;
@@ -89,11 +92,14 @@ public class BaseRequest extends StringRequest
 		this.requestHeaders = new HashMap<String, String>();
 		switch (this.format) {
 		case XML:
-			this.addRequestHeader("Accept", "application/xml");
+			this.addRequestHeader(ACCEPT_HEADER_KEY, PROTOCOL_REQUEST_APP_TYPE_XML);
+			break;
+		case JSON_HAL:
+			this.addRequestHeader(ACCEPT_HEADER_KEY, PROTOCOL_REQUEST_APP_TYPE_JSON_HAL);
 			break;
 		case JSON:
 		default:
-			this.addRequestHeader("Accept", "application/json");
+			this.addRequestHeader(ACCEPT_HEADER_KEY, PROTOCOL_REQUEST_APP_TYPE_JSON);
 		}
 	}
 
@@ -138,6 +144,7 @@ public class BaseRequest extends StringRequest
 					this.result.data = new XMLResponceHandler().itemFromResponceWithSpecifier(requestResult.result, responceClasSpecifier);
 					break;
 				case JSON:
+				case JSON_HAL:
 				default:
 					this.result.data = new JSONResponceHandler().itemFromResponceWithSpecifier(requestResult.result, responceClasSpecifier);
 				}
@@ -300,6 +307,7 @@ public class BaseRequest extends StringRequest
 				handler = new XMLRequestHandler(this.objectToPost);
 				break;
 			case JSON:
+			case JSON_HAL:
 				handler = new JSONRequestHandler(this.objectToPost);
 				break;
 			default:
@@ -329,10 +337,13 @@ public class BaseRequest extends StringRequest
 			switch (this.format) {
 			case XML:
 				handler = new XMLRequestHandler(objectToPost);
-				return PROTOCOL_CONTENT_TYPE_XML + handler.getCharset(this.defaultCharset);
-			case JSON:
+				return PROTOCOL_REQUEST_APP_TYPE_XML + CONTENT_TYPE_CHARSET_PREFIX + handler.getCharset(this.defaultCharset);
+			case JSON_HAL:
 				handler = new JSONRequestHandler(objectToPost);
-				return PROTOCOL_CONTENT_TYPE_JSON + handler.getCharset(this.defaultCharset);
+				return PROTOCOL_REQUEST_APP_TYPE_JSON_HAL + CONTENT_TYPE_CHARSET_PREFIX + handler.getCharset(this.defaultCharset);
+			case JSON:			
+				handler = new JSONRequestHandler(objectToPost);
+				return PROTOCOL_REQUEST_APP_TYPE_JSON + CONTENT_TYPE_CHARSET_PREFIX + handler.getCharset(this.defaultCharset);
 			default:
 				throw new IllegalArgumentException("Unrecognised request format");
 			}
