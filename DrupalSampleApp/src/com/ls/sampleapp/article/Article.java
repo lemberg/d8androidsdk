@@ -5,13 +5,13 @@ import java.util.Map;
 
 import junit.framework.Assert;
 
+import com.ls.drupal.AbstractDrupalEntity;
 import com.ls.drupal.DrupalClient;
-import com.ls.drupal.DrupalEntity;
 import com.ls.http.base.BaseRequest.RequestMethod;
 import com.ls.sampleapp.drupal.DrupalValueArrayWrapper;
 import com.ls.sampleapp.drupal.DrupalValueContainer;
 
-public class Article extends DrupalEntity
+public class Article extends AbstractDrupalEntity
 {
 
 	private List<DrupalValueContainer<String>> nid;

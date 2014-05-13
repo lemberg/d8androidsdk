@@ -5,7 +5,6 @@ import java.util.List;
 
 import android.content.Context;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +12,8 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.android.volley.VolleyError;
-import com.ls.drupal.AbstractDrupalEntity;
-import com.ls.drupal.AbstractDrupalEntity.OnEntityRequestListener;
+import com.ls.drupal.AbstractBaseDrupalEntity;
+import com.ls.drupal.AbstractBaseDrupalEntity.OnEntityRequestListener;
 import com.ls.drupal.DrupalClient;
 import com.ls.sampleapp.R;
 import com.ls.sampleapp.article.ArticlePreview;
@@ -104,7 +103,7 @@ public class CategoryArticlesListAdapter extends BaseAdapter implements OnEntity
 	}
 
 	@Override
-	public void onEntityFetched(AbstractDrupalEntity entity)
+	public void onEntityFetched(AbstractBaseDrupalEntity entity)
 	{		
 		if(!this.currentLoadingPage.isEmpty())
 		{
@@ -118,19 +117,19 @@ public class CategoryArticlesListAdapter extends BaseAdapter implements OnEntity
 	}
 
 	@Override
-	public void onEntityPosted(AbstractDrupalEntity entity)
+	public void onEntityPosted(AbstractBaseDrupalEntity entity)
 	{}
 
 	@Override
-	public void onEntityPatched(AbstractDrupalEntity entity)
+	public void onEntityPatched(AbstractBaseDrupalEntity entity)
 	{}
 
 	@Override
-	public void onEntityRemoved(AbstractDrupalEntity entity)
+	public void onEntityRemoved(AbstractBaseDrupalEntity entity)
 	{}
 
 	@Override
-	public void onRequestFailed(VolleyError error, AbstractDrupalEntity entity)
+	public void onRequestFailed(VolleyError error, AbstractBaseDrupalEntity entity)
 	{
 		this.canLoadMore = false;
 	}

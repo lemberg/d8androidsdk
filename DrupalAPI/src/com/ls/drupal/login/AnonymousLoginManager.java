@@ -7,8 +7,10 @@ public class AnonymousLoginManager implements ILoginManager
 {
 
 	@Override
-	public void login(String userName, String password, RequestQueue queue)
-	{}
+	public Object login(String userName, String password, RequestQueue queue)
+	{
+		return null;
+	}
 
 	@Override
 	public boolean isLogged()
@@ -25,7 +27,9 @@ public class AnonymousLoginManager implements ILoginManager
 	{}
 
 	@Override
-	public void logout(RequestQueue queue)
-	{}
+	public Object logout(RequestQueue queue)
+	{
+		return null;
+	}
 
 }

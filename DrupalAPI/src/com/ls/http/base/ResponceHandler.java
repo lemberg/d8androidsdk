@@ -4,8 +4,6 @@ import java.lang.reflect.Type;
 
 import org.eclipse.jdt.annotation.NonNull;
 
-import android.util.Log;
-
 abstract class ResponceHandler
 {
 	abstract Object itemFromResponce(@NonNull String responce,@NonNull Class<?> theClass);
@@ -16,12 +14,11 @@ abstract class ResponceHandler
 		Object result = null;
 		if(responce != null && theSpecifier != null)
 		{
-//			Log.d(ResponceHandler.class.getName(),"Handlig responce:"+responce);
-			if(theSpecifier instanceof Type)
+			if(theSpecifier instanceof Class<?>)
 			{
+				return itemFromResponce(responce, (Class<?>)theSpecifier);				
+			}else if(theSpecifier instanceof Type){
 				return itemFromResponce(responce, (Type)theSpecifier);
-			}else if(theSpecifier instanceof Class<?>){
-				return itemFromResponce(responce, (Class<?>)theSpecifier);
 			}else{
 				throw new IllegalArgumentException("You have to specify Class<?> or Type instance");
 			}

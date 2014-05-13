@@ -11,8 +11,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
-import com.ls.drupal.AbstractDrupalEntity;
-import com.ls.drupal.AbstractDrupalEntity.OnEntityRequestListener;
+import com.ls.drupal.AbstractBaseDrupalEntity;
+import com.ls.drupal.AbstractBaseDrupalEntity.OnEntityRequestListener;
 import com.ls.drupal.DrupalClient;
 import com.ls.sampleapp.article.Article;
 
@@ -82,23 +82,23 @@ public class ArticleFragment extends Fragment implements OnEntityRequestListener
 	// Request listener
 
 	@Override
-	public void onEntityFetched(AbstractDrupalEntity entity)
+	public void onEntityFetched(AbstractBaseDrupalEntity entity)
 	{
 		Log.d(this.getClass().getName(), "Page fetched");
 		this.resetPageContent();
 	}
 
 	@Override
-	public void onEntityPosted(AbstractDrupalEntity entity)	{}
+	public void onEntityPosted(AbstractBaseDrupalEntity entity)	{}
 
 	@Override
-	public void onEntityPatched(AbstractDrupalEntity entity){}
+	public void onEntityPatched(AbstractBaseDrupalEntity entity){}
 
 	@Override
-	public void onEntityRemoved(AbstractDrupalEntity entity){}
+	public void onEntityRemoved(AbstractBaseDrupalEntity entity){}
 
 	@Override
-	public void onRequestFailed(VolleyError error, AbstractDrupalEntity entity)
+	public void onRequestFailed(VolleyError error, AbstractBaseDrupalEntity entity)
 	{
 		Toast.makeText(this.getActivity(), "Page fetch failed", Toast.LENGTH_SHORT).show();
 	}

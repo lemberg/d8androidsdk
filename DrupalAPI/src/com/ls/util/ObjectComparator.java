@@ -168,7 +168,7 @@ public class ObjectComparator
 		for(Entry<String, JsonElement> entry: patched.entrySet())
 		{
 			originKeySet.remove(entry.getKey());
-			Object difference = getDifferencesObject(origin, patched);
+			Object difference = getDifferencesObject(origin.get(entry.getKey()), entry.getValue());
 			if(difference != UNCHANGED)
 			{
 				result.put(entry.getKey(),difference);

@@ -1,6 +1,5 @@
 package com.ls.drupal;
 
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,7 +7,6 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -22,6 +20,11 @@ import com.ls.http.base.BaseRequest.RequestFormat;
 import com.ls.http.base.BaseRequest.RequestMethod;
 import com.ls.http.base.ResponseData;
 
+/**
+ * Class is used to generate requests based on DrupalEntities and attach them to request queue
+ * @author lemberg
+ *
+ */
 public class DrupalClient implements OnResponseListener
 {
 
@@ -42,16 +45,34 @@ public class DrupalClient implements OnResponseListener
 		void onCancel(Object tag);
 	}
 	
+	/**
+	 * 
+	 * @param theBaseURL this URL will be appended with {@link AbstractBaseDrupalEntity#getPath()} 
+	 * @param theContext application context, used to create request queue
+	 */
 	public DrupalClient(@NonNull String theBaseURL,@NonNull Context theContext)
 	{
 		this(theBaseURL, theContext,null);
 	}
 
+	/**
+	 * 
+	 * @param theBaseURL this URL will be appended with {@link AbstractBaseDrupalEntity#getPath()} 
+	 * @param theContext application context, used to create request queue
+	 * @param theFormat server request/response format. Defines format of serialized objects and server response format, see {@link RequestFormat}
+	 */
 	public DrupalClient(@NonNull String theBaseURL,@NonNull Context theContext,@Nullable RequestFormat theFormat)
 	{
 		this(theBaseURL, theContext, theFormat, null);
 	}
 
+	/**
+	 * 
+	 * @param theBaseURL this URL will be appended with {@link AbstractBaseDrupalEntity#getPath()} 
+	 * @param theContext application context, used to create request queue
+	 * @param theFormat server request/response format. Defines format of serialized objects and server response format, see {@link RequestFormat}
+	 * @param theLoginManager contains user profile data and can update request parameters and headers in order to apply it.
+	 */
 	public DrupalClient(@NonNull String theBaseURL,@NonNull Context theContext,@Nullable RequestFormat theFormat,@Nullable ILoginManager theLoginManager)
 	{
 		this(theBaseURL,getDefaultQueue(theContext),theFormat,theLoginManager);		
@@ -63,6 +84,13 @@ public class DrupalClient implements OnResponseListener
 		return Volley.newRequestQueue(theContext.getApplicationContext());
 	}
 	
+	/**
+	 * 
+	 * @param theBaseURL this URL will be appended with {@link AbstractBaseDrupalEntity#getPath()}  
+	 * @param theQueue queue to execute requests. You can customize cache management, by setting custom queue
+	 * @param theFormat server request/response format. Defines format of serialized objects and server response format, see {@link RequestFormat}
+	 * @param theLoginManager contains user profile data and can update request parameters and headers in order to apply it.
+	 */
 	public DrupalClient(@NonNull String theBaseURL,@NonNull RequestQueue theQueue,@Nullable RequestFormat theFormat,@Nullable ILoginManager theLoginManager)
 	{
 		this.listeners = new HashMap<BaseRequest, DrupalClient.OnResponseListener>();
@@ -85,11 +113,23 @@ public class DrupalClient implements OnResponseListener
 		}
 	}
 
+	/**	 
+	 * @param request Request object to be performed	
+	 * @param synchronous if true request result will be returned synchronously
+	 * @return {@link ResponseData} object, containing request result code and string or error and deserialized object, specified in request.
+	 */
 	public ResponseData performRequest(BaseRequest request, boolean synchronous)
 	{
 		return performRequest(request, null, null, synchronous);
 	}
 
+	/**	 
+	 * @param request Request object to be performed
+	 * @param tag will be applied to the request and returned in listener
+	 * @param listener 
+	 * @param synchronous if true request result will be returned synchronously
+	 * @return {@link ResponseData} object, containing request result code and string or error and deserialized object, specified in request.
+	 */
 	public ResponseData performRequest(BaseRequest request, Object tag, OnResponseListener listener, boolean synchronous)
 	{
 		if (!this.loginManager.isLogged())
@@ -100,7 +140,6 @@ public class DrupalClient implements OnResponseListener
 		request.setResponceListener(this);
 		this.loginManager.applyLoginDataToRequest(request);
 		this.listeners.put(request, listener);
-//		Log.d("DrupalClient", "Performing request:" + request.getUrl());
 		return request.performRequest(synchronous, queue);
 	}
 /**
@@ -114,7 +153,7 @@ public class DrupalClient implements OnResponseListener
  * @param synchronous if true - result will be returned synchronously.
  * @return ResponceData object or null if request was asynchronous.
  */
-	public ResponseData getObject(AbstractDrupalEntity entity, Object responseClassSpecifier, Object tag, OnResponseListener listener,
+	public ResponseData getObject(AbstractBaseDrupalEntity entity, Object responseClassSpecifier, Object tag, OnResponseListener listener,
 			boolean synchronous)
 	{			
 		BaseRequest request = BaseRequest.newBaseRequest(RequestMethod.GET, getURLForEntity(entity), this.requestFormat, responseClassSpecifier);
@@ -134,7 +173,7 @@ public class DrupalClient implements OnResponseListener
 	 * @param synchronous if true - result will be returned synchronously.
 	 * @return ResponceData object or null if request was asynchronous.
 	 */
-	public ResponseData postObject(AbstractDrupalEntity entity, Object responseClassSpecifier, Object tag, OnResponseListener listener,
+	public ResponseData postObject(AbstractBaseDrupalEntity entity, Object responseClassSpecifier, Object tag, OnResponseListener listener,
 			boolean synchronous)
 	{
 		BaseRequest request = BaseRequest.newBaseRequest(RequestMethod.POST, getURLForEntity(entity), this.requestFormat, responseClassSpecifier);
@@ -156,7 +195,7 @@ public class DrupalClient implements OnResponseListener
 	 * @param synchronous if true - result will be returned synchronously.
 	 * @return ResponceData object or null if request was asynchronous.
 	 */
-	public ResponseData patchObject(AbstractDrupalEntity entity,  Object responseClassSpecifier, Object tag, OnResponseListener listener,
+	public ResponseData patchObject(AbstractBaseDrupalEntity entity,  Object responseClassSpecifier, Object tag, OnResponseListener listener,
 			boolean synchronous)
 	{
 		BaseRequest request = BaseRequest.newBaseRequest(RequestMethod.PATCH, getURLForEntity(entity), this.requestFormat, responseClassSpecifier);
@@ -176,7 +215,7 @@ public class DrupalClient implements OnResponseListener
 	 * @param synchronous if true - result will be returned synchronously.
 	 * @return ResponceData object or null if request was asynchronous.
 	 */
-	public ResponseData deleteObject(AbstractDrupalEntity entity,  Object responseClassSpecifier, Object tag, OnResponseListener listener,
+	public ResponseData deleteObject(AbstractBaseDrupalEntity entity,  Object responseClassSpecifier, Object tag, OnResponseListener listener,
 			boolean synchronous)
 	{
 		BaseRequest request = BaseRequest.newBaseRequest(RequestMethod.DELETE, getURLForEntity(entity), this.requestFormat, responseClassSpecifier);
@@ -184,23 +223,20 @@ public class DrupalClient implements OnResponseListener
 		return this.performRequest(request, tag, listener, synchronous);
 	}
 
-	private String getURLForEntity(AbstractDrupalEntity entity)
+	private String getURLForEntity(AbstractBaseDrupalEntity entity)
 	{
 		return this.baseURL + entity.getPath();
 	}
 
 	/**
-	 * This request is always synchronous
+	 * This request is always synchronous and has no callback
 	 * 
 	 * @param userName
 	 * @param password
 	 */
-	public final void login(final String userName, final String password)
-	{
-		if (!this.loginManager.isLogged())
-		{
-			this.loginManager.login(userName, password, queue);
-		}
+	public final Object login(final String userName, final String password)
+	{		
+		return this.loginManager.login(userName, password, queue);		
 	}
 
 	/**
@@ -208,12 +244,13 @@ public class DrupalClient implements OnResponseListener
 	 */
 	public final void logout()
 	{
-		if (this.loginManager.isLogged())
-		{
-			this.loginManager.logout(queue);
-		}
+		this.loginManager.logout(queue);		
 	}
 
+	/**
+	 * 
+	 * @return true if all necessary user id data is fetched and there is no need in performing login
+	 */
 	public boolean isLogged()
 	{
 		return this.loginManager.isLogged();
@@ -255,21 +292,33 @@ public class DrupalClient implements OnResponseListener
 		this.listeners.remove(request);
 	}
 	
+	/**	 
+	 * @return Charset, used to encode/decode server request post body and response.
+	 */
 	public String getDefaultCharset()
 	{
 		return defaultCharset;
 	}
 
+	/**	 
+	 * @param defaultCharset Charset, used to encode/decode server request post body and response.
+	 */
 	public void setDefaultCharset(String defaultCharset)
 	{
 		this.defaultCharset = defaultCharset;
 	}
 
+	/**	 
+	 * @param tag Cancel all requests, containing given tag. If no tag is specified - all requests are canceled.
+	 */
 	public void cancelByTag(final @NonNull Object tag)
 	{
 		this.cancelAllRequestsForListener(null, tag);
 	}
 		
+	/**	 
+	 * @param tag Cancel all requests
+	 */
 	public void cancelAll()
 	{
 		this.cancelAllRequestsForListener(null, null);

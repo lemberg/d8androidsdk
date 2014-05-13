@@ -8,26 +8,24 @@ import java.util.Iterator;
 
 import org.eclipse.jdt.annotation.NonNull;
 
-import android.util.Log;
-
-public abstract class AbstractDrupalItemsArray<T> extends DrupalEntity implements Collection<T>
+public abstract class AbstractDrupalItemsArray<E> extends AbstractDrupalEntity implements Collection<E>
 {
-	private transient final ArrayList<T> innerItems;
+	private transient final ArrayList<E> innerItems;
 
 	public AbstractDrupalItemsArray(DrupalClient client, int itemCount)
 	{
 		super(client);
-		innerItems = new ArrayList<T>(itemCount);
+		innerItems = new ArrayList<E>(itemCount);
 	}
 
 	@Override
-	public boolean add(T object)
+	public boolean add(E object)
 	{
 		return innerItems.add(object);
 	}
 
 	@Override
-	public boolean addAll(Collection<? extends T> collection)
+	public boolean addAll(Collection<? extends E> collection)
 	{
 		return this.innerItems.addAll(collection);
 	}
@@ -57,7 +55,7 @@ public abstract class AbstractDrupalItemsArray<T> extends DrupalEntity implement
 	}
 
 	@Override
-	public Iterator<T> iterator()
+	public Iterator<E> iterator()
 	{
 		return innerItems.iterator();
 	}
@@ -105,7 +103,7 @@ public abstract class AbstractDrupalItemsArray<T> extends DrupalEntity implement
 	 *            the index of the element to return.
 	 * @return the element at the specified index.
 	 */
-	public T get(int index)
+	public E get(int index)
 	{
 		return innerItems.get(index);
 	}
@@ -120,7 +118,7 @@ public abstract class AbstractDrupalItemsArray<T> extends DrupalEntity implement
 	 * @throws IndexOutOfBoundsException
 	 *             - when location < 0 || location >= size()
 	 */
-	public T set(int index, T object)
+	public E set(int index, E object)
 	{
 		return innerItems.set(index, object);
 	}
@@ -134,13 +132,14 @@ public abstract class AbstractDrupalItemsArray<T> extends DrupalEntity implement
 	 * @throws IndexOutOfBoundsException
 	 *             - when location < 0 || location >= size()
 	 */
-	public T remove(int index)
+	public E remove(int index)
 	{
 		return innerItems.remove(index);
 	}
 
 	// Replacing this with items set
 
+	@SuppressWarnings("null")
 	@Override
 	public @NonNull
 	Object getManagedData()
@@ -150,10 +149,10 @@ public abstract class AbstractDrupalItemsArray<T> extends DrupalEntity implement
 
 	@Override
 	protected void consumeObject(Object entity)
-	{
-		// this.addAll((Collection<? extends T>) entity);
-		T[] items = (T[]) entity;
-		for (T item : items)
+	{	
+		@SuppressWarnings("unchecked")
+		E[] items = (E[]) entity;
+		for (E item : items)
 		{
 			this.add(item);
 		}
@@ -180,7 +179,8 @@ public abstract class AbstractDrupalItemsArray<T> extends DrupalEntity implement
 			if(genericArgType instanceof Class)
 			{
 				Class<?> genericArgClass = (Class<?>) (genericArgType);
-				T[] array = (T[]) java.lang.reflect.Array.newInstance(genericArgClass, 0);
+				@SuppressWarnings("unchecked")
+				E[] array = (E[]) java.lang.reflect.Array.newInstance(genericArgClass, 0);
 				return array.getClass();	
 			}else{
 				throw new IllegalArgumentException(AbstractDrupalItemsArray.class.getName()+" doesn't support RAW types deserialization");

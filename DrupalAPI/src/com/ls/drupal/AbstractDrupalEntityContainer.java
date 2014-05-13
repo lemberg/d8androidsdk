@@ -5,28 +5,39 @@ import java.lang.reflect.Type;
 
 import org.eclipse.jdt.annotation.NonNull;
 
-public abstract class AbstractDrupalEntityContainer<T> extends AbstractDrupalEntity
+/**
+ * 
+ * @author lemberg
+ *
+ * @param <T> class of container content
+ */
+public abstract class AbstractDrupalEntityContainer<T> extends AbstractBaseDrupalEntity
 {		
-	transient private final Object data;
+	transient private final T data;
 	public AbstractDrupalEntityContainer(DrupalClient client,T theData)
 	{
 		super(client);
+		if(theData == null)
+		{
+			throw new IllegalArgumentException("Data object can't be null");
+		}
 		this.data = theData;
 	}	
 
-	public @NonNull Object getManagedData()
+	@SuppressWarnings("null")
+	public @NonNull T getManagedData()
 	{
 		return data;
 	}	
 	
 	@Override
-	protected void consumeObject(Object entity)
+	protected final void consumeObject(Object entity)
 	{
-		AbstractDrupalEntity.consumeObject(this.data, entity);
+		AbstractBaseDrupalEntity.consumeObject(this.data, entity);
 	}
 	
 	@Override
-	protected Object getManagedDataClassSpecifyer()
+	protected final Object getManagedDataClassSpecifyer()
 	{
 		Class<?> itemsArrayClass = this.getClass();
 		Type classType = null;
