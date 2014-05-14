@@ -14,6 +14,7 @@ import com.android.volley.VolleyError;
 import com.ls.drupal.AbstractBaseDrupalEntity;
 import com.ls.drupal.AbstractBaseDrupalEntity.OnEntityRequestListener;
 import com.ls.drupal.DrupalClient;
+import com.ls.http.base.ResponseData;
 import com.ls.sampleapp.article.Article;
 
 public class ArticleFragment extends Fragment implements OnEntityRequestListener
@@ -40,11 +41,11 @@ public class ArticleFragment extends Fragment implements OnEntityRequestListener
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		String pageId = this.getArguments().getString(PAGE_ID_KEY);
+		String pageId = this.getArguments().getString(PAGE_ID_KEY);		
 		this.page = new Article(new DrupalClient(AppConstants.SERVER_BASE_URL, this.getActivity()), pageId);
 		this.page.setRequestListener(this);
 //		this.page.setProgressListener(this);
-		this.page.getDataFromServer(false);
+		this.page.pullFromServer(false);
 	}
 
 	@Override
@@ -82,26 +83,29 @@ public class ArticleFragment extends Fragment implements OnEntityRequestListener
 	// Request listener
 
 	@Override
-	public void onEntityFetched(AbstractBaseDrupalEntity entity)
+	public void onEntityPulled(AbstractBaseDrupalEntity entity, ResponseData data)
 	{
 		Log.d(this.getClass().getName(), "Page fetched");
 		this.resetPageContent();
 	}
+	
+	@Override
+	public void onEntityPushed(AbstractBaseDrupalEntity entity, ResponseData data)
+	{}
 
 	@Override
-	public void onEntityPosted(AbstractBaseDrupalEntity entity)	{}
+	public void onEntityPatched(AbstractBaseDrupalEntity entity, ResponseData data)
+	{}
 
 	@Override
-	public void onEntityPatched(AbstractBaseDrupalEntity entity){}
+	public void onEntityRemoved(AbstractBaseDrupalEntity entity, ResponseData data)
+	{}
 
 	@Override
-	public void onEntityRemoved(AbstractBaseDrupalEntity entity){}
-
-	@Override
-	public void onRequestFailed(VolleyError error, AbstractBaseDrupalEntity entity)
+	public void onRequestFailed(AbstractBaseDrupalEntity entity, VolleyError error)
 	{
 		Toast.makeText(this.getActivity(), "Page fetch failed", Toast.LENGTH_SHORT).show();
-	}
+	}	
 	
 	public void showLoadingDialog()
 	{
@@ -118,24 +122,6 @@ public class ArticleFragment extends Fragment implements OnEntityRequestListener
 			this.progressView.setVisibility(View.GONE);
 		}
 	}
-	
-	// Request progress listener
 
-//		@Override
-//		public void onRequestStarted(AbstractDrupalEntity theEntity, int activeRequests)
-//		{		
-//			if (activeRequests == 1)
-//			{
-//				showLoadingDialog();
-//			}
-//		}
-//
-//		@Override
-//		public void onRequestFinished(AbstractDrupalEntity theEntity, int activeRequests)
-//		{		
-//			if (activeRequests == 0)
-//			{
-//				dismissLoadingDialog();
-//			}
-//		}
+	
 }

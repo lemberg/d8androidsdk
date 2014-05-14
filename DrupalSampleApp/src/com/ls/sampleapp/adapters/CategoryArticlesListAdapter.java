@@ -15,6 +15,7 @@ import com.android.volley.VolleyError;
 import com.ls.drupal.AbstractBaseDrupalEntity;
 import com.ls.drupal.AbstractBaseDrupalEntity.OnEntityRequestListener;
 import com.ls.drupal.DrupalClient;
+import com.ls.http.base.ResponseData;
 import com.ls.sampleapp.R;
 import com.ls.sampleapp.article.ArticlePreview;
 import com.ls.sampleapp.article.Page;
@@ -98,13 +99,13 @@ public class CategoryArticlesListAdapter extends BaseAdapter implements OnEntity
 		{
 			this.currentLoadingPage = new Page(this.client, this.pagesLoaded,this.categoryId);
 			this.currentLoadingPage.setRequestListener(this);
-			this.currentLoadingPage.getDataFromServer(false);			
+			this.currentLoadingPage.pullFromServer(false);			
 		}
 	}
 
 	@Override
-	public void onEntityFetched(AbstractBaseDrupalEntity entity)
-	{		
+	public void onEntityPulled(AbstractBaseDrupalEntity entity, ResponseData data)
+	{
 		if(!this.currentLoadingPage.isEmpty())
 		{
 			this.data.addAll(this.currentLoadingPage);
@@ -113,23 +114,23 @@ public class CategoryArticlesListAdapter extends BaseAdapter implements OnEntity
 			this.notifyDataSetChanged();
 		}else{
 			this.canLoadMore = false;
-		}
+		}		
 	}
 
 	@Override
-	public void onEntityPosted(AbstractBaseDrupalEntity entity)
+	public void onEntityPushed(AbstractBaseDrupalEntity entity, ResponseData data)
 	{}
 
 	@Override
-	public void onEntityPatched(AbstractBaseDrupalEntity entity)
+	public void onEntityPatched(AbstractBaseDrupalEntity entity, ResponseData data)
 	{}
 
 	@Override
-	public void onEntityRemoved(AbstractBaseDrupalEntity entity)
+	public void onEntityRemoved(AbstractBaseDrupalEntity entity, ResponseData data)
 	{}
 
 	@Override
-	public void onRequestFailed(VolleyError error, AbstractBaseDrupalEntity entity)
+	public void onRequestFailed(AbstractBaseDrupalEntity entity, VolleyError error)
 	{
 		this.canLoadMore = false;
 	}

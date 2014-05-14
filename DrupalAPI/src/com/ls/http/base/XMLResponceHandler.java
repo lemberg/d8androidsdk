@@ -20,6 +20,6 @@ import org.eclipse.jdt.annotation.NonNull;
 	{		
 		Object result = null;
 		//TODO implement parsing
-		return null;
+		return result;
 	}
 }

@@ -17,7 +17,7 @@ public interface ILoginManager {
 	 */
 	boolean isLogged();
 	/**
-	 * Add necessary login data to request headers or post/get parameters
+	 * Add necessary authentication data to request headers or post/get parameters
 	 * @param request
 	 */
 	void applyLoginDataToRequest(BaseRequest request);

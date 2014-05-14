@@ -26,6 +26,9 @@ public class SharedGson
 		return gson;		
 	}
 	
+	/**
+	 * all following gson calls will use updated gson object.
+	 */
 	public static synchronized void performUpdates()
 	{
 		gson = null;

@@ -38,16 +38,41 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	 */
 	public interface OnEntityRequestListener
 	{
-		void onEntityFetched(AbstractBaseDrupalEntity entity);
+		void onEntityPulled(AbstractBaseDrupalEntity entity, ResponseData data);
 
-		void onEntityPosted(AbstractBaseDrupalEntity entity);
+		void onEntityPushed(AbstractBaseDrupalEntity entity, ResponseData data);
 
-		void onEntityPatched(AbstractBaseDrupalEntity entity);
+		void onEntityPatched(AbstractBaseDrupalEntity entity, ResponseData data);
 
-		void onEntityRemoved(AbstractBaseDrupalEntity entity);
+		void onEntityRemoved(AbstractBaseDrupalEntity entity, ResponseData data);
 
-		void onRequestFailed(VolleyError error, AbstractBaseDrupalEntity entity);
+		void onRequestFailed(AbstractBaseDrupalEntity entity, VolleyError error);
 	}	
+	
+	/**
+	 * Can be used in order to react on request count changes
+	 * (start/success/failure or canceling).
+	 * 
+	 * @author lemberg
+	 * 
+	 */
+	public interface RequestProgressListener
+	{
+		/**
+		 * Called after new request was added to queue
+		 * @param theEntity
+		 * @param activeRequests number of requests pending
+		 */
+		void onRequestStarted(AbstractBaseDrupalEntity theEntity, int activeRequests);
+
+		/**
+		 * Called after current request was complete
+		 * @param theEntity
+		 * @param activeRequests number of requests pending
+		 */
+		void onRequestFinished(AbstractBaseDrupalEntity theEntity, int activeRequests);
+	}
+
 	
 	/**
 	 * @return path to resource. Shouldn't include base URL(domain).
@@ -85,30 +110,7 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 		this.activeRequestCount = new AtomicInteger(0);
 	}
 	
-	/**
-	 * Can be used in order to react on request count changes
-	 * (start/success/failure or canceling).
-	 * 
-	 * @author lemberg
-	 * 
-	 */
-	public interface RequestProgressListener
-	{
-		/**
-		 * Called after new request was added to queue
-		 * @param theEntity
-		 * @param activeRequests number of requests pending
-		 */
-		void onRequestStarted(AbstractBaseDrupalEntity theEntity, int activeRequests);
-
-		/**
-		 * Called after current request was complete
-		 * @param theEntity
-		 * @param activeRequests number of requests pending
-		 */
-		void onRequestFinished(AbstractBaseDrupalEntity theEntity, int activeRequests);
-	}
-
+	
 	/**
 	 * @param synchronous
 	 *            if true - request will be performed synchronously.
@@ -117,7 +119,7 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	 * @return @class ResponseData entity, containing server response string and
 	 *         code or error in case of synchronous request, null otherwise
 	 */
-	public ResponseData postDataToServer(boolean synchronous, Class<?> resultClass)
+	public ResponseData pushToServer(boolean synchronous, Class<?> resultClass)
 	{
 		Assert.assertNotNull("You have to specify drupal client in order to perform requests", this.drupalClient);
 		ResponseData result = this.drupalClient.postObject(this, resultClass, RequestMethod.POST, this, synchronous);
@@ -131,7 +133,7 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	 * @return @class ResponseData entity, containing server response or error
 	 *         in case of synchronous request, null otherwise
 	 */
-	public ResponseData getDataFromServer(boolean synchronous)
+	public ResponseData pullFromServer(boolean synchronous)
 	{
 		Assert.assertNotNull("You have to specify drupal client in order to perform requests", this.drupalClient);
 		ResponseData result = this.drupalClient.getObject(this, this.getManagedDataClassSpecifyer(), RequestMethod.GET, this, synchronous);
@@ -148,7 +150,7 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	 * @return @class ResponseData entity, containing server response or error
 	 *         in case of synchronous request, null otherwise
 	 */
-	public ResponseData deleteDataFromServer(boolean synchronous, Class<?> resultClass)
+	public ResponseData deleteFromServer(boolean synchronous, Class<?> resultClass)
 	{
 		Assert.assertNotNull("You have to specify drupal client in order to perform requests", this.drupalClient);
 		ResponseData result = this.drupalClient.deleteObject(this, resultClass, RequestMethod.DELETE, this, synchronous);
@@ -172,16 +174,16 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 		{
 			switch (method) {
 			case POST:
-				this.requestListener.onEntityPosted(this);
+				this.requestListener.onEntityPushed(this,data);
 				break;
 			case DELETE:
-				this.requestListener.onEntityRemoved(this);
+				this.requestListener.onEntityRemoved(this,data);
 				break;
 			case PATCH:
-				this.requestListener.onEntityPatched(this);
+				this.requestListener.onEntityPatched(this,data);
 				break;
 			case GET:
-				this.requestListener.onEntityFetched(this);
+				this.requestListener.onEntityPulled(this,data);
 				break;
 			}
 		}
@@ -191,7 +193,7 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	{
 		if (this.requestListener != null)
 		{
-			this.requestListener.onRequestFailed(error, this);
+			this.requestListener.onRequestFailed(this,error);
 		}
 		this.onNewRequestComplete();
 	}
@@ -342,7 +344,7 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	 *             in case if there are no changes to post. You can check if
 	 *             there are ones, calling <code>canPatch()</code> method.
 	 */
-	public ResponseData patchDataOnServer(boolean synchronous, Class<?> resultClass) throws IllegalStateException
+	public ResponseData patchServerData(boolean synchronous, Class<?> resultClass) throws IllegalStateException
 	{
 		ResponseData result = this.drupalClient.patchObject(this, resultClass, RequestMethod.PATCH, this, synchronous);
 		this.onNewRequestStarted();

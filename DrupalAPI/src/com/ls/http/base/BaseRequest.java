@@ -296,6 +296,7 @@ public class BaseRequest extends StringRequest
 
 	// Post Body handling
 
+	@SuppressWarnings("null")
 	@Override
 	public byte[] getBody() throws AuthFailureError
 	{
@@ -328,6 +329,7 @@ public class BaseRequest extends StringRequest
 		}
 	}
 
+	@SuppressWarnings("null")
 	@Override
 	public String getBodyContentType()
 	{
@@ -423,6 +425,10 @@ public class BaseRequest extends StringRequest
 		return defaultCharset;
 	}
 
+	/**
+	 * 
+	 * @param defaultCharset charset, used to encode post body.
+	 */
 	public void setDefaultCharset(String defaultCharset)
 	{
 		this.defaultCharset = defaultCharset;

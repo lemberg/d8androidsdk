@@ -11,6 +11,9 @@ public class ResponseData {
 	protected VolleyError error;
 	protected String responceString;
 	
+	/**	 
+	 * @return Instance of class, specified in response or null if no such class was specified.
+	 */
 	public Object getData() {
 		return data;
 	}
