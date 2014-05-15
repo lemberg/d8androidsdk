@@ -44,7 +44,7 @@ public abstract class AbstractDrupalEntityContainer<T> extends AbstractBaseDrupa
 
 		while (classType == null)
 		{
-			if (itemsArrayClass.getSuperclass().equals(AbstractDrupalItemsArray.class))
+			if (itemsArrayClass.getSuperclass().equals(AbstractDrupalArrayEntity.class))
 			{
 				classType = itemsArrayClass.getGenericSuperclass();
 			}

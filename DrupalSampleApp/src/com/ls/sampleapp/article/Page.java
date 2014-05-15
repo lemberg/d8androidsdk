@@ -3,11 +3,11 @@ package com.ls.sampleapp.article;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.ls.drupal.AbstractDrupalItemsArray;
+import com.ls.drupal.AbstractDrupalArrayEntity;
 import com.ls.drupal.DrupalClient;
 import com.ls.http.base.BaseRequest.RequestMethod;
 
-public class Page extends AbstractDrupalItemsArray<ArticlePreview>
+public class Page extends AbstractDrupalArrayEntity<ArticlePreview>
 {
 
 	transient private int pageNumber;

@@ -274,22 +274,22 @@ public class DrupalClient implements OnResponseListener
 	public void onResponceReceived(ResponseData data, BaseRequest request)
 	{			
 		OnResponseListener listener = this.listeners.get(request);
+		this.listeners.remove(request);
 		if (listener != null)
 		{			
 			listener.onResponceReceived(data, request.getTag());
-		}
-		this.listeners.remove(request);
+		}		
 	}
 
 	@Override
 	public void onError(VolleyError error, BaseRequest request)
 	{
 		OnResponseListener listener = this.listeners.get(request);
+		this.listeners.remove(request);
 		if (listener != null)
 		{
 			listener.onError(error, request.getTag());
-		}
-		this.listeners.remove(request);
+		}		
 	}
 	
 	/**	 
@@ -353,5 +353,14 @@ public class DrupalClient implements OnResponseListener
 				return false;
 			}
 		});		
+	}	
+	
+	/**	 
+	 * @return number of requests pending
+	 */
+	public int getActiveRequestsCount()
+	{
+		return this.listeners.size();
 	}
+	
 }

@@ -8,11 +8,11 @@ import java.util.Iterator;
 
 import org.eclipse.jdt.annotation.NonNull;
 
-public abstract class AbstractDrupalItemsArray<E> extends AbstractDrupalEntity implements Collection<E>
+public abstract class AbstractDrupalArrayEntity<E> extends AbstractDrupalEntity implements Collection<E>
 {
 	private transient final ArrayList<E> innerItems;
 
-	public AbstractDrupalItemsArray(DrupalClient client, int itemCount)
+	public AbstractDrupalArrayEntity(DrupalClient client, int itemCount)
 	{
 		super(client);
 		innerItems = new ArrayList<E>(itemCount);
@@ -166,7 +166,7 @@ public abstract class AbstractDrupalItemsArray<E> extends AbstractDrupalEntity i
 
 		while (classType == null)
 		{
-			if (itemsArrayClass.getSuperclass().equals(AbstractDrupalItemsArray.class))
+			if (itemsArrayClass.getSuperclass().equals(AbstractDrupalArrayEntity.class))
 			{
 				classType = itemsArrayClass.getGenericSuperclass();
 			}
@@ -183,7 +183,7 @@ public abstract class AbstractDrupalItemsArray<E> extends AbstractDrupalEntity i
 				E[] array = (E[]) java.lang.reflect.Array.newInstance(genericArgClass, 0);
 				return array.getClass();	
 			}else{
-				throw new IllegalArgumentException(AbstractDrupalItemsArray.class.getName()+" doesn't support RAW types deserialization");
+				throw new IllegalArgumentException(AbstractDrupalArrayEntity.class.getName()+" doesn't support RAW types deserialization");
 			}
 	}
 }
