@@ -97,14 +97,13 @@ public class CategoryArticlesListAdapter extends BaseAdapter implements OnEntity
 	{
 		if(this.canLoadMore && this.currentLoadingPage == null)
 		{
-			this.currentLoadingPage = new Page(this.client, this.pagesLoaded,this.categoryId);
-			this.currentLoadingPage.setRequestListener(this);
-			this.currentLoadingPage.pullFromServer(false);			
+			this.currentLoadingPage = new Page(this.client, this.pagesLoaded,this.categoryId);		
+			this.currentLoadingPage.pullFromServer(false,null,this);			
 		}
 	}
 
 	@Override
-	public void onEntityPulled(AbstractBaseDrupalEntity entity, ResponseData data)
+	public void onRequestComplete(AbstractBaseDrupalEntity entity, Object tag, ResponseData data)
 	{
 		if(!this.currentLoadingPage.isEmpty())
 		{
@@ -114,25 +113,17 @@ public class CategoryArticlesListAdapter extends BaseAdapter implements OnEntity
 			this.notifyDataSetChanged();
 		}else{
 			this.canLoadMore = false;
-		}		
+		}	
 	}
 
 	@Override
-	public void onEntityPushed(AbstractBaseDrupalEntity entity, ResponseData data)
-	{}
-
-	@Override
-	public void onEntityPatched(AbstractBaseDrupalEntity entity, ResponseData data)
-	{}
-
-	@Override
-	public void onEntityRemoved(AbstractBaseDrupalEntity entity, ResponseData data)
-	{}
-
-	@Override
-	public void onRequestFailed(AbstractBaseDrupalEntity entity, VolleyError error)
+	public void onRequestFailed(AbstractBaseDrupalEntity entity, Object tag, VolleyError error)
 	{
 		this.canLoadMore = false;
 	}
+
+	@Override
+	public void onRequestCanceled(AbstractBaseDrupalEntity entity, Object tag)
+	{}
 	
 }

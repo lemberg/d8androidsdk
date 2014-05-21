@@ -3,7 +3,6 @@ package com.ls.drupal;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import junit.framework.Assert;
 
@@ -22,13 +21,8 @@ import com.ls.util.ObjectComparator.FootPrint;
 public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnResponseListener, ICharsetItem
 {
 	transient private DrupalClient drupalClient; 
-	transient private OnEntityRequestListener requestListener;
-
-	transient private RequestProgressListener progressListener;
 
 	transient private FootPrint footprint;
-
-	transient private final AtomicInteger activeRequestCount;
 
 	/**
 	 * In case of request canceling - no method will be triggered.
@@ -38,42 +32,11 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	 */
 	public interface OnEntityRequestListener
 	{
-		void onEntityPulled(AbstractBaseDrupalEntity entity, ResponseData data);
-
-		void onEntityPushed(AbstractBaseDrupalEntity entity, ResponseData data);
-
-		void onEntityPatched(AbstractBaseDrupalEntity entity, ResponseData data);
-
-		void onEntityRemoved(AbstractBaseDrupalEntity entity, ResponseData data);
-
-		void onRequestFailed(AbstractBaseDrupalEntity entity, VolleyError error);
+		void onRequestComplete(AbstractBaseDrupalEntity entity, Object tag, ResponseData data);
+		void onRequestFailed(AbstractBaseDrupalEntity entity, Object tag, VolleyError error);
+		void onRequestCanceled(AbstractBaseDrupalEntity entity, Object tag);
 	}	
-	
-	/**
-	 * Can be used in order to react on request count changes
-	 * (start/success/failure or canceling).
-	 * 
-	 * @author lemberg
-	 * 
-	 */
-	public interface RequestProgressListener
-	{
-		/**
-		 * Called after new request was added to queue
-		 * @param theEntity
-		 * @param activeRequests number of requests pending
-		 */
-		void onRequestStarted(AbstractBaseDrupalEntity theEntity, int activeRequests);
-
-		/**
-		 * Called after current request was complete
-		 * @param theEntity
-		 * @param activeRequests number of requests pending
-		 */
-		void onRequestFinished(AbstractBaseDrupalEntity theEntity, int activeRequests);
-	}
-
-	
+			
 	/**
 	 * @return path to resource. Shouldn't include base URL(domain).
 	 */
@@ -106,8 +69,7 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 
 	public AbstractBaseDrupalEntity(DrupalClient client)
 	{
-		this.drupalClient = client;
-		this.activeRequestCount = new AtomicInteger(0);
+		this.drupalClient = client;	
 	}
 	
 	
@@ -116,29 +78,33 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	 *            if true - request will be performed synchronously.
 	 * @param resultClass
 	 *            class of result or null if no result needed.
+	 * @param tag Object tag, passer to listener after request was finished or failed because of exception
+	 * @param listener 
 	 * @return @class ResponseData entity, containing server response string and
 	 *         code or error in case of synchronous request, null otherwise
 	 */
-	public ResponseData pushToServer(boolean synchronous, Class<?> resultClass)
+	public ResponseData pushToServer(boolean synchronous, Class<?> resultClass, Object tag, OnEntityRequestListener listener)
 	{
 		Assert.assertNotNull("You have to specify drupal client in order to perform requests", this.drupalClient);
-		ResponseData result = this.drupalClient.postObject(this, resultClass, RequestMethod.POST, this, synchronous);
-		this.onNewRequestStarted();
+		DrupalEntityTag drupalTag = new DrupalEntityTag(false, tag, listener);
+		ResponseData result = this.drupalClient.postObject(this, resultClass, drupalTag, this, synchronous);		
 		return result;
 	}
 
 	/**
 	 * @param synchronous
 	 *            if true - request will be performed synchronously.
+	 * @param tag Object tag, passer to listener after request was finished or failed because of exception
+	 * @param listener 
 	 * @return @class ResponseData entity, containing server response or error
 	 *         in case of synchronous request, null otherwise
 	 */
-	public ResponseData pullFromServer(boolean synchronous)
+	public ResponseData pullFromServer(boolean synchronous, Object tag, OnEntityRequestListener listener)
 	{
 		Assert.assertNotNull("You have to specify drupal client in order to perform requests", this.drupalClient);
-		ResponseData result = this.drupalClient.getObject(this, this.getManagedDataClassSpecifyer(), RequestMethod.GET, this, synchronous);
-		;
-		this.onNewRequestStarted();
+		DrupalEntityTag drupalTag = new DrupalEntityTag(true, tag, listener);
+		ResponseData result = this.drupalClient.getObject(this, this.getManagedDataClassSpecifyer(), drupalTag, this, synchronous);
+		;		
 		return result;
 	}
 
@@ -146,62 +112,55 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	 * @param synchronous
 	 *            if true - request will be performed synchronously.
 	 * @param resultClass
-	 *            class of result or null if no result needed.
+	 *            class of result or null if no result needed. 
+	 * @param tag Object tag, passer to listener after request was finished or failed because of exception
+	 * @param listener 
 	 * @return @class ResponseData entity, containing server response or error
 	 *         in case of synchronous request, null otherwise
 	 */
-	public ResponseData deleteFromServer(boolean synchronous, Class<?> resultClass)
+	public ResponseData deleteFromServer(boolean synchronous, Class<?> resultClass, Object tag, OnEntityRequestListener listener)
 	{
 		Assert.assertNotNull("You have to specify drupal client in order to perform requests", this.drupalClient);
-		ResponseData result = this.drupalClient.deleteObject(this, resultClass, RequestMethod.DELETE, this, synchronous);
-		this.onNewRequestStarted();
+		DrupalEntityTag drupalTag = new DrupalEntityTag(false, tag, listener);
+		ResponseData result = this.drupalClient.deleteObject(this, resultClass, drupalTag, this, synchronous);		
 		return result;
 	}
 
 	// OnResponceListener methods
 	
-	public final void onResponceReceived(ResponseData data, Object tag)
-	{
-		this.onNewRequestComplete();
-		RequestMethod method = (RequestMethod) tag;
-
-		if (method == RequestMethod.GET)
+	@Override
+	public void onResponceReceived(ResponseData data, Object tag)
+	{		
+		DrupalEntityTag entityTag = (DrupalEntityTag)tag;
+		if (entityTag.consumeResponce)
 		{
 			this.consumeObject(data.getData());
 		}
 
-		if (this.requestListener != null)
+		if(entityTag.listener != null)
 		{
-			switch (method) {
-			case POST:
-				this.requestListener.onEntityPushed(this,data);
-				break;
-			case DELETE:
-				this.requestListener.onEntityRemoved(this,data);
-				break;
-			case PATCH:
-				this.requestListener.onEntityPatched(this,data);
-				break;
-			case GET:
-				this.requestListener.onEntityPulled(this,data);
-				break;
-			}
+			entityTag.listener.onRequestComplete(this, entityTag.requestTag, data);
 		}
 	}
 	
-	public final void onError(VolleyError error, Object tag)
+	@Override
+	public void onError(VolleyError error, Object tag)
 	{
-		if (this.requestListener != null)
+		DrupalEntityTag entityTag = (DrupalEntityTag)tag;
+		if(entityTag.listener != null)
 		{
-			this.requestListener.onRequestFailed(this,error);
-		}
-		this.onNewRequestComplete();
+			entityTag.listener.onRequestFailed(this,entityTag.requestTag,error);
+		}		
 	}
 
 	@Override
-	public final void onCancel(Object tag)
+	public void onCancel(Object tag)
 	{
-		this.onNewRequestComplete();
+		DrupalEntityTag entityTag = (DrupalEntityTag)tag;
+		if(entityTag.listener != null)
+		{
+			entityTag.listener.onRequestCanceled(this,entityTag.requestTag);
+		}	
 	}
 
 	/**
@@ -280,26 +239,6 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 		this.drupalClient = drupalClient;
 	}
 
-	public RequestProgressListener getProgressListener()
-	{
-		return progressListener;
-	}
-
-	public void setProgressListener(RequestProgressListener progressListener)
-	{
-		this.progressListener = progressListener;
-	}
-
-	public OnEntityRequestListener getRequestListener()
-	{
-		return requestListener;
-	}
-
-	public void setRequestListener(OnEntityRequestListener requestListener)
-	{
-		this.requestListener = requestListener;
-	}
-
 	// Request canceling
 	public void cancellAllRequests()
 	{
@@ -337,6 +276,8 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	 *            if true - request will be performed synchronously.
 	 * @param resultClass
 	 *            class of result or null if no result needed.
+	 * @param tag Object tag, passer to listener after request was finished or failed because of exception
+	 * @param listener 
 	 * @return @class ResponseData entity, containing server response and
 	 *         resultClass instance or error in case of synchronous request,
 	 *         null otherwise
@@ -344,10 +285,10 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	 *             in case if there are no changes to post. You can check if
 	 *             there are ones, calling <code>canPatch()</code> method.
 	 */
-	public ResponseData patchServerData(boolean synchronous, Class<?> resultClass) throws IllegalStateException
+	public ResponseData patchServerData(boolean synchronous, Class<?> resultClass, Object tag, OnEntityRequestListener listener) throws IllegalStateException
 	{
-		ResponseData result = this.drupalClient.patchObject(this, resultClass, RequestMethod.PATCH, this, synchronous);
-		this.onNewRequestStarted();
+		DrupalEntityTag drupalTag = new DrupalEntityTag(false, tag, listener);
+		ResponseData result = this.drupalClient.patchObject(this, resultClass, drupalTag, this, synchronous);
 		return result;
 	}
 
@@ -389,51 +330,25 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 		Assert.assertNotNull("You have to make initial objects footprint in order to calculate changes", origin);
 		return comparator.getDifferencesJSON(origin, current);
 	}
-
-	// Manage request progress
-
-	/**	 
-	 * @return number of requests pending
-	 */
-	public int getActiveRequestCount()
-	{
-		return activeRequestCount.get();
-	}
-
-	private void onNewRequestStarted()
-	{
-		if (this.progressListener != null)
-		{
-			synchronized (this.progressListener)
-			{
-				int requestCount = this.activeRequestCount.incrementAndGet();
-				this.progressListener.onRequestStarted(this, requestCount);
-			}
-		} else
-		{
-			this.activeRequestCount.incrementAndGet();
-		}
-	}
-
-	private void onNewRequestComplete()
-	{
-		if (this.progressListener != null)
-		{
-			synchronized (this.progressListener)
-			{
-				int requestCount = this.activeRequestCount.decrementAndGet();
-				this.progressListener.onRequestFinished(this, requestCount);
-			}
-		} else
-		{
-			this.activeRequestCount.decrementAndGet();
-		}
-	}
-
+	
 	@NonNull
 	private Object getManagedDataChecked()
 	{
 		Assert.assertNotNull("You have to specify non null data object", this.getManagedData());
 		return getManagedData();
+	}
+	
+	protected final class DrupalEntityTag
+	{
+		public OnEntityRequestListener listener;
+		public Object requestTag;
+		public boolean  consumeResponce;
+		
+		public DrupalEntityTag(boolean consumeResponce,Object requestTag,OnEntityRequestListener listener)
+		{
+			this.consumeResponce = consumeResponce;
+			this.requestTag = requestTag;
+			this.listener = listener;
+		}
 	}
 }

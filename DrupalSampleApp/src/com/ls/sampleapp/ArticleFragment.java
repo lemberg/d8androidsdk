@@ -42,10 +42,9 @@ public class ArticleFragment extends Fragment implements OnEntityRequestListener
 	{
 		super.onCreate(savedInstanceState);
 		String pageId = this.getArguments().getString(PAGE_ID_KEY);		
-		this.page = new Article(new DrupalClient(AppConstants.SERVER_BASE_URL, this.getActivity()), pageId);
-		this.page.setRequestListener(this);
+		this.page = new Article(new DrupalClient(AppConstants.SERVER_BASE_URL, this.getActivity()), pageId);		
 //		this.page.setProgressListener(this);
-		this.page.pullFromServer(false);
+		this.page.pullFromServer(false,null,this);
 	}
 
 	@Override
@@ -61,7 +60,7 @@ public class ArticleFragment extends Fragment implements OnEntityRequestListener
 
 	private void resetPageContent()
 	{
-		if(this.page.getActiveRequestCount() > 0)
+		if(this.page.getDrupalClient().getActiveRequestsCount() > 0)
 		{
 			this.showLoadingDialog();
 		}else{
@@ -81,31 +80,6 @@ public class ArticleFragment extends Fragment implements OnEntityRequestListener
 	}
 
 	// Request listener
-
-	@Override
-	public void onEntityPulled(AbstractBaseDrupalEntity entity, ResponseData data)
-	{
-		Log.d(this.getClass().getName(), "Page fetched");
-		this.resetPageContent();
-	}
-	
-	@Override
-	public void onEntityPushed(AbstractBaseDrupalEntity entity, ResponseData data)
-	{}
-
-	@Override
-	public void onEntityPatched(AbstractBaseDrupalEntity entity, ResponseData data)
-	{}
-
-	@Override
-	public void onEntityRemoved(AbstractBaseDrupalEntity entity, ResponseData data)
-	{}
-
-	@Override
-	public void onRequestFailed(AbstractBaseDrupalEntity entity, VolleyError error)
-	{
-		Toast.makeText(this.getActivity(), "Page fetch failed", Toast.LENGTH_SHORT).show();
-	}	
 	
 	public void showLoadingDialog()
 	{
@@ -122,6 +96,22 @@ public class ArticleFragment extends Fragment implements OnEntityRequestListener
 			this.progressView.setVisibility(View.GONE);
 		}
 	}
+
+	@Override
+	public void onRequestComplete(AbstractBaseDrupalEntity entity, Object tag, ResponseData data)
+	{
+		this.resetPageContent();
+	}
+
+	@Override
+	public void onRequestFailed(AbstractBaseDrupalEntity entity, Object tag, VolleyError error)
+	{
+		Toast.makeText(this.getActivity(), "Page fetch failed", Toast.LENGTH_SHORT).show();		
+	}
+
+	@Override
+	public void onRequestCanceled(AbstractBaseDrupalEntity entity, Object tag)
+	{}
 
 	
 }
