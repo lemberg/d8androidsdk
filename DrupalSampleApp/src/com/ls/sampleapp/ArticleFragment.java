@@ -22,6 +22,7 @@ public class ArticleFragment extends Fragment implements OnEntityRequestListener
 	final static String PROGRESS_DIALOG_TAG = "progress_dialog";
 	private final static String PAGE_ID_KEY = "page_id";
 	private Article page;
+	private DrupalClient client;
 
 	private TextView title;
 	private WebView content;
@@ -42,7 +43,8 @@ public class ArticleFragment extends Fragment implements OnEntityRequestListener
 	{
 		super.onCreate(savedInstanceState);
 		String pageId = this.getArguments().getString(PAGE_ID_KEY);		
-		this.page = new Article(new DrupalClient(AppConstants.SERVER_BASE_URL, this.getActivity()), pageId);		
+		this.client = new DrupalClient(AppConstants.SERVER_BASE_URL, this.getActivity());
+		this.page = new Article(client, pageId);		
 //		this.page.setProgressListener(this);
 		this.page.pullFromServer(false,null,this);
 	}
@@ -113,5 +115,10 @@ public class ArticleFragment extends Fragment implements OnEntityRequestListener
 	public void onRequestCanceled(AbstractBaseDrupalEntity entity, Object tag)
 	{}
 
-	
+	@Override
+	public void onDestroy()
+	{
+		this.client.cancelAll();
+		super.onDestroy();
+	}
 }

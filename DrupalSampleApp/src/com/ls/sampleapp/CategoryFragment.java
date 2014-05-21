@@ -18,6 +18,7 @@ public class CategoryFragment extends Fragment implements OnItemClickListener
 {
 	private final static String CATEGORY_ID_KEY = "category_id";
 	
+	private DrupalClient client;
 
 	public static CategoryFragment newInstance(String categoryId)
 	{
@@ -36,7 +37,7 @@ public class CategoryFragment extends Fragment implements OnItemClickListener
 		ListView list = (ListView) result.findViewById(R.id.listView);	
 		list.setOnItemClickListener(this);
 		
-		DrupalClient client = new DrupalClient(AppConstants.SERVER_BASE_URL, this.getActivity());
+		this.client = new DrupalClient(AppConstants.SERVER_BASE_URL, this.getActivity());
 		list.setAdapter(new CategoryArticlesListAdapter(categoryId,client,this.getActivity()));
 		return result;
 	}
@@ -48,5 +49,15 @@ public class CategoryFragment extends Fragment implements OnItemClickListener
 		
 		Intent intent = ArticleActivity.getExecutionIntent(getActivity(), article.getNid());
 		this.getActivity().startActivity(intent);
+	}
+	
+	@Override
+	public void onDestroyView()
+	{
+		if(this.client != null)
+		{
+			this.client.cancelAll();
+		}
+		super.onDestroyView();
 	}
 }
