@@ -27,7 +27,7 @@ public class BaseRequest extends StringRequest
 
 	public static enum RequestMethod
 	{
-		GET(Method.GET), POST(Method.POST), PATCH(Method.PATCH), DELETE(Method.DELETE);
+		GET(Method.GET), POST(Method.POST), PATCH(Method.PATCH), DELETE(Method.DELETE), PUT(Method.PUT),HEAD(Method.HEAD),OPTIONS(Method.OPTIONS),TRACE(Method.TRACE);
 		final private int methodCode;
 
 		RequestMethod(int theCode)
