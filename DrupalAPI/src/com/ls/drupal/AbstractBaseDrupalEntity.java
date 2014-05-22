@@ -16,13 +16,13 @@ import com.ls.http.base.IPostableItem;
 import com.ls.http.base.IResponceItem;
 import com.ls.http.base.ResponseData;
 import com.ls.util.ObjectComparator;
-import com.ls.util.ObjectComparator.FootPrint;
+import com.ls.util.ObjectComparator.Snapshot;
 
 public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnResponseListener, ICharsetItem
 {
 	transient private DrupalClient drupalClient; 
 
-	transient private FootPrint footprint;
+	transient private Snapshot snapshot;
 
 	/**
 	 * In case of request canceling - no method will be triggered.
@@ -32,7 +32,7 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	 */
 	public interface OnEntityRequestListener
 	{
-		void onRequestComplete(AbstractBaseDrupalEntity entity, Object tag, ResponseData data);
+		void onRequestCompleted(AbstractBaseDrupalEntity entity, Object tag, ResponseData data);
 		void onRequestFailed(AbstractBaseDrupalEntity entity, Object tag, VolleyError error);
 		void onRequestCanceled(AbstractBaseDrupalEntity entity, Object tag);
 	}	
@@ -139,7 +139,7 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 
 		if(entityTag.listener != null)
 		{
-			entityTag.listener.onRequestComplete(this, entityTag.requestTag, data);
+			entityTag.listener.onRequestCompleted(this, entityTag.requestTag, data);
 		}
 	}
 	
@@ -248,26 +248,26 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	// Patch method management
 
 	/**
-	 * Creates footprint to be used later in order to calculate differences for
+	 * Creates snapshot to be used later in order to calculate differences for
 	 * patch request.
 	 */
-	public void createFootPrint()
+	public void createSnapshot()
 	{
-		this.footprint = getCurrentStateFootprint();
+		this.snapshot = getCurrentStateSnapshot();
 	}
 	
 	/**
-	 * Release current footprint (is recommended to perform after successful patch request)
+	 * Release current snapshot (is recommended to perform after successful patch request)
 	 */
-	public void clearFootPrint()
+	public void clearSnapshot()
 	{
-		this.footprint = null;
+		this.snapshot = null;
 	}
 
-	protected FootPrint getCurrentStateFootprint()
+	protected Snapshot getCurrentStateSnapshot()
 	{
 		ObjectComparator comparator = new ObjectComparator();
-		return comparator.createFootPrint(this.getManagedDataChecked());
+		return comparator.createSnapshot(this.getManagedDataChecked());
 	}
 
 	/**
@@ -295,10 +295,10 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	public Object getPatchObject()
 	{
 		ObjectComparator comparator = new ObjectComparator();
-		FootPrint currentState = comparator.createFootPrint(this.getManagedDataChecked());
+		Snapshot currentState = comparator.createSnapshot(this.getManagedDataChecked());
 
 		@SuppressWarnings("null")
-		Object difference = this.getDifference(this.footprint, currentState, comparator);
+		Object difference = this.getDifference(this.snapshot, currentState, comparator);
 		if (difference != null)
 		{
 			return difference;
@@ -315,19 +315,19 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	public boolean canPatch()
 	{
 		ObjectComparator comparator = new ObjectComparator();
-		return this.canPatch(this.footprint, comparator.createFootPrint(this), comparator);
+		return this.canPatch(this.snapshot, comparator.createSnapshot(this), comparator);
 	}
 
-	private boolean canPatch(@NonNull FootPrint origin, @NonNull FootPrint current, @NonNull ObjectComparator comparator)
+	private boolean canPatch(@NonNull Snapshot origin, @NonNull Snapshot current, @NonNull ObjectComparator comparator)
 	{
 		Object difference = this.getDifference(origin, current, comparator);
 		return (difference != null);
 	}
 
-	private Object getDifference(@NonNull FootPrint origin, @NonNull FootPrint current, ObjectComparator comparator)
+	private Object getDifference(@NonNull Snapshot origin, @NonNull Snapshot current, ObjectComparator comparator)
 	{
 		Assert.assertNotNull("You have to specify drupal client in order to perform requests", this.drupalClient);
-		Assert.assertNotNull("You have to make initial objects footprint in order to calculate changes", origin);
+		Assert.assertNotNull("You have to make initial objects snapshot in order to calculate changes", origin);
 		return comparator.getDifferencesJSON(origin, current);
 	}
 	

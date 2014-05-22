@@ -30,10 +30,10 @@ public class ObjectComparator
 		converter = SharedGson.getGson();
 	}
 			
-	public static class FootPrint
+	public static class Snapshot
 	{
 		private final JsonElement data;
-		private FootPrint(Object dataSource, Gson converter)
+		private Snapshot(Object dataSource, Gson converter)
 		{			
 			this.data = converter.toJsonTree(dataSource);
 		}
@@ -46,19 +46,19 @@ public class ObjectComparator
 		@Override
 		public boolean equals(Object o)
 		{
-			if(o instanceof FootPrint)
+			if(o instanceof Snapshot)
 			{
-				return this.data.equals(((FootPrint)o).data);
+				return this.data.equals(((Snapshot)o).data);
 			} else {
 				return false;
 			}
 		}
 	}
 		
-	public FootPrint createFootPrint(@NonNull final Object obj)
+	public Snapshot createSnapshot(@NonNull final Object obj)
 	{
 		Assert.assertNotNull("You can't create Footprint from null object",obj);
-		return new FootPrint(obj, converter);
+		return new Snapshot(obj, converter);
 	}
 	
 	/**
@@ -67,7 +67,7 @@ public class ObjectComparator
 	 * @param updated updated updated object footprint
 	 * @return null if there is no differences or differences JSON string.
 	 */
-	public final @Nullable String getDifferencesJSON(@NonNull FootPrint origin,@NonNull FootPrint updated)
+	public final @Nullable String getDifferencesJSON(@NonNull Snapshot origin,@NonNull Snapshot updated)
 	{
 		Object difference = getDifferences(origin, updated);
 		if(difference!= null)
@@ -84,7 +84,7 @@ public class ObjectComparator
 	 * @param updated updated object footprint
 	 * @return null if there are no differences or differences Map(or List, depending on input object structure) in case if there are ones.
 	 */
-	public final static @Nullable Object getDifferences(@NonNull FootPrint origin,@NonNull FootPrint updated)
+	public final static @Nullable Object getDifferences(@NonNull Snapshot origin,@NonNull Snapshot updated)
 	{		
 		Assert.assertNotNull("Origin footprint can't be null",origin);
 		Assert.assertNotNull("Updated object footprint can't be null",updated);

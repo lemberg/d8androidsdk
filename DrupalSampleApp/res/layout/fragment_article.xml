@@ -3,27 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <LinearLayout
-        android:id="@+id/articlesList"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical" >
-
-        <TextView
-            android:id="@+id/pageTitle"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="#ffffffff" 
-            android:padding="5dip"
-            android:background="#ffcccccc"/>
-
-        <WebView
+     <WebView
             android:id="@+id/contentView"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-    </LinearLayout>
 
     <FrameLayout
         android:id="@+id/progressView"

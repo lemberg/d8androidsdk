@@ -47,7 +47,7 @@ public class CategoryFragment extends Fragment implements OnItemClickListener
 	{		
 		ArticlePreview article = (ArticlePreview)parent.getItemAtPosition(position);
 		
-		Intent intent = ArticleActivity.getExecutionIntent(getActivity(), article.getNid());
+		Intent intent = ArticleActivity.getExecutionIntent(getActivity(), article.getNid(),article.getTitle());
 		this.getActivity().startActivity(intent);
 	}
 	

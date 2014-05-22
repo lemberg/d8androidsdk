@@ -131,7 +131,7 @@ public class CategoryArticlesListAdapter extends BaseAdapter implements OnEntity
 	}
 
 	@Override
-	public void onRequestComplete(AbstractBaseDrupalEntity entity, Object tag, ResponseData data)
+	public void onRequestCompleted(AbstractBaseDrupalEntity entity, Object tag, ResponseData data)
 	{
 		if (!this.currentLoadingPage.isEmpty())
 		{

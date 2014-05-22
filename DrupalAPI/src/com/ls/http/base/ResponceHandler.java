@@ -10,7 +10,7 @@ abstract class ResponceHandler
 	abstract Object itemFromResponce(@NonNull String responce,@NonNull Type theType);
 	
 	Object itemFromResponceWithSpecifier(String responce, Object theSpecifier)
-	{		
+	{			
 		Object result = null;
 		if(responce != null && theSpecifier != null)
 		{
