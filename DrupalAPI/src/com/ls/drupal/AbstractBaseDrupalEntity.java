@@ -283,7 +283,7 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	 *         null otherwise
 	 * @throws IllegalStateException
 	 *             in case if there are no changes to post. You can check if
-	 *             there are ones, calling <code>canPatch()</code> method.
+	 *             there are ones, calling <code>isModified()</code> method.
 	 */
 	public ResponseData patchServerData(boolean synchronous, Class<?> resultClass, Object tag, OnEntityRequestListener listener) throws IllegalStateException
 	{
@@ -304,7 +304,7 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 			return difference;
 		} else
 		{
-			throw new IllegalStateException("There are no changes to post, check canPatch() call before");
+			throw new IllegalStateException("There are no changes to post, check isModified() call before");
 		}
 	}
 
@@ -312,13 +312,13 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	 * @return true if there are changes to post, false otherwise
 	 */
 	@SuppressWarnings("null")
-	public boolean canPatch()
+	public boolean isModified()
 	{
 		ObjectComparator comparator = new ObjectComparator();
-		return this.canPatch(this.snapshot, comparator.createSnapshot(this), comparator);
+		return this.isModified(this.snapshot, comparator.createSnapshot(this), comparator);
 	}
 
-	private boolean canPatch(@NonNull Snapshot origin, @NonNull Snapshot current, @NonNull ObjectComparator comparator)
+	private boolean isModified(@NonNull Snapshot origin, @NonNull Snapshot current, @NonNull ObjectComparator comparator)
 	{
 		Object difference = this.getDifference(origin, current, comparator);
 		return (difference != null);
