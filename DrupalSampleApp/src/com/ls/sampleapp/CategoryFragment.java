@@ -38,7 +38,8 @@ public class CategoryFragment extends Fragment implements OnItemClickListener
 		list.setOnItemClickListener(this);
 		
 		this.client = new DrupalClient(AppConstants.SERVER_BASE_URL, this.getActivity());
-		list.setAdapter(new CategoryArticlesListAdapter(categoryId,client,this.getActivity()));
+		View noArticlesView = result.findViewById(R.id.emptyView);
+		list.setAdapter(new CategoryArticlesListAdapter(categoryId,client,this.getActivity(),noArticlesView));
 		return result;
 	}
 
@@ -47,7 +48,7 @@ public class CategoryFragment extends Fragment implements OnItemClickListener
 	{		
 		ArticlePreview article = (ArticlePreview)parent.getItemAtPosition(position);
 		
-		Intent intent = ArticleActivity.getExecutionIntent(getActivity(), article.getNid(),article.getTitle());
+		Intent intent = ArticleActivity.getExecutionIntent(getActivity(), article);
 		this.getActivity().startActivity(intent);
 	}
 	

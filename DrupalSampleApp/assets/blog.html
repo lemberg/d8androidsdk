@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
   <head>
     <base href="http://blog.lemberg.co.uk" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>%ARTICLE_TITLE%</title>
     <style>
@@ -50,22 +50,30 @@
         height: auto;
       }
 
+      a {
+        color: #0089cf;
+        text-decoration: none; }
+      a:hover {
+        text-decoration: underline; }
+      a:hover, a:active {
+        color: #5da3e9; }
+
       ul li:before {
         content: "•";
         display: inline-block;
-        width: 2rem;
-        margin-left: -2rem; }
+        width: 1rem;
+        margin-left: -1rem; }
       ol {
         counter-reset: list-counter; }
-        ol li:before {
-          content: counter(list-counter) ".";
-          counter-increment: list-counter;
-          display: inline-block;
-          width: 2rem;
-          margin-left: -2rem; }
+      ol li:before {
+        content: counter(list-counter) ".";
+        counter-increment: list-counter;
+        display: inline-block;
+        width: 1rem;
+        margin-left: -1rem; }
       li {
-        margin: 0 0 0.75rem 0;
-        padding-left: 4rem;
+        /*margin: 0 0 0.75rem 0;*/
+        padding-left: 1rem;
         overflow: hidden; }
 
       table, tbody {
@@ -87,24 +95,70 @@
         font-family: museo_sans_rounded700, sans-serif;
         background-color: #fafafa; }
 
+      blockquote {
+        margin: 0;
+      }
+
+      pre {
+        max-width: 100%;
+        overflow-x: auto;
+      }
+
       div.box {
         font-family: museo_sans_rounded500, sans-serif;
         font-size: 1.125rem;
         line-height: 1.5rem;
         margin: 0 0 1.5rem 0; }
-        div.box:after {
-          content: "";
-          display: block;
-          height: 0;
-          clear: both;
-          visibility: hidden; }
+      div.box:after {
+        content: "";
+        display: block;
+        height: 0;
+        clear: both;
+        visibility: hidden; }
+
+
+      pre.prettyprint {
+        border-left: 2px solid #e6e6e6;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        margin: 0 0 1.5rem 0;
+        padding-left: 1rem;
+        white-space: -moz-pre-wrap;
+        white-space: -ms-pre-wrap;
+        white-space: -o-pre-wrap;
+        white-space: pre-wrap; }
+
+      .prettyprint .str {
+        color: #080; }
+      .prettyprint .kwd {
+        color: #008; }
+      .prettyprint .com {
+        color: #800; }
+      .prettyprint .typ {
+        color: #606; }
+      .prettyprint .lit {
+        color: #066; }
+      .prettyprint .pun {
+        color: #660; }
+      .prettyprint .pln {
+        color: #000; }
+      .prettyprint .tag {
+        color: #008; }
+      .prettyprint .atn {
+        color: #606; }
+      .prettyprint .atv {
+        color: #080; }
+      .prettyprint .dec {
+        color: #606; }
     </style>
+    <script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
   </head>
   <body>
     <div role="main">
       <article>
+        <h1>%ARTICLE_TITLE%</h1>
         %ARTICLE_BODY%
       </article>
-  </div>
-</body>
+    </div>
+  </body>
 </html>

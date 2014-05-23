@@ -38,15 +38,17 @@ public class CategoryArticlesListAdapter extends BaseAdapter implements OnEntity
 	private final LayoutInflater inflater;
 	private ImageLoader loader;
 	private String categoryId;
+	private View emptyView;
 
 	private final List<ArticlePreview> data;
 
-	public CategoryArticlesListAdapter(String theCategoryId, DrupalClient theClient, Context theContext)
+	public CategoryArticlesListAdapter(String theCategoryId, DrupalClient theClient, Context theContext, View emptyView)
 	{
+		this.emptyView = emptyView;
 		this.data = new ArrayList<ArticlePreview>();
 		this.inflater = LayoutInflater.from(theContext);
 		this.client = theClient;
-		this.canLoadMore = true;
+		this.setCanLoadMore(true);		
 		this.categoryId = theCategoryId;
 		this.initImageLoader(theContext);
 		this.loadNextPage();
@@ -59,7 +61,8 @@ public class CategoryArticlesListAdapter extends BaseAdapter implements OnEntity
 		{
 			@Override
 			public void putBitmap(String url, Bitmap bitmap)
-			{}
+			{
+			}
 
 			@Override
 			public Bitmap getBitmap(String url)
@@ -86,6 +89,17 @@ public class CategoryArticlesListAdapter extends BaseAdapter implements OnEntity
 	{
 		return position;
 	}
+	
+	public void setCanLoadMore(boolean canLoadMore)
+	{
+		this.canLoadMore = canLoadMore;
+		if(!this.canLoadMore && this.data.isEmpty())
+		{
+			this.emptyView.setVisibility(View.VISIBLE);
+		}else{
+			this.emptyView.setVisibility(View.INVISIBLE);
+		}
+	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent)
@@ -107,16 +121,27 @@ public class CategoryArticlesListAdapter extends BaseAdapter implements OnEntity
 			title.setText(Html.fromHtml(item.getTitle()).toString());
 
 			TextView author = (TextView) convertView.findViewById(R.id.author);
-			author.setText(item.getAuthor());
+			View byView = convertView.findViewById(R.id.by);
+			String authorName = item.getAuthor();
+			if (authorName != null && !authorName.isEmpty())
+			{
+				author.setText(authorName);
+				byView.setVisibility(View.VISIBLE);
+				author.setVisibility(View.VISIBLE);
+			} else
+			{
+				byView.setVisibility(View.INVISIBLE);
+				author.setVisibility(View.INVISIBLE);
+			}
 
 			TextView date = (TextView) convertView.findViewById(R.id.date);
 			date.setText(item.getDate());
 
 			TextView description = (TextView) convertView.findViewById(R.id.description);
 			description.setText(Html.fromHtml(item.getBody()));
-			
+
 			NetworkImageView imageView = (NetworkImageView) convertView.findViewById(R.id.image);
-			imageView.setImageUrl("http://www.menucool.com/slider/prod/image-slider-4.jpg", this.loader);
+			imageView.setImageUrl(item.getImage(), this.loader);
 		}
 		return convertView;
 	}
@@ -141,16 +166,16 @@ public class CategoryArticlesListAdapter extends BaseAdapter implements OnEntity
 			this.notifyDataSetChanged();
 		} else
 		{
-			this.canLoadMore = false;
+			this.setCanLoadMore(false);
 		}
 	}
 
 	@Override
 	public void onRequestFailed(AbstractBaseDrupalEntity entity, Object tag, VolleyError error)
 	{
-		this.canLoadMore = false;
+		this.setCanLoadMore(false);
 	}
-
+	
 	@Override
 	public void onRequestCanceled(AbstractBaseDrupalEntity entity, Object tag)
 	{

@@ -86,7 +86,7 @@ public class ArticleFragment extends Fragment implements OnEntityRequestListener
 		{
 			String template = this.loadPageTemplate();
 			String body = template.replaceFirst(ARTICLE_CONTENT_STUB, this.page.getBody());
-			body = body.replaceFirst(ARTICLE_TITLE_STUB, this.page.getTitle());
+			body = body.replaceAll(ARTICLE_TITLE_STUB, this.page.getTitle());
 			
 			this.content.loadDataWithBaseURL("file:///android_asset/fonts", body, "text/html", this.page.getCharset(), null);
 		}
