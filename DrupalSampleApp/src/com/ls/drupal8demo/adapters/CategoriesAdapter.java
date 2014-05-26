@@ -1,11 +1,11 @@
-package com.ls.sampleapp.adapters;
+package com.ls.drupal8demo.adapters;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.ls.sampleapp.AppConstants;
-import com.ls.sampleapp.CategoryFragment;
+import com.ls.drupal8demo.AppConstants;
+import com.ls.drupal8demo.CategoryFragment;
 
 public class CategoriesAdapter extends FragmentPagerAdapter
 {

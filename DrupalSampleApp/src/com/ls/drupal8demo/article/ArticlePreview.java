@@ -1,4 +1,4 @@
-package com.ls.sampleapp.article;
+package com.ls.drupal8demo.article;
 
 
 public class ArticlePreview

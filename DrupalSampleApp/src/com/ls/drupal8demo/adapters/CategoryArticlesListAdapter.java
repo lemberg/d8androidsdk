@@ -1,4 +1,4 @@
-package com.ls.sampleapp.adapters;
+package com.ls.drupal8demo.adapters;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +22,9 @@ import com.ls.drupal.AbstractBaseDrupalEntity;
 import com.ls.drupal.AbstractBaseDrupalEntity.OnEntityRequestListener;
 import com.ls.drupal.DrupalClient;
 import com.ls.http.base.ResponseData;
-import com.ls.sampleapp.R;
-import com.ls.sampleapp.article.ArticlePreview;
-import com.ls.sampleapp.article.Page;
+import com.ls.drupal8demo.R;
+import com.ls.drupal8demo.article.ArticlePreview;
+import com.ls.drupal8demo.article.Page;
 
 public class CategoryArticlesListAdapter extends BaseAdapter implements OnEntityRequestListener
 {

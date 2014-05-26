@@ -1,4 +1,4 @@
-package com.ls.sampleapp.article;
+package com.ls.drupal8demo.article;
 
 import java.util.HashMap;
 import java.util.Map;

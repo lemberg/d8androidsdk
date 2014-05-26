@@ -1,4 +1,4 @@
-package com.ls.sampleapp.article;
+package com.ls.drupal8demo.article;
 
 import java.util.List;
 import java.util.Map;
@@ -7,9 +7,9 @@ import junit.framework.Assert;
 
 import com.ls.drupal.AbstractDrupalEntity;
 import com.ls.drupal.DrupalClient;
+import com.ls.drupal8demo.drupal.DrupalValueArrayWrapper;
+import com.ls.drupal8demo.drupal.DrupalValueContainer;
 import com.ls.http.base.BaseRequest.RequestMethod;
-import com.ls.sampleapp.drupal.DrupalValueArrayWrapper;
-import com.ls.sampleapp.drupal.DrupalValueContainer;
 
 public class Article extends AbstractDrupalEntity
 {

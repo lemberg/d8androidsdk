@@ -1,4 +1,4 @@
-package com.ls.sampleapp;
+package com.ls.drupal8demo;
 
 
 import android.os.Bundle;
@@ -9,7 +9,8 @@ import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBar.TabListener;
 import android.support.v7.app.ActionBarActivity;
 
-import com.ls.sampleapp.adapters.CategoriesAdapter;
+import com.ls.drupal8demo.R;
+import com.ls.drupal8demo.adapters.CategoriesAdapter;
 
 public class MainActivity extends ActionBarActivity implements TabListener{
 		

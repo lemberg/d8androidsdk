@@ -1,4 +1,4 @@
-package com.ls.sampleapp;
+package com.ls.drupal8demo;
 
 public class AppConstants
 {

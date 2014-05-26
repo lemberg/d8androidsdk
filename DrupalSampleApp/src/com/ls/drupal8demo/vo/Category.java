@@ -1,4 +1,4 @@
-package com.ls.sampleapp.vo;
+package com.ls.drupal8demo.vo;
 
 public class Category
 {

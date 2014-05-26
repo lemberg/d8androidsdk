@@ -1,4 +1,4 @@
-package com.ls.sampleapp;
+package com.ls.drupal8demo;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,8 +11,9 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import com.ls.drupal.DrupalClient;
-import com.ls.sampleapp.adapters.CategoryArticlesListAdapter;
-import com.ls.sampleapp.article.ArticlePreview;
+import com.ls.drupal8demo.R;
+import com.ls.drupal8demo.adapters.CategoryArticlesListAdapter;
+import com.ls.drupal8demo.article.ArticlePreview;
 
 public class CategoryFragment extends Fragment implements OnItemClickListener
 {

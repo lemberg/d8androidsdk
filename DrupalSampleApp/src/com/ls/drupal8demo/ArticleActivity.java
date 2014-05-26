@@ -1,9 +1,9 @@
-package com.ls.sampleapp;
+package com.ls.drupal8demo;
 
 import java.security.PublicKey;
 
+import com.ls.drupal8demo.article.ArticlePreview;
 import com.ls.http.base.SharedGson;
-import com.ls.sampleapp.article.ArticlePreview;
 
 import android.content.Context;
 import android.content.Intent;

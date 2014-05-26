@@ -1,4 +1,4 @@
-package com.ls.sampleapp;
+package com.ls.drupal8demo;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,9 +18,10 @@ import android.widget.Toast;
 import com.android.volley.VolleyError;
 import com.ls.drupal.AbstractBaseDrupalEntity;
 import com.ls.drupal.AbstractBaseDrupalEntity.OnEntityRequestListener;
+import com.ls.drupal8demo.R;
+import com.ls.drupal8demo.article.Article;
 import com.ls.drupal.DrupalClient;
 import com.ls.http.base.ResponseData;
-import com.ls.sampleapp.article.Article;
 
 public class ArticleFragment extends Fragment implements OnEntityRequestListener
 {
