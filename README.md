@@ -31,7 +31,7 @@ container, implementing collection interface. Can manage drupal and non-drupal e
 
 ***DrupalEntityContainer***
 wrapper object, able to contain drupal or non-drupal entities providing them with all *DrupalEntity* methods like post, push, pull,  delete.
-> **NOTE:** in case of raw content item types deserialization issues may occur. You shouldnít store instances of this class (or subclasses) as serializable fields: objects, containing subclasses of this EntityContainer wonít be able to deserialize them correctly.
+> **NOTE:** in case of raw content item types deserialization issues may occur. You shouldn‚Äôt store instances of this class (or subclasses) as serializable fields: objects, containing subclasses of this EntityContainer won‚Äôt be able to deserialize them correctly.
 
 **3. API can calculate object differences to perform patch requests**
 Callback is quite simple: 
@@ -80,8 +80,8 @@ You can:
  SharedGson.performUpdates();```
 **NOTE:** SharedGson updates between DrupalEntity.createSnapshot() and  DrupalEntity.patchServerData() calls can corrupt difference calculation.
  - implement IPostableItem, IResponceItem and ICharsetItem to provide custom object 
-**NOTE:** if object, containing *IPostableItem* or *IResponceItem* as field is (de)serialized with default method (doesnít implement this interfaces) - interfaces will be ignored. 
-*ICharsetItem*  is called for root object only (fieldís charset interface wonít be called).
+**NOTE:** if object, containing *IPostableItem* or *IResponceItem* as field is (de)serialized with default method (doesn‚Äôt implement this interfaces) - interfaces will be ignored. 
+*ICharsetItem*  is called for root object only (field‚Äôs charset interface won‚Äôt be called).
 
 **Other details**
 =================
@@ -104,12 +104,12 @@ Object, containing:
 Object, containing server base URL, LoginManager and RequestQueue and responsible for server request generation and posting to server. You have to specify *DrupalClient* while creating *DrupalEntity* instance.
 
 ***Performing request***
-You can perform custom request, using drupal client directly but itís recommended to use *DriupalEntities* instead.
+You can perform custom request, using drupal client directly but it‚Äôs recommended to use *DriupalEntities* instead.
 
 ***Request canceling***
 Also you can use client instance to cancel all pending requests for the screen:
 ```DrupalClient.cancelAll();```
-Or by tag/listener, if youíve started some manually: 
+Or by tag/listener, if you‚Äôve started some manually: 
 ```DrupalClient.cancelAllRequestsForListener(OnResponseListener,tag);```
 >**NOTE:** if you want to cancel all requests, related to specific *DrupalEntity*, just call ```DrupalEntity.cancellAllRequests().```
 
@@ -174,7 +174,7 @@ protected Map<String, String> getItemRequestGetParameters(RequestMethod method)
 ---------------------------
 
 ```
-DrupalClient client = new DrupalClient(ìhttp:\\my.server.comî, this.getContext());
+DrupalClient client = new DrupalClient(‚Äúhttp:\\my.server.com‚Äù, this.getContext());
 ```
 You can also use alternative constructors to specify request queue or login manager.
 
