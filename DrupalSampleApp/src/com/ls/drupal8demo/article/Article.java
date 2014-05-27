@@ -13,7 +13,10 @@ import com.ls.http.base.BaseRequest.RequestMethod;
 
 public class Article extends AbstractDrupalEntity
 {
-
+	/**
+	 * Such complicated structures are just a workaround to map all server data to objects.
+	 * Server can be configured to get rid of them.
+	 */
 	private List<DrupalValueContainer<String>> nid;
 	private List<DrupalValueContainer<String>> body;
 	private List<DrupalValueContainer<String>> title;

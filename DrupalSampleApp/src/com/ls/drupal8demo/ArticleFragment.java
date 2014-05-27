@@ -30,6 +30,7 @@ public class ArticleFragment extends Fragment implements OnEntityRequestListener
 	
 	final static String PROGRESS_DIALOG_TAG = "progress_dialog";
 	private final static String PAGE_ID_KEY = "page_id";
+	private final static String BLOG_IMAGE_KEY = "blog_image";
 	private Article page;
 	private DrupalClient client;
 
@@ -38,11 +39,12 @@ public class ArticleFragment extends Fragment implements OnEntityRequestListener
 
 	private View progressView;
 
-	public static ArticleFragment newInstance(String pageId)
+	public static ArticleFragment newInstance(String pageId,String blogImage)
 	{
 		ArticleFragment fragment = new ArticleFragment();
 		Bundle args = new Bundle();
 		args.putString(PAGE_ID_KEY, pageId);
+		args.putString(BLOG_IMAGE_KEY, blogImage);
 		fragment.setArguments(args);
 		return fragment;
 	}

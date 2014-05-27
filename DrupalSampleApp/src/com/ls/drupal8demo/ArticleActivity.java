@@ -1,10 +1,5 @@
 package com.ls.drupal8demo;
 
-import java.security.PublicKey;
-
-import com.ls.drupal8demo.article.ArticlePreview;
-import com.ls.http.base.SharedGson;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,10 +11,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.ls.drupal8demo.article.ArticlePreview;
+import com.ls.http.base.SharedGson;
+
 public class ArticleActivity extends ActionBarActivity
 {
-//	private final static String NID_KEY = "NID";
-//	private final static String TITLE_KEY = "TITLE";
 	
 	private final static String ARTICLE_PREVIEW_KEY = "ARTIVLE_PREVIEW";
 
@@ -49,7 +45,7 @@ public class ArticleActivity extends ActionBarActivity
 		content.setId(contentId);
 		this.setContentView(content);
 
-		ArticleFragment articleFragment = ArticleFragment.newInstance(preview.getNid());
+		ArticleFragment articleFragment = ArticleFragment.newInstance(preview.getNid(),preview.getImage());
 		FragmentTransaction trans = this.getSupportFragmentManager().beginTransaction();
 		trans.add(contentId, articleFragment);
 		trans.commit();
