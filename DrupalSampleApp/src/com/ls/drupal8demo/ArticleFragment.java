@@ -27,6 +27,7 @@ public class ArticleFragment extends Fragment implements OnEntityRequestListener
 {
 	private final static String ARTICLE_CONTENT_STUB = "%ARTICLE_BODY%";
 	private final static String ARTICLE_TITLE_STUB = "%ARTICLE_TITLE%";
+	private final static String ARTICLE_IMAGE_STUB = "%ARTICLE_IMAGE_URL%";
 	
 	final static String PROGRESS_DIALOG_TAG = "progress_dialog";
 	private final static String PAGE_ID_KEY = "page_id";
@@ -90,6 +91,9 @@ public class ArticleFragment extends Fragment implements OnEntityRequestListener
 			String template = this.loadPageTemplate();
 			String body = template.replaceFirst(ARTICLE_CONTENT_STUB, this.page.getBody());
 			body = body.replaceAll(ARTICLE_TITLE_STUB, this.page.getTitle());
+			
+			String imageURL = this.getArguments().getString(BLOG_IMAGE_KEY);
+			body = body.replaceAll(ARTICLE_IMAGE_STUB, imageURL);
 			
 			this.content.loadDataWithBaseURL("file:///android_asset/fonts", body, "text/html", this.page.getCharset(), null);
 		}

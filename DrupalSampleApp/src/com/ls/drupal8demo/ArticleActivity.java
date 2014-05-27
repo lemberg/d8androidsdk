@@ -15,15 +15,13 @@ import com.ls.drupal8demo.article.ArticlePreview;
 import com.ls.http.base.SharedGson;
 
 public class ArticleActivity extends ActionBarActivity
-{
-	
+{	
 	private final static String ARTICLE_PREVIEW_KEY = "ARTIVLE_PREVIEW";
 
 	public static Intent getExecutionIntent(Context theContext, ArticlePreview article)
 	{
 		Intent intent = new Intent(theContext, ArticleActivity.class);
-		intent.putExtra(ARTICLE_PREVIEW_KEY, SharedGson.getGson().toJson(article));
-	
+		intent.putExtra(ARTICLE_PREVIEW_KEY, SharedGson.getGson().toJson(article));		
 		return intent;
 	}
 
@@ -34,8 +32,7 @@ public class ArticleActivity extends ActionBarActivity
 		final int contentId = 1001;
 		final ActionBar bar = this.getSupportActionBar();
 		bar.setDisplayShowHomeEnabled(true);
-		bar.setDisplayHomeAsUpEnabled(true);
-		
+		bar.setDisplayHomeAsUpEnabled(true);		
 		String previewString = this.getIntent().getStringExtra(ARTICLE_PREVIEW_KEY);
 		
 		ArticlePreview preview = SharedGson.getGson().fromJson(previewString, ArticlePreview.class);
