@@ -38,4 +38,9 @@ public class ArticlePreview
 	{
 		return field_blog_category;
 	}
+	
+	public String getArticleURL()
+	{
+		return "http://vh015.uk.dev-ls.co.uk/node/"+nid;
+	}
 }
