@@ -15,7 +15,7 @@ Main purpose of this library is to make communication with Drupal 8 - based serv
 **1. Requests are binded to entities.**
 ----------
 You can simply call
-```
+```java
 - DrupalEntity.pushToServer() to post data to server.
 - DrupalEntity.pullFromServer() to pull data from server.
 - DrupalEntity.deleteFromServer() to remove data from server.
@@ -35,7 +35,7 @@ wrapper object, able to contain drupal or non-drupal entities providing them wit
 
 **3. API can calculate object differences to perform patch requests**
 Callback is quite simple: 
-```
+```java
 DrupalEntity.createSnapshot();// to fix initial object state.
 //Perform some changes.
 DrupalEntity.isModified();// check if there are changes to patch
@@ -51,7 +51,7 @@ Google volley API provides asynchronous API calls only, which can cause troubles
 In order to handle asynchronous request result you can pass
 
 OnEntityRequestListener object while triggering request . It provides following methods:
-```
+```java
 void onRequestCompleted(AbstractBaseDrupalEntity entity, Object tag, ResponseData data);//called after successful request.
 
 void onRequestCanceled(AbstractBaseDrupalEntity entity, Object tag);//called after successful entity deleterequest.
@@ -60,7 +60,7 @@ void onRequestFailed(AbstractBaseDrupalEntity entity, Object tag, VolleyError er
 ```
 > **NOTE:** in case of pull request entity will be updated with response data automatically.
 and set *RequestProgressListener* to *DrupalClient* to track pending requests:
-```
+```java
 void onRequestStarted(DrupalClient theClient, int activeRequests);
 void onRequestFinished(DrupalClient theClient, int activeRequests);
 ```
@@ -74,13 +74,16 @@ Result object will be returned immediately.
 You can: 
 
  - rely on default gson serialization
- - configure gson object, used for serialization/deserialization:```
+ - configure gson object, used for serialization/deserialization:
+```java
  GsonBuilder builder = SharedGson.getBuilder();
  //configure builder
- SharedGson.performUpdates();```
-**NOTE:** SharedGson updates between DrupalEntity.createSnapshot() and  DrupalEntity.patchServerData() calls can corrupt difference calculation.
+ SharedGson.performUpdates();
+```
+>**NOTE:** SharedGson updates between DrupalEntity.createSnapshot() and  DrupalEntity.patchServerData() calls can corrupt difference calculation.
+
  - implement IPostableItem, IResponceItem and ICharsetItem to provide custom object 
-**NOTE:** if object, containing *IPostableItem* or *IResponceItem* as field is (de)serialized with default method (doesn’t implement this interfaces) - interfaces will be ignored. 
+>**NOTE:** if object, containing *IPostableItem* or *IResponceItem* as field is (de)serialized with default method (doesn’t implement this interfaces) - interfaces will be ignored. 
 *ICharsetItem*  is called for root object only (field’s charset interface won’t be called).
 
 **Other details**
@@ -108,10 +111,18 @@ You can perform custom request, using drupal client directly but it’s recommen
 
 ***Request canceling***
 Also you can use client instance to cancel all pending requests for the screen:
-```DrupalClient.cancelAll();```
+```java
+DrupalClient.cancelAll();
+```
+
 Or by tag/listener, if you’ve started some manually: 
-```DrupalClient.cancelAllRequestsForListener(OnResponseListener,tag);```
->**NOTE:** if you want to cancel all requests, related to specific *DrupalEntity*, just call ```DrupalEntity.cancellAllRequests().```
+```java
+DrupalClient.cancelAllRequestsForListener(OnResponseListener,tag);
+```
+>**NOTE:** if you want to cancel all requests, related to specific *DrupalEntity*, just call 
+```java
+javaDrupalEntity.cancellAllRequests().
+```
 
 **LoginManager**
 ----------
@@ -132,7 +143,7 @@ and implement abstract methods:
 
 **getPath**
 this method will return relative path to entity on the server.
-```
+```java
 @Override
 protected String getPath()
 {		
@@ -143,7 +154,7 @@ protected String getPath()
 **getItemRequestPostParameters**
 this method will return item post parameters if needed.
 >**NOTE:** method will be called for post request only and in case if null is returned - serialized object will be posted.
-```
+```java
 @Override
 protected Map<String, String> getItemRequestPostParameters()
 {		
@@ -152,7 +163,7 @@ protected Map<String, String> getItemRequestPostParameters()
 ```
 **getItemRequestGetParameters**
 this method can be called for get/post/delete or patch requests and you can define parameters for each request type:
-```
+```java
 @Override
 protected Map<String, String> getItemRequestGetParameters(RequestMethod method)
 {
@@ -173,14 +184,14 @@ protected Map<String, String> getItemRequestGetParameters(RequestMethod method)
 **2. Create Drupal client**
 ---------------------------
 
-```
+```java
 DrupalClient client = new DrupalClient(“http:\\my.server.com”, this.getContext());
 ```
 You can also use alternative constructors to specify request queue or login manager.
 
 **3. Instantiate Drupal Entity**
 ---------------------------
-```
+```java
 MyDrupalEntity entity = new MyDrupalEntity(client);
 entity.setPagenumber(104);
 ```
@@ -188,7 +199,7 @@ entity.setPagenumber(104);
 ---------------------------
 
 **4.1 Asynchronous**
-```
+```java
 boolean synchronous = false;
 Class<?> myResponseClass = MyResponceClass.class;
 final Tag myTag = new Tag();
@@ -218,42 +229,42 @@ OnEntityRequestListener listener = new OnEntityRequestListener()
 }
 ```
 ***a) Fetch entity from server***
-```
+```java
 entity.pullFromServer(synchronous, listener, myTag );
 ```
 ***b) Post entity to server***
-```
+```java
 entity.pushToServer(synchronous, myResponseClass , listener, myTag );
 ```
 ***c) Patch entity on server***
-```
+```java
 entity.createSnapshot();
 entity.setValue1(...);
 entity.setValie2(...);
 if(entity.canPatch())
 {
-entity.patchServerData(synchronous, myResponseClass , listener, myTag );
+    entity.patchServerData(synchronous, myResponseClass , listener, myTag );
 }
 ```
 ***d) Remove entity from server***
-```
+```java
 entity.deleteFromServer(synchronous, myResponseClass , listener, myTag );
 ```
 **4.2 Synchronous**
-```
+```java
 boolean synchronous = false;
 Class<?> myResponseClass = MyResponceClass.class;
 ```
 ***a) Fetch entity from server***
-```
+```java
 ResponseData response = entity.pullFromServer(synchronous, null, null);
 ```
 ***b) Post entity to server***
-```
+```java
 ResponseData response = entity.pushToServer(synchronous, myResponseClass , null, null);
 ```
 ***c) Patch entity on server***
-```
+```java
 entity.createSnapshot();
 entity.setValue1(...);
 entity.setValie2(...);
@@ -263,11 +274,11 @@ if(entity.isModified())
 }
 ```
 ***d) Remove entity from server***
-```
+```java
 ResponseData response = entity.deleteFromServer(synchronous, myResponseClass , null, null);
 ```
 **5.Track active requests count**
-```
+```java
 client.setProgressListener(new RequestProgressListener()
 {				
     @Override
