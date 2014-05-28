@@ -12,12 +12,12 @@ Main purpose of this library is to make communication with Drupal 8 - based serv
 ### 1. Requests are binded to entities
 
 You can simply call
-```
-- DrupalEntity.pushToServer() to post data to server.
-- DrupalEntity.pullFromServer() to pull data from server.
-- DrupalEntity.deleteFromServer() to remove data from server.
-- DrupalEntity.patchServerData() to post  patch data to server.
-```
+
+- `DrupalEntity.pushToServer()` to post data to server.
+- `DrupalEntity.pullFromServer()` to pull data from server.
+- `DrupalEntity.deleteFromServer()` to remove data from server.
+- `DrupalEntity.patchServerData()` to post  patch data to server.
+
 ### 2. Requests are not binded to entities only
 
 Besides of entity api provides few more handy structures:
@@ -138,6 +138,7 @@ protected String getPath()
 ```
 
 `getItemRequestPostParameters` this method will return item post parameters if needed.
+
 **Note:** method will be called for post request only and in case if null is returned - serialized object will be posted.
 
 ```java
