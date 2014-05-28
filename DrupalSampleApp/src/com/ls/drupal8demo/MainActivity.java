@@ -9,7 +9,6 @@ import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBar.TabListener;
 import android.support.v7.app.ActionBarActivity;
 
-import com.ls.drupal8demo.R;
 import com.ls.drupal8demo.adapters.CategoriesAdapter;
 
 public class MainActivity extends ActionBarActivity implements TabListener{
@@ -19,8 +18,8 @@ public class MainActivity extends ActionBarActivity implements TabListener{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);    
-
+        setContentView(R.layout.activity_main);  
+  
         final ActionBar bar = this.getSupportActionBar();
         bar.setTitle(R.string.app_name);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -40,7 +39,7 @@ public class MainActivity extends ActionBarActivity implements TabListener{
         			bar.newTab()
                             .setText(AppConstants.CATEGORIE.values()[i].name)
                             .setTabListener(this));
-        }           
+        }        
     }
 
 	@Override

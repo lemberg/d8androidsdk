@@ -93,7 +93,12 @@ public class ArticleFragment extends Fragment implements OnEntityRequestListener
 			body = body.replaceAll(ARTICLE_TITLE_STUB, this.page.getTitle());
 			
 			String imageURL = this.getArguments().getString(BLOG_IMAGE_KEY);
-			body = body.replaceAll(ARTICLE_IMAGE_STUB, imageURL);
+			if(imageURL != null)
+			{
+				body = body.replaceAll(ARTICLE_IMAGE_STUB, imageURL);
+			}else{
+				body = body.replaceAll(ARTICLE_IMAGE_STUB, "http://blog.lemberg.co.uk/sites/blog/themes/lemberg_blog/logo.png");
+			}
 			
 			this.content.loadDataWithBaseURL("file:///android_asset/fonts", body, "text/html", this.page.getCharset(), null);
 		}

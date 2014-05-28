@@ -18,7 +18,7 @@
         <activity
             android:name="com.ls.drupal8demo.MainActivity"
             android:label="@string/app_name"
-            android:configChanges="orientation|keyboard" >
+            android:configChanges="orientation|screenSize|keyboard" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,7 +28,7 @@
          <activity
             android:name="com.ls.drupal8demo.ArticleActivity"
             android:label="@string/app_name" 
-             android:configChanges="orientation|keyboard">           
+             android:configChanges="orientation|screenSize|keyboard">           
         </activity>
     </application>
 
