@@ -13,10 +13,10 @@ Main purpose of this library is to make communication with Drupal 8 - based serv
 
 You can simply call
 ```
-- DrupalEntity.pushToServer() to post data to server.
-- DrupalEntity.pullFromServer() to pull data from server.
-- DrupalEntity.deleteFromServer() to remove data from server.
-- DrupalEntity.patchServerData() to post  patch data to server.
+- DrupalEntity.pushToServer() 		//to post data to server.
+- DrupalEntity.pullFromServer() 	//to pull data from server.
+- DrupalEntity.deleteFromServer() 	//to remove data from server.
+- DrupalEntity.patchServerData() 	//to post  patch data to server.
 ```
 ### 2. Requests are not binded to entities only
 
@@ -35,10 +35,10 @@ Besides of entity api provides few more handy structures:
 Callback is quite simple: 
 
 ```java
-DrupalEntity.createSnapshot();// to fix initial object state.
+DrupalEntity.createSnapshot();	// to fix initial object state.
 //Perform some changes.
-DrupalEntity.isModified();// check if there are changes to patch
-DrupalEntity.patchServerData();// to post patch to server is there where some changes.
+DrupalEntity.isModified();		// check if there are changes to patch
+DrupalEntity.patchServerData();	// to post patch to server is there where some changes.
 ```
 **Tip:** There is no point in patch call if there are no changes.
 
@@ -52,9 +52,9 @@ In order to handle asynchronous request result you can pass
 `OnEntityRequestListener` object while triggering request . It provides following methods:
 
 ```java
-void onRequestCompleted(AbstractBaseDrupalEntity entity, Object tag, ResponseData data);//called after successful request.
+void onRequestCompleted(AbstractBaseDrupalEntity entity, Object tag, ResponseData data);	//called after successful request.
 
-void onRequestCanceled(AbstractBaseDrupalEntity entity, Object tag);//called after successful entity deleterequest.
+void onRequestCanceled(AbstractBaseDrupalEntity entity, Object tag);	//called after successful entity deleterequest.
 
 void onRequestFailed(AbstractBaseDrupalEntity entity, Object tag, VolleyError error);
 ```
