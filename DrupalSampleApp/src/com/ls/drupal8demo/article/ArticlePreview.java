@@ -1,5 +1,7 @@
 package com.ls.drupal8demo.article;
 
+import com.ls.drupal8demo.AppConstants;
+
 
 public class ArticlePreview
 {
@@ -41,6 +43,6 @@ public class ArticlePreview
 	
 	public String getArticleURL()
 	{
-		return "http://vh015.uk.dev-ls.co.uk/node/"+nid;
+		return AppConstants.SERVER_BASE_URL+"node/"+nid;
 	}
 }

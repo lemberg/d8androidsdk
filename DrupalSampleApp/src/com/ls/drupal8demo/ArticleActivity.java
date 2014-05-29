@@ -94,9 +94,6 @@ public class ArticleActivity extends ActionBarActivity
 	public boolean onCreateOptionsMenu(Menu menu) {	    
 	    getMenuInflater().inflate(R.menu.share_menu, menu);
 	    MenuItem item = menu.findItem(R.id.menu_item_share);
-	  
-//	    mShareActionProvider = new ShareActionProvider(this);
-//	    MenuItemCompat.setActionProvider(item, mShareActionProvider);
 	    
 	    mShareActionProvider = (ShareActionProvider)MenuItemCompat.getActionProvider(item);
 	    if(mShareActionProvider != null)
