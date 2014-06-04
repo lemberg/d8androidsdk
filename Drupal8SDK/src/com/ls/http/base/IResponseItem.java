@@ -1,6 +1,6 @@
 package com.ls.http.base;
 
-public interface IResponceItem
+public interface IResponseItem
 {
 	void initWithJSON(String theJSONString);
 	void initWithXML(String theJSONString);

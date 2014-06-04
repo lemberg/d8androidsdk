@@ -43,10 +43,10 @@ public class BaseRequest extends StringRequest
 
 	private final RequestFormat format;
 	private final RequestFuture<String> syncLock;
-	private final Object responceClasSpecifier;
+	private final Object responseClasSpecifier;
 	private String defaultCharset;
 
-	private OnResponseListener responceListener;
+	private OnResponseListener responseListener;
 
 	private Map<String, String> requestHeaders;
 	private Map<String, String> postParameters;
@@ -78,13 +78,13 @@ public class BaseRequest extends StringRequest
 		this.format = requestFormat;
 		this.syncLock = lock;
 		this.initRequestHeaders();
-		this.responceClasSpecifier = theResponseClass;
+		this.responseClasSpecifier = theResponseClass;
 		this.result = new ResponseData();
 	}
 
-	public Object getResponceClasSpecifier()
+	public Object getResponseClasSpecifier()
 	{
-		return responceClasSpecifier;
+		return responseClasSpecifier;
 	}
 
 	private void initRequestHeaders()
@@ -135,18 +135,18 @@ public class BaseRequest extends StringRequest
 			this.result.error = requestResult.error;
 			this.result.statusCode = response.statusCode;
 			this.result.headers = new HashMap<String, String>(response.headers);
-			this.result.responceString = requestResult.result;
+			this.result.responseString = requestResult.result;
 			if (requestResult.result != null)
 			{
 
 				switch (this.format) {
 				case XML:
-					this.result.data = new XMLResponceHandler().itemFromResponceWithSpecifier(requestResult.result, responceClasSpecifier);
+					this.result.data = new XMLResponseHandler().itemFromResponseWithSpecifier(requestResult.result, responseClasSpecifier);
 					break;
 				case JSON:
 				case JSON_HAL:
 				default:
-					this.result.data = new JSONResponceHandler().itemFromResponceWithSpecifier(requestResult.result, responceClasSpecifier);
+					this.result.data = new JSONResponseHandler().itemFromResponseWithSpecifier(requestResult.result, responseClasSpecifier);
 				}
 
 			}
@@ -169,10 +169,9 @@ public class BaseRequest extends StringRequest
 	@Override
 	protected void deliverResponse(String response)
 	{		
-//		Log.e(this.getClass().getName(),"Delivering responce");
-		if (this.responceListener != null)
+		if (this.responseListener != null)
 		{
-			this.responceListener.onResponceReceived(result, this);
+			this.responseListener.onResponseReceived(result, this);
 		}
 		this.syncLock.onResponse(response);
 	}
@@ -180,29 +179,28 @@ public class BaseRequest extends StringRequest
 	@Override
 	public void deliverError(VolleyError error)
 	{
-//		Log.e(this.getClass().getName(),"Delivering error");
-		if (this.responceListener != null)
+		if (this.responseListener != null)
 		{
-			this.responceListener.onError(error, this);
+			this.responseListener.onError(error, this);
 		}
 		this.syncLock.onErrorResponse(error);
 	}
 
 	public static interface OnResponseListener
 	{
-		void onResponceReceived(ResponseData data, BaseRequest request);
+		void onResponseReceived(ResponseData data, BaseRequest request);
 
 		void onError(VolleyError error, BaseRequest request);
 	}
 
-	public OnResponseListener getResponceListener()
+	public OnResponseListener getResponseListener()
 	{
-		return responceListener;
+		return responseListener;
 	}
 
-	public void setResponceListener(OnResponseListener responceListener)
+	public void setResponseListener(OnResponseListener responseListener)
 	{
-		this.responceListener = responceListener;
+		this.responseListener = responseListener;
 	}
 
 	public RequestFormat getFormat()

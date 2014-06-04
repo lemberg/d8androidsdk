@@ -13,7 +13,7 @@ import com.google.gson.annotations.Expose;
 import com.ls.http.base.BaseRequest.RequestMethod;
 import com.ls.http.base.ICharsetItem;
 import com.ls.http.base.IPostableItem;
-import com.ls.http.base.IResponceItem;
+import com.ls.http.base.IResponseItem;
 import com.ls.http.base.ResponseData;
 import com.ls.util.ObjectComparator;
 import com.ls.util.ObjectComparator.Snapshot;
@@ -57,7 +57,7 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	protected abstract Map<String, String> getItemRequestGetParameters(RequestMethod method);
 
 	/** Get data object, used to perform perform get/post/patch/delete requests.
-	 * @return data object. Can implement {@link IPostableItem} or {@link IResponceItem} in order to handle json/xml serialization/deserialization manually.
+	 * @return data object. Can implement {@link IPostableItem} or {@link IResponseItem} in order to handle json/xml serialization/deserialization manually.
 	 */
 	abstract @NonNull Object getManagedData();
 	
@@ -126,13 +126,13 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 		return result;
 	}
 
-	// OnResponceListener methods
+	// OnResponseListener methods
 	
 	@Override
-	public void onResponceReceived(ResponseData data, Object tag)
+	public void onResponseReceived(ResponseData data, Object tag)
 	{		
 		DrupalEntityTag entityTag = (DrupalEntityTag)tag;
-		if (entityTag.consumeResponce)
+		if (entityTag.consumeResponse)
 		{
 			this.consumeObject(data.getData());
 		}
@@ -342,11 +342,11 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	{
 		public OnEntityRequestListener listener;
 		public Object requestTag;
-		public boolean  consumeResponce;
+		public boolean  consumeResponse;
 		
-		public DrupalEntityTag(boolean consumeResponce,Object requestTag,OnEntityRequestListener listener)
+		public DrupalEntityTag(boolean consumeResponse,Object requestTag,OnEntityRequestListener listener)
 		{
-			this.consumeResponce = consumeResponce;
+			this.consumeResponse = consumeResponse;
 			this.requestTag = requestTag;
 			this.listener = listener;
 		}

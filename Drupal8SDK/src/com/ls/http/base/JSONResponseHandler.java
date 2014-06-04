@@ -7,10 +7,10 @@ import org.eclipse.jdt.annotation.NonNull;
 import com.google.gson.Gson;
 import com.ls.util.ObjectsFactory;
 
-class JSONResponceHandler extends ResponceHandler
+class JSONResponseHandler extends ResponseHandler
 {
 
-	public Object itemFromResponce(@NonNull String json,@NonNull Class<?> theClass)
+	public Object itemFromResponse(@NonNull String json,@NonNull Class<?> theClass)
 	{
 		Object result = createInstanceByInterface(json, theClass);
 		if (result == null)
@@ -21,7 +21,7 @@ class JSONResponceHandler extends ResponceHandler
 		return result;
 	}
 
-	public Object itemFromResponce(@NonNull String json,@NonNull Type theType)
+	public Object itemFromResponse(@NonNull String json,@NonNull Type theType)
 	{		
 		Class<?> theClass = theType.getClass();
 
@@ -38,10 +38,10 @@ class JSONResponceHandler extends ResponceHandler
 	{
 		Object result = null;
 
-		if (IResponceItem.class.isAssignableFrom(theClass))
+		if (IResponseItem.class.isAssignableFrom(theClass))
 		{
-			IResponceItem item;
-			item = (IResponceItem) ObjectsFactory.newInstance(theClass);
+			IResponseItem item;
+			item = (IResponseItem) ObjectsFactory.newInstance(theClass);
 			item.initWithJSON(json);
 			result = item;
 		}

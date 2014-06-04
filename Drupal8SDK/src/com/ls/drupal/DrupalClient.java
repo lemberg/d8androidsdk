@@ -41,7 +41,7 @@ public class DrupalClient implements OnResponseListener
 
 	public static interface OnResponseListener
 	{
-		void onResponceReceived(ResponseData data, Object tag);
+		void onResponseReceived(ResponseData data, Object tag);
 
 		void onError(VolleyError error, Object tag);
 
@@ -200,7 +200,7 @@ public class DrupalClient implements OnResponseListener
 			throw new IllegalStateException("User isnt logged in");
 		}
 		request.setTag(tag);
-		request.setResponceListener(this);
+		request.setResponseListener(this);
 		this.loginManager.applyLoginDataToRequest(request);
 		this.listeners.put(request, listener);
 		this.onNewRequestStarted();
@@ -221,7 +221,7 @@ public class DrupalClient implements OnResponseListener
 	 * @param listener
 	 * @param synchronous
 	 *            if true - result will be returned synchronously.
-	 * @return ResponceData object or null if request was asynchronous.
+	 * @return ResponseData object or null if request was asynchronous.
 	 */
 	public ResponseData getObject(AbstractBaseDrupalEntity entity, Object responseClassSpecifier, Object tag, OnResponseListener listener, boolean synchronous)
 	{
@@ -244,7 +244,7 @@ public class DrupalClient implements OnResponseListener
 	 * @param listener
 	 * @param synchronous
 	 *            if true - result will be returned synchronously.
-	 * @return ResponceData object or null if request was asynchronous.
+	 * @return ResponseData object or null if request was asynchronous.
 	 */
 	public ResponseData postObject(AbstractBaseDrupalEntity entity, Object responseClassSpecifier, Object tag, OnResponseListener listener, boolean synchronous)
 	{
@@ -270,7 +270,7 @@ public class DrupalClient implements OnResponseListener
 	 * @param listener
 	 * @param synchronous
 	 *            if true - result will be returned synchronously.
-	 * @return ResponceData object or null if request was asynchronous.
+	 * @return ResponseData object or null if request was asynchronous.
 	 */
 	public ResponseData patchObject(AbstractBaseDrupalEntity entity, Object responseClassSpecifier, Object tag, OnResponseListener listener, boolean synchronous)
 	{
@@ -293,7 +293,7 @@ public class DrupalClient implements OnResponseListener
 	 * @param listener
 	 * @param synchronous
 	 *            if true - result will be returned synchronously.
-	 * @return ResponceData object or null if request was asynchronous.
+	 * @return ResponseData object or null if request was asynchronous.
 	 */
 	public ResponseData deleteObject(AbstractBaseDrupalEntity entity, Object responseClassSpecifier, Object tag, OnResponseListener listener,
 			boolean synchronous)
@@ -352,14 +352,14 @@ public class DrupalClient implements OnResponseListener
 	}
 
 	@Override
-	public void onResponceReceived(ResponseData data, BaseRequest request)
+	public void onResponseReceived(ResponseData data, BaseRequest request)
 	{
 		OnResponseListener listener = this.listeners.get(request);
 		this.listeners.remove(request);
 		this.onRequestComplete();
 		if (listener != null)
 		{
-			listener.onResponceReceived(data, request.getTag());
+			listener.onResponseReceived(data, request.getTag());
 		}
 	}
 
