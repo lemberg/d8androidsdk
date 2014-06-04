@@ -86,9 +86,9 @@ You can:
 
 **Note:** `SharedGson` updates between `DrupalEntity.createSnapshot()` and `DrupalEntity.patchServerData()` calls can corrupt difference calculation.
 
- - implement `IPostableItem`, `IResponceItem` and `ICharsetItem` to provide custom object 
+ - implement `IPostableItem`, `IResponseItem` and `ICharsetItem` to provide custom object 
 
-**Note:** if object, containing `IPostableItem` or `IResponceItem` as field is (de)serialized with default method (doesn’t implement this interfaces) - interfaces will be ignored. 
+**Note:** if object, containing `IPostableItem` or `IResponseItem` as field is (de)serialized with default method (doesn’t implement this interfaces) - interfaces will be ignored. 
 `ICharsetItem`  is called for root object only (field’s charset interface won’t be called).
 
 ## Other details
@@ -188,7 +188,7 @@ entity.setPagenumber(104);
 
 ```java
 boolean synchronous = false;
-Class<?> myResponseClass = MyResponceClass.class;
+Class<?> myResponseClass = MyResponseClass.class;
 final Tag myTag = new Tag();
 OnEntityRequestListener listener = new OnEntityRequestListener()
 {
@@ -249,7 +249,7 @@ entity.deleteFromServer(synchronous, myResponseClass , listener, myTag );
 
 ```java
 boolean synchronous = false;
-Class<?> myResponseClass = MyResponceClass.class;
+Class<?> myResponseClass = MyResponseClass.class;
 ```
 
 **a) Fetch entity from server**
