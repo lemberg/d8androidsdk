@@ -48,110 +48,95 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CategoryArticlesListAdapter extends BaseAdapter implements OnEntityRequestListener
-{
-	private final static int PRELOADING_PAGE_OFFSET = 4;
+public class CategoryArticlesListAdapter extends BaseAdapter implements OnEntityRequestListener {
 
-	private int pagesLoaded = 0;
-	private boolean canLoadMore;
+	private final static int PRE_LOADING_PAGE_OFFSET = 4;
 
-	private Page currentLoadingPage;
-	private final DrupalClient client;
-	private final LayoutInflater inflater;
-	private ImageLoader loader;
-	private String categoryId;
-	private View emptyView;
+	private int mPagesLoaded = 0;
+	private boolean mCanLoadMore;
 
-	private final List<ArticlePreview> data;
+	private Page mArticlePreviews;
+	private final DrupalClient mDrupalClient;
+	private final LayoutInflater mInflater;
+	private ImageLoader mImageLoader;
+	private String mCategoryId;
+	private View mEmptyView;
 
-	public CategoryArticlesListAdapter(String theCategoryId, DrupalClient theClient, Context theContext, View emptyView)
-	{
-		this.emptyView = emptyView;
-		this.data = new ArrayList<ArticlePreview>();
-		this.inflater = LayoutInflater.from(theContext);
-		this.client = theClient;
-		this.setCanLoadMore(true);
-		this.categoryId = theCategoryId;
-		this.initImageLoader(theContext);
-		this.loadNextPage();
+	private final List<ArticlePreview> mArticlePreviewList;
+
+	public CategoryArticlesListAdapter(String theCategoryId, DrupalClient theClient, Context theContext,
+			View emptyView) {
+		mEmptyView = emptyView;
+		mArticlePreviewList = new ArrayList<ArticlePreview>();
+		mInflater = LayoutInflater.from(theContext);
+		mDrupalClient = theClient;
+		setCanLoadMore(true);
+		mCategoryId = theCategoryId;
+		initImageLoader(theContext);
+		loadNextPage();
 	}
 
-	private void initImageLoader(Context theContext)
-	{
+	private void initImageLoader(Context theContext) {
 		RequestQueue queue = Volley.newRequestQueue(theContext);
-		this.loader = new ImageLoader(queue, new ImageCache()
-		{
+		mImageLoader = new ImageLoader(queue, new ImageCache() {
 			@Override
-			public void putBitmap(String url, Bitmap bitmap)
-			{
+			public void putBitmap(String url, Bitmap bitmap) {
 			}
 
 			@Override
-			public Bitmap getBitmap(String url)
-			{
+			public Bitmap getBitmap(String url) {
 				return null;
 			}
 		});
 	}
 
 	@Override
-	public int getCount()
-	{
-		return data.size();
+	public int getCount() {
+		return mArticlePreviewList.size();
 	}
 
 	@Override
-	public ArticlePreview getItem(int position)
-	{
-		return data.get(position);
+	public ArticlePreview getItem(int position) {
+		return mArticlePreviewList.get(position);
 	}
 
 	@Override
-	public long getItemId(int position)
-	{
+	public long getItemId(int position) {
 		return position;
 	}
 
-	public void setCanLoadMore(boolean canLoadMore)
-	{
-		this.canLoadMore = canLoadMore;
-		if(!this.canLoadMore && this.data.isEmpty())
-		{
-			this.emptyView.setVisibility(View.VISIBLE);
-		}else{
-			this.emptyView.setVisibility(View.INVISIBLE);
+	public void setCanLoadMore(boolean canLoadMore) {
+		mCanLoadMore = canLoadMore;
+		if (!mCanLoadMore && mArticlePreviewList.isEmpty()) {
+			mEmptyView.setVisibility(View.VISIBLE);
+		} else {
+			mEmptyView.setVisibility(View.INVISIBLE);
 		}
 	}
 
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent)
-	{
-		if (position > this.data.size() - PRELOADING_PAGE_OFFSET)
-		{
-			this.loadNextPage();
+	public View getView(int position, View convertView, ViewGroup parent) {
+		if (position > mArticlePreviewList.size() - PRE_LOADING_PAGE_OFFSET) {
+			loadNextPage();
 		}
 
-		if (convertView == null)
-		{
-			convertView = this.inflater.inflate(R.layout.list_item_article, null);
+		if (convertView == null) {
+			convertView = mInflater.inflate(R.layout.list_item_article, null);
 		}
 
-		ArticlePreview item = this.data.get(position);
-		if (item != null)
-		{
+		ArticlePreview item = mArticlePreviewList.get(position);
+		if (item != null) {
 			TextView title = (TextView) convertView.findViewById(R.id.title);
 			title.setText(Html.fromHtml(item.getTitle()).toString());
 
 			TextView author = (TextView) convertView.findViewById(R.id.author);
 			View byView = convertView.findViewById(R.id.by);
 			String authorName = item.getAuthor();
-			if (authorName != null && !authorName.isEmpty())
-			{
+			if (authorName != null && !authorName.isEmpty()) {
 				author.setText(authorName);
 				byView.setVisibility(View.VISIBLE);
 				author.setVisibility(View.VISIBLE);
-			} else
-			{
+			} else {
 				byView.setVisibility(View.INVISIBLE);
 				author.setVisibility(View.INVISIBLE);
 			}
@@ -163,44 +148,37 @@ public class CategoryArticlesListAdapter extends BaseAdapter implements OnEntity
 			description.setText(Html.fromHtml(item.getBody()));
 
 			NetworkImageView imageView = (NetworkImageView) convertView.findViewById(R.id.image);
-			imageView.setImageUrl(item.getImage(), this.loader);
+			imageView.setImageUrl(item.getImage(), mImageLoader);
 		}
 		return convertView;
 	}
 
-	private void loadNextPage()
-	{
-		if (this.canLoadMore && this.currentLoadingPage == null)
-		{
-			this.currentLoadingPage = new Page(this.client, this.pagesLoaded, this.categoryId);
-			this.currentLoadingPage.pullFromServer(false, null, this);
+	private void loadNextPage() {
+		if (mCanLoadMore && mArticlePreviews == null) {
+			mArticlePreviews = new Page(mDrupalClient, mPagesLoaded, mCategoryId);
+			mArticlePreviews.pullFromServer(false, null, this);
 		}
 	}
 
 	@Override
-	public void onRequestCompleted(AbstractBaseDrupalEntity entity, Object tag, ResponseData data)
-	{
-		if (!this.currentLoadingPage.isEmpty())
-		{
-			this.data.addAll(this.currentLoadingPage);
-			this.currentLoadingPage = null;
-			this.pagesLoaded++;
-			this.notifyDataSetChanged();
-		} else
-		{
-			this.setCanLoadMore(false);
+	public void onRequestCompleted(AbstractBaseDrupalEntity entity, Object tag, ResponseData data) {
+		if (!mArticlePreviews.isEmpty()) {
+			mArticlePreviewList.addAll(mArticlePreviews);
+			mArticlePreviews = null;
+			mPagesLoaded++;
+			notifyDataSetChanged();
+		} else {
+			setCanLoadMore(false);
 		}
 	}
 
 	@Override
-	public void onRequestFailed(AbstractBaseDrupalEntity entity, Object tag, VolleyError error)
-	{
-		this.setCanLoadMore(false);
+	public void onRequestFailed(AbstractBaseDrupalEntity entity, Object tag, VolleyError error) {
+		setCanLoadMore(false);
 	}
 
 	@Override
-	public void onRequestCanceled(AbstractBaseDrupalEntity entity, Object tag)
-	{
+	public void onRequestCanceled(AbstractBaseDrupalEntity entity, Object tag) {
 	}
 
 }

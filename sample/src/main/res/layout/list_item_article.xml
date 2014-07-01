@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
     The MIT License (MIT)
 
     Copyright (c) 2014 Lemberg Solutions Limited
@@ -23,10 +22,11 @@
     SOFTWARE.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    android:padding="5dip" >
+    android:padding="5dip">
 
     <com.android.volley.toolbox.NetworkImageView
         android:id="@+id/image"
@@ -41,27 +41,27 @@
         android:layout_height="match_parent"
         android:layout_weight="0.7"
         android:orientation="vertical"
-        android:padding="5dip" >
+        android:padding="5dip">
 
         <TextView
             android:id="@+id/title"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Title"
+            tools:text="Title"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="#0089CF"
             android:textStyle="bold" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingRight="5dip"
-                android:text="Small Text"
+                tools:text="Small Text"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="#CCCCCF" />
 
@@ -70,14 +70,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingRight="5dip"
-                android:text="By"
+                tools:text="By"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <TextView
                 android:id="@+id/author"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Small Text"
+                tools:text="Small Text"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="#0097DC" />
         </LinearLayout>
@@ -88,7 +88,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="3"
-            android:text="Medium Text"
+            tools:text="Medium Text"
             android:textAppearance="?android:attr/textAppearanceMedium" />
     </LinearLayout>
 

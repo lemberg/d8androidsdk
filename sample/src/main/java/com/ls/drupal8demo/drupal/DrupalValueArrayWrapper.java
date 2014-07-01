@@ -24,30 +24,26 @@ package com.ls.drupal8demo.drupal;
 
 import java.util.ArrayList;
 
-public class DrupalValueArrayWrapper<T> extends ArrayList<DrupalValueContainer<T>>
-{
+public class DrupalValueArrayWrapper<T> extends ArrayList<DrupalValueContainer<T>> {
+
 	private static final long serialVersionUID = 9137776045434777936L;
 
-	public DrupalValueArrayWrapper(T value)
-	{
+	public DrupalValueArrayWrapper(T value) {
 		super(1);
 		this.setValue(value);
 	}
 
-	public T getValue()
-	{
-		if(!this.isEmpty())
-		{
-			return this.get(0).value;
-		}else{
+	public T getValue() {
+		if (!isEmpty()) {
+			return get(0).value;
+		} else {
 			return null;
 		}
 	}
 
-	public void setValue(T value)
-	{
-		this.clear();
-		this.add(new DrupalValueContainer<T>(value));
+	public void setValue(T value) {
+		clear();
+		add(new DrupalValueContainer<T>(value));
 	}
 
 

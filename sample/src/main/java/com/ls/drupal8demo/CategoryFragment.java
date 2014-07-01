@@ -36,14 +36,13 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-public class CategoryFragment extends Fragment implements OnItemClickListener
-{
+public class CategoryFragment extends Fragment implements OnItemClickListener {
+
 	private final static String CATEGORY_ID_KEY = "category_id";
 
-	private DrupalClient client;
+	private DrupalClient mClient;
 
-	public static CategoryFragment newInstance(String categoryId)
-	{
+	public static CategoryFragment newInstance(String categoryId) {
 		CategoryFragment fragment = new CategoryFragment();
 		Bundle args = new Bundle();
 		args.putString(CATEGORY_ID_KEY, categoryId);
@@ -52,34 +51,30 @@ public class CategoryFragment extends Fragment implements OnItemClickListener
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-	{
-		String categoryId = this.getArguments().getString(CATEGORY_ID_KEY);
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		String categoryId = getArguments().getString(CATEGORY_ID_KEY);
 		ViewGroup result = (ViewGroup) inflater.inflate(R.layout.fragment_category, container, false);
 		ListView list = (ListView) result.findViewById(R.id.listView);
 		list.setOnItemClickListener(this);
 
-		this.client = new DrupalClient(AppConstants.SERVER_BASE_URL, this.getActivity());
+		mClient = new DrupalClient(AppConstants.SERVER_BASE_URL, getActivity());
 		View noArticlesView = result.findViewById(R.id.emptyView);
-		list.setAdapter(new CategoryArticlesListAdapter(categoryId,client,this.getActivity(),noArticlesView));
+		list.setAdapter(new CategoryArticlesListAdapter(categoryId, mClient, getActivity(), noArticlesView));
 		return result;
 	}
 
 	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-	{
-		ArticlePreview article = (ArticlePreview)parent.getItemAtPosition(position);
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		ArticlePreview article = (ArticlePreview) parent.getItemAtPosition(position);
 
 		Intent intent = ArticleActivity.getExecutionIntent(getActivity(), article);
-		this.getActivity().startActivity(intent);
+		getActivity().startActivity(intent);
 	}
 
 	@Override
-	public void onDestroyView()
-	{
-		if(this.client != null)
-		{
-			this.client.cancelAll();
+	public void onDestroyView() {
+		if (mClient != null) {
+			mClient.cancelAll();
 		}
 		super.onDestroyView();
 	}

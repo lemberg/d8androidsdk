@@ -29,24 +29,21 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-public class CategoriesAdapter extends FragmentPagerAdapter
-{
-	public CategoriesAdapter(FragmentManager fm)
-	{
+public class CategoriesAdapter extends FragmentPagerAdapter {
+
+	public CategoriesAdapter(FragmentManager fm) {
 		super(fm);
 	}
 
 	@Override
-	public Fragment getItem(int arg0)
-	{
+	public Fragment getItem(int arg0) {
 
-		return CategoryFragment.newInstance(AppConstants.CATEGORIE.values()[arg0].id);
+		return CategoryFragment.newInstance(AppConstants.CATEGORY.values()[arg0].id);
 	}
 
 	@Override
-	public int getCount()
-	{
-		return AppConstants.CATEGORIE.values().length;
+	public int getCount() {
+		return AppConstants.CATEGORY.values().length;
 	}
 
 }

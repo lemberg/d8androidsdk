@@ -29,52 +29,45 @@ import com.ls.http.base.BaseRequest.RequestMethod;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Page extends AbstractDrupalArrayEntity<ArticlePreview>
-{
+public class Page extends AbstractDrupalArrayEntity<ArticlePreview> {
 
-	transient private int pageNumber;
-	transient private String categoryId;
+	transient private int mPageNumber;
+	transient private String mCategoryId;
 
-	public Page(DrupalClient client, int thePageNumber,String theCategoryId)
-	{
+	public Page(DrupalClient client, int thePageNumber, String theCategoryId) {
 		super(client, 5);
-		this.pageNumber = thePageNumber;
-		this.categoryId = theCategoryId;
+		mPageNumber = thePageNumber;
+		mCategoryId = theCategoryId;
 	}
 
 	@Override
-	protected String getPath()
-	{
-		if(categoryId == null)
-		{
+	protected String getPath() {
+		if (mCategoryId == null) {
 			return "blog-rest";
-		}else{
-			return "category/"+categoryId;
+		} else {
+			return "category/" + mCategoryId;
 		}
 	}
 
 	@Override
-	protected Map<String, String> getItemRequestPostParameters()
-	{
+	protected Map<String, String> getItemRequestPostParameters() {
 		return null;
 	}
 
 	@Override
-	protected Map<String, String> getItemRequestGetParameters(RequestMethod method)
-	{
+	protected Map<String, String> getItemRequestGetParameters(RequestMethod method) {
 		switch (method) {
-		case GET:
-			Map<String, String> result = new HashMap<String, String>();
-			result.put("page", Integer.toString(pageNumber));
-			return result;
-		default:
-			return null;
+			case GET:
+				Map<String, String> result = new HashMap<String, String>();
+				result.put("page", Integer.toString(mPageNumber));
+				return result;
+			default:
+				return null;
 		}
 	}
 
-	public int getPageNumber()
-	{
-		return pageNumber;
+	public int getPageNumber() {
+		return mPageNumber;
 	}
 
 }
