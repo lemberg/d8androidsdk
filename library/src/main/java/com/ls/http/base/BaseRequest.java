@@ -1,11 +1,26 @@
+/**
+ * The MIT License (MIT)
+ * Copyright (c) 2014 Lemberg Solutions Limited
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ *  The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package com.ls.http.base;
-
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-
-import android.net.Uri;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -15,10 +30,17 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.StringRequest;
 
+import android.net.Uri;
+
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+
 public class BaseRequest extends StringRequest
 {
 	private static String ACCEPT_HEADER_KEY = "Accept";
-	
+
 	private static final String PROTOCOL_REQUEST_APP_TYPE_JSON = "application/json";
 	private static final String PROTOCOL_REQUEST_APP_TYPE_XML = "application/xml";
 	private static final String PROTOCOL_REQUEST_APP_TYPE_JSON_HAL = "application/hal+json";
@@ -56,7 +78,7 @@ public class BaseRequest extends StringRequest
 	private ResponseData result;
 
 	/**
-	 * 
+	 *
 	 * @param requestMethod
 	 * @param requestUrl
 	 * @param requestFormat
@@ -125,13 +147,13 @@ public class BaseRequest extends StringRequest
 
 		return this.result;
 	}
-		
+
 	@Override
 	protected Response<String> parseNetworkResponse(NetworkResponse response)
 	{
-		Response<String> requestResult = super.parseNetworkResponse(response);	
+		Response<String> requestResult = super.parseNetworkResponse(response);
 		if (!this.isCanceled())
-		{			
+		{
 			this.result.error = requestResult.error;
 			this.result.statusCode = response.statusCode;
 			this.result.headers = new HashMap<String, String>(response.headers);
@@ -153,7 +175,7 @@ public class BaseRequest extends StringRequest
 		}
 		return requestResult;
 	}
-	
+
 	@Override
 	protected VolleyError parseNetworkError(VolleyError volleyError)
 	{
@@ -168,7 +190,7 @@ public class BaseRequest extends StringRequest
 
 	@Override
 	protected void deliverResponse(String response)
-	{		
+	{
 //		Log.e(this.getClass().getName(),"Delivering responce");
 		if (this.responceListener != null)
 		{
@@ -343,7 +365,7 @@ public class BaseRequest extends StringRequest
 			case JSON_HAL:
 				handler = new JSONRequestHandler(objectToPost);
 				return PROTOCOL_REQUEST_APP_TYPE_JSON_HAL + CONTENT_TYPE_CHARSET_PREFIX + handler.getCharset(this.defaultCharset);
-			case JSON:			
+			case JSON:
 				handler = new JSONRequestHandler(objectToPost);
 				return PROTOCOL_REQUEST_APP_TYPE_JSON + CONTENT_TYPE_CHARSET_PREFIX + handler.getCharset(this.defaultCharset);
 			default:
@@ -371,12 +393,12 @@ public class BaseRequest extends StringRequest
 	public String getUrl()
 	{
 		if (this.getParameters != null && !this.getParameters.isEmpty())
-		{			
+		{
 			Uri.Builder builder = Uri.parse(super.getUrl()).buildUpon();
 			for (Map.Entry<String, String> entry : this.getParameters.entrySet())
 			{
 				builder.appendQueryParameter(entry.getKey(), entry.getValue());
-			}					
+			}
 			return builder.build().toString();
 		} else
 		{
@@ -426,7 +448,7 @@ public class BaseRequest extends StringRequest
 	}
 
 	/**
-	 * 
+	 *
 	 * @param defaultCharset charset, used to encode post body.
 	 */
 	public void setDefaultCharset(String defaultCharset)
