@@ -39,8 +39,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Map;
 
-public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnResponseListener, ICharsetItem
-{
+public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnResponseListener, ICharsetItem {
+
 	transient private DrupalClient drupalClient;
 
 	transient private Snapshot snapshot;
@@ -49,12 +49,13 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	 * In case of request canceling - no method will be triggered.
 	 *
 	 * @author lemberg
-	 *
 	 */
-	public interface OnEntityRequestListener
-	{
+	public interface OnEntityRequestListener {
+
 		void onRequestCompleted(AbstractBaseDrupalEntity entity, Object tag, ResponseData data);
+
 		void onRequestFailed(AbstractBaseDrupalEntity entity, Object tag, VolleyError error);
+
 		void onRequestCanceled(AbstractBaseDrupalEntity entity, Object tag);
 	}
 
@@ -66,46 +67,46 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	/**
 	 * Called for post requests only
 	 *
-	 * @return post parameters to be published on server or null if default
-	 *         object serialization has to be performed.
+	 * @return post parameters to be published on server or null if default object serialization has to be performed.
 	 */
 	protected abstract Map<String, String> getItemRequestPostParameters();
 
 	/**
-	 * @param method is instance od {@link com.ls.http.base.BaseRequest.RequestMethod} enum, this method is called for. it can be "GET", "POST", "PATCH" or "DELETE".
+	 * @param method is instance od {@link com.ls.http.base.BaseRequest.RequestMethod} enum, this method is called for.
+	 *               it can be "GET", "POST", "PATCH" or "DELETE".
 	 * @return parameters for the request method specified.
 	 */
 	protected abstract Map<String, String> getItemRequestGetParameters(RequestMethod method);
 
-	/** Get data object, used to perform perform get/post/patch/delete requests.
-	 * @return data object. Can implement {@link com.ls.http.base.IPostableItem} or {@link com.ls.http.base.IResponceItem} in order to handle json/xml serialization/deserialization manually.
+	/**
+	 * Get data object, used to perform perform get/post/patch/delete requests.
+	 *
+	 * @return data object. Can implement {@link com.ls.http.base.IPostableItem} or {@link
+	 * com.ls.http.base.IResponseItem} in order to handle json/xml serialization/deserialization manually.
 	 */
-	abstract @NotNull Object getManagedData();
+	abstract
+	@NotNull
+	Object getManagedData();
 
 	@Override
-	public String getCharset()
-	{
+	public String getCharset() {
 		return null;
 	}
 
-	public AbstractBaseDrupalEntity(DrupalClient client)
-	{
+	public AbstractBaseDrupalEntity(DrupalClient client) {
 		this.drupalClient = client;
 	}
 
 
 	/**
-	 * @param synchronous
-	 *            if true - request will be performed synchronously.
-	 * @param resultClass
-	 *            class of result or null if no result needed.
-	 * @param tag Object tag, passer to listener after request was finished or failed because of exception
-	 * @param listener
-	 * @return @class ResponseData entity, containing server response string and
-	 *         code or error in case of synchronous request, null otherwise
+	 * @param synchronous if true - request will be performed synchronously.
+	 * @param resultClass class of result or null if no result needed.
+	 * @param tag         Object tag, passer to listener after request was finished or failed because of exception
+	 * @return @class ResponseData entity, containing server response string and code or error in case of synchronous
+	 * request, null otherwise
 	 */
-	public ResponseData pushToServer(boolean synchronous, Class<?> resultClass, Object tag, OnEntityRequestListener listener)
-	{
+	public ResponseData pushToServer(boolean synchronous, Class<?> resultClass, Object tag,
+			OnEntityRequestListener listener) {
 		Assert.assertNotNull("You have to specify drupal client in order to perform requests", this.drupalClient);
 		DrupalEntityTag drupalTag = new DrupalEntityTag(false, tag, listener);
 		ResponseData result = this.drupalClient.postObject(this, resultClass, drupalTag, this, synchronous);
@@ -113,124 +114,100 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	}
 
 	/**
-	 * @param synchronous
-	 *            if true - request will be performed synchronously.
-	 * @param tag Object tag, passer to listener after request was finished or failed because of exception
-	 * @param listener
-	 * @return @class ResponseData entity, containing server response or error
-	 *         in case of synchronous request, null otherwise
+	 * @param synchronous if true - request will be performed synchronously.
+	 * @param tag         Object tag, passer to listener after request was finished or failed because of exception
+	 * @return @class ResponseData entity, containing server response or error in case of synchronous request, null
+	 * otherwise
 	 */
-	public ResponseData pullFromServer(boolean synchronous, Object tag, OnEntityRequestListener listener)
-	{
+	public ResponseData pullFromServer(boolean synchronous, Object tag, OnEntityRequestListener listener) {
 		Assert.assertNotNull("You have to specify drupal client in order to perform requests", this.drupalClient);
 		DrupalEntityTag drupalTag = new DrupalEntityTag(true, tag, listener);
-		ResponseData result = this.drupalClient.getObject(this, this.getManagedDataClassSpecifyer(), drupalTag, this, synchronous);
+		ResponseData result = this.drupalClient
+				.getObject(this, this.getManagedDataClassSpecifier(), drupalTag, this, synchronous);
 		;
 		return result;
 	}
 
 	/**
-	 * @param synchronous
-	 *            if true - request will be performed synchronously.
-	 * @param resultClass
-	 *            class of result or null if no result needed.
-	 * @param tag Object tag, passer to listener after request was finished or failed because of exception
-	 * @param listener
-	 * @return @class ResponseData entity, containing server response or error
-	 *         in case of synchronous request, null otherwise
+	 * @param synchronous if true - request will be performed synchronously.
+	 * @param resultClass class of result or null if no result needed.
+	 * @param tag         Object tag, passer to listener after request was finished or failed because of exception
+	 * @return @class ResponseData entity, containing server response or error in case of synchronous request, null
+	 * otherwise
 	 */
-	public ResponseData deleteFromServer(boolean synchronous, Class<?> resultClass, Object tag, OnEntityRequestListener listener)
-	{
+	public ResponseData deleteFromServer(boolean synchronous, Class<?> resultClass, Object tag,
+			OnEntityRequestListener listener) {
 		Assert.assertNotNull("You have to specify drupal client in order to perform requests", this.drupalClient);
 		DrupalEntityTag drupalTag = new DrupalEntityTag(false, tag, listener);
 		ResponseData result = this.drupalClient.deleteObject(this, resultClass, drupalTag, this, synchronous);
 		return result;
 	}
 
-	// OnResponceListener methods
+	// OnResponseListener methods
 
 	@Override
-	public void onResponceReceived(ResponseData data, Object tag)
-	{
-		DrupalEntityTag entityTag = (DrupalEntityTag)tag;
-		if (entityTag.consumeResponce)
-		{
+	public void onResponseReceived(ResponseData data, Object tag) {
+		DrupalEntityTag entityTag = (DrupalEntityTag) tag;
+		if (entityTag.consumeResponse) {
 			this.consumeObject(data.getData());
 		}
 
-		if(entityTag.listener != null)
-		{
+		if (entityTag.listener != null) {
 			entityTag.listener.onRequestCompleted(this, entityTag.requestTag, data);
 		}
 	}
 
 	@Override
-	public void onError(VolleyError error, Object tag)
-	{
-		DrupalEntityTag entityTag = (DrupalEntityTag)tag;
-		if(entityTag.listener != null)
-		{
-			entityTag.listener.onRequestFailed(this,entityTag.requestTag,error);
+	public void onError(VolleyError error, Object tag) {
+		DrupalEntityTag entityTag = (DrupalEntityTag) tag;
+		if (entityTag.listener != null) {
+			entityTag.listener.onRequestFailed(this, entityTag.requestTag, error);
 		}
 	}
 
 	@Override
-	public void onCancel(Object tag)
-	{
-		DrupalEntityTag entityTag = (DrupalEntityTag)tag;
-		if(entityTag.listener != null)
-		{
-			entityTag.listener.onRequestCanceled(this,entityTag.requestTag);
+	public void onCancel(Object tag) {
+		DrupalEntityTag entityTag = (DrupalEntityTag) tag;
+		if (entityTag.listener != null) {
+			entityTag.listener.onRequestCanceled(this, entityTag.requestTag);
 		}
 	}
 
 	/**
-	 * Method is used in order to apply server response result object to current instance
-	 * and clone all fields of object specified to current one You can override this
-	 * method in order to perform custom cloning.
+	 * Method is used in order to apply server response result object to current instance and clone all fields of object
+	 * specified to current one You can override this method in order to perform custom cloning.
 	 *
-	 * @param entity
-	 *            object to be consumed
+	 * @param entity object to be consumed
 	 */
-	protected void consumeObject(Object entity)
-	{
+	protected void consumeObject(Object entity) {
 		Object consumer = this.getManagedDataChecked();
 		AbstractBaseDrupalEntity.consumeObject(consumer, entity);
 	}
 
 	/**
 	 * Utility method, used to clone all entities non-transient fields to the consumer
-	 * @param consumer
-	 * @param entity
 	 */
-	public static void consumeObject(Object consumer,Object entity)
-	{
+	public static void consumeObject(Object consumer, Object entity) {
 		Class<?> currentClass = consumer.getClass();
-		while (!Object.class.equals(currentClass))
-		{
+		while (!Object.class.equals(currentClass)) {
 			Field[] fields = currentClass.getDeclaredFields();
-			for (int counter = 0; counter < fields.length; counter++)
-			{
+			for (int counter = 0; counter < fields.length; counter++) {
 				Field field = fields[counter];
 				Expose expose = field.getAnnotation(Expose.class);
-				if (expose != null && !expose.deserialize() || Modifier.isTransient(field.getModifiers()))
-				{
+				if (expose != null && !expose.deserialize() || Modifier.isTransient(field.getModifiers())) {
 					continue;// We don't have to copy ignored fields.
 				}
 				field.setAccessible(true);
 				Object value;
-				try
-				{
+				try {
 					value = field.get(entity);
 					// if(value != null)
 					// {
 					field.set(consumer, value);
 					// }
-				} catch (IllegalAccessException e)
-				{
+				} catch (IllegalAccessException e) {
 					e.printStackTrace();
-				} catch (IllegalArgumentException e)
-				{
+				} catch (IllegalArgumentException e) {
 					e.printStackTrace();
 				}
 			}
@@ -239,92 +216,75 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	}
 
 	/**
-	 * You can override this method in order to gain custom classes from "GET"
-	 * Note:  you will also have to override {@link com.ls.drupal.AbstractBaseDrupalEntity#consumeObject(Object)} method in order to apply modified response class
-	 * request response.
+	 * You can override this method in order to gain custom classes from "GET" Note:  you will also have to override
+	 * {@link com.ls.drupal.AbstractBaseDrupalEntity#consumeObject(Object)} method in order to apply modified response
+	 * class request response.
 	 *
 	 * @return Class or type of managed object.
 	 */
-	protected Object getManagedDataClassSpecifyer()
-	{
+	protected Object getManagedDataClassSpecifier() {
 		return this.getManagedData().getClass();
 	}
 
-	public DrupalClient getDrupalClient()
-	{
+	public DrupalClient getDrupalClient() {
 		return drupalClient;
 	}
 
-	public void setDrupalClient(DrupalClient drupalClient)
-	{
+	public void setDrupalClient(DrupalClient drupalClient) {
 		this.drupalClient = drupalClient;
 	}
 
 	// Request canceling
-	public void cancellAllRequests()
-	{
+	public void cancellAllRequests() {
 		this.drupalClient.cancelAllRequestsForListener(this, null);
 	}
 
 	// Patch method management
 
 	/**
-	 * Creates snapshot to be used later in order to calculate differences for
-	 * patch request.
+	 * Creates snapshot to be used later in order to calculate differences for patch request.
 	 */
-	public void createSnapshot()
-	{
+	public void createSnapshot() {
 		this.snapshot = getCurrentStateSnapshot();
 	}
 
 	/**
 	 * Release current snapshot (is recommended to perform after successful patch request)
 	 */
-	public void clearSnapshot()
-	{
+	public void clearSnapshot() {
 		this.snapshot = null;
 	}
 
-	protected Snapshot getCurrentStateSnapshot()
-	{
+	protected Snapshot getCurrentStateSnapshot() {
 		ObjectComparator comparator = new ObjectComparator();
 		return comparator.createSnapshot(this.getManagedDataChecked());
 	}
 
 	/**
-	 *
-	 * @param synchronous
-	 *            if true - request will be performed synchronously.
-	 * @param resultClass
-	 *            class of result or null if no result needed.
-	 * @param tag Object tag, passer to listener after request was finished or failed because of exception
-	 * @param listener
-	 * @return @class ResponseData entity, containing server response and
-	 *         resultClass instance or error in case of synchronous request,
-	 *         null otherwise
-	 * @throws IllegalStateException
-	 *             in case if there are no changes to post. You can check if
-	 *             there are ones, calling <code>isModified()</code> method.
+	 * @param synchronous if true - request will be performed synchronously.
+	 * @param resultClass class of result or null if no result needed.
+	 * @param tag         Object tag, passer to listener after request was finished or failed because of exception
+	 * @return @class ResponseData entity, containing server response and resultClass instance or error in case of
+	 * synchronous request, null otherwise
+	 * @throws IllegalStateException in case if there are no changes to post. You can check if there are ones, calling
+	 *                               <code>isModified()</code> method.
 	 */
-	public ResponseData patchServerData(boolean synchronous, Class<?> resultClass, Object tag, OnEntityRequestListener listener) throws IllegalStateException
-	{
+	public ResponseData patchServerData(boolean synchronous, Class<?> resultClass, Object tag,
+			OnEntityRequestListener listener) throws IllegalStateException {
 		DrupalEntityTag drupalTag = new DrupalEntityTag(false, tag, listener);
 		ResponseData result = this.drupalClient.patchObject(this, resultClass, drupalTag, this, synchronous);
 		return result;
 	}
 
-	public Object getPatchObject()
-	{
+	public Object getPatchObject() {
 		ObjectComparator comparator = new ObjectComparator();
 		Snapshot currentState = comparator.createSnapshot(this.getManagedDataChecked());
 
 		@SuppressWarnings("null")
 		Object difference = this.getDifference(this.snapshot, currentState, comparator);
-		if (difference != null)
-		{
+		if (difference != null) {
 			return difference;
-		} else
-		{
+		} else {
 			throw new IllegalStateException("There are no changes to post, check isModified() call before");
 		}
 	}
@@ -333,41 +293,37 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	 * @return true if there are changes to post, false otherwise
 	 */
 	@SuppressWarnings("null")
-	public boolean isModified()
-	{
+	public boolean isModified() {
 		ObjectComparator comparator = new ObjectComparator();
 		return this.isModified(this.snapshot, comparator.createSnapshot(this), comparator);
 	}
 
-	private boolean isModified(@NotNull Snapshot origin, @NotNull Snapshot current, @NotNull ObjectComparator comparator)
-	{
+	private boolean isModified(@NotNull Snapshot origin, @NotNull Snapshot current,
+			@NotNull ObjectComparator comparator) {
 		Object difference = this.getDifference(origin, current, comparator);
 		return (difference != null);
 	}
 
-	private Object getDifference(@NotNull Snapshot origin, @NotNull Snapshot current, ObjectComparator comparator)
-	{
+	private Object getDifference(@NotNull Snapshot origin, @NotNull Snapshot current, ObjectComparator comparator) {
 		Assert.assertNotNull("You have to specify drupal client in order to perform requests", this.drupalClient);
 		Assert.assertNotNull("You have to make initial objects snapshot in order to calculate changes", origin);
 		return comparator.getDifferencesJSON(origin, current);
 	}
 
 	@NotNull
-	private Object getManagedDataChecked()
-	{
+	private Object getManagedDataChecked() {
 		Assert.assertNotNull("You have to specify non null data object", this.getManagedData());
 		return getManagedData();
 	}
 
-	protected final class DrupalEntityTag
-	{
+	protected final class DrupalEntityTag {
+
 		public OnEntityRequestListener listener;
 		public Object requestTag;
-		public boolean  consumeResponce;
+		public boolean consumeResponse;
 
-		public DrupalEntityTag(boolean consumeResponce,Object requestTag,OnEntityRequestListener listener)
-		{
-			this.consumeResponce = consumeResponce;
+		public DrupalEntityTag(boolean consumeResponse, Object requestTag, OnEntityRequestListener listener) {
+			this.consumeResponse = consumeResponse;
 			this.requestTag = requestTag;
 			this.listener = listener;
 		}

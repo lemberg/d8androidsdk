@@ -22,8 +22,6 @@
 
 package com.ls.http.base;
 
-
-
 public interface ICharsetItem {
 
 	public final static String UTF_8 = "utf-8";

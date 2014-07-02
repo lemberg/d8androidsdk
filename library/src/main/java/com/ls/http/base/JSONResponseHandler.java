@@ -22,8 +22,46 @@
 
 package com.ls.http.base;
 
-public interface IResponceItem
-{
-	void initWithJSON(String theJSONString);
-	void initWithXML(String theJSONString);
+import com.google.gson.Gson;
+
+import com.ls.util.ObjectsFactory;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.lang.reflect.Type;
+
+class JSONResponseHandler extends ResponseHandler {
+
+	public Object itemFromResponse(@NotNull String response, @NotNull Class<?> theClass) {
+		Object result = createInstanceByInterface(response, theClass);
+		if (result == null) {
+			Gson gson = SharedGson.getGson();
+			result = gson.fromJson(response, theClass);
+		}
+		return result;
+	}
+
+	public Object itemFromResponse(@NotNull String response, @NotNull Type theType) {
+		Class<?> theClass = theType.getClass();
+
+		Object result = createInstanceByInterface(response, theClass);
+		if (result == null) {
+			Gson gson = SharedGson.getGson();
+			result = gson.fromJson(response, theType);
+		}
+		return result;
+	}
+
+	private Object createInstanceByInterface(String json, Class<?> theClass) {
+		Object result = null;
+
+		if (IResponseItem.class.isAssignableFrom(theClass)) {
+			IResponseItem item;
+			item = (IResponseItem) ObjectsFactory.newInstance(theClass);
+			item.initWithJSON(json);
+			result = item;
+		}
+		return result;
+	}
+
 }

@@ -27,22 +27,18 @@ import com.google.gson.Gson;
 import org.jetbrains.annotations.NotNull;
 
 
-class JSONRequestHandler extends RequestHandler
-{
+class JSONRequestHandler extends RequestHandler {
 
-	public JSONRequestHandler(@NotNull Object theObject)
-	{
+	public JSONRequestHandler(@NotNull Object theObject) {
 		super(theObject);
 	}
 
 	@Override
-	public String stringBodyFromItem()
-	{
-		if(implementsPostableInterface())
-		{
-			IPostableItem item = (IPostableItem)this.object;
+	public String stringBodyFromItem() {
+		if (implementsPostableInterface()) {
+			IPostableItem item = (IPostableItem) this.object;
 			return item.toJsonString();
-		}else{
+		} else {
 			Gson gson = SharedGson.getGson();
 			return gson.toJson(this.object);
 		}

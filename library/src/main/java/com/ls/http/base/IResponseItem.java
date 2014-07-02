@@ -22,26 +22,9 @@
 
 package com.ls.http.base;
 
-import org.jetbrains.annotations.NotNull;
+public interface IResponseItem {
 
-import java.lang.reflect.Type;
+	void initWithJSON(String theJSONString);
 
-
-class XMLResponceHandler extends ResponceHandler{
-
-	@Override
-	public Object itemFromResponce(@NotNull String responce, @NotNull Class<?> theClass)
-	{
-		Object result = null;
-		//TODO implement parsing
-		return result;
-	}
-
-	@Override
-	public Object itemFromResponce(@NotNull String json, @NotNull Type theType)
-	{
-		Object result = null;
-		//TODO implement parsing
-		return result;
-	}
+	void initWithXML(String theJSONString);
 }

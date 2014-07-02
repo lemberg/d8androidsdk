@@ -22,53 +22,24 @@
 
 package com.ls.http.base;
 
-import com.google.gson.Gson;
-
-import com.ls.util.ObjectsFactory;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Type;
 
-class JSONResponceHandler extends ResponceHandler
-{
 
-	public Object itemFromResponce(@NotNull String json,@NotNull Class<?> theClass)
-	{
-		Object result = createInstanceByInterface(json, theClass);
-		if (result == null)
-		{
-			Gson gson = SharedGson.getGson();
-			result = gson.fromJson(json, theClass);
-		}
-		return result;
-	}
+class XMLResponseHandler extends ResponseHandler {
 
-	public Object itemFromResponce(@NotNull String json,@NotNull Type theType)
-	{
-		Class<?> theClass = theType.getClass();
-
-		Object result = createInstanceByInterface(json, theClass);
-		if (result == null)
-		{
-			Gson gson = SharedGson.getGson();
-			result = gson.fromJson(json, theType);
-		}
-		return result;
-	}
-
-	private Object createInstanceByInterface(String json, Class<?> theClass)
-	{
+	@Override
+	public Object itemFromResponse(@NotNull String response, @NotNull Class<?> theClass) {
 		Object result = null;
-
-		if (IResponceItem.class.isAssignableFrom(theClass))
-		{
-			IResponceItem item;
-			item = (IResponceItem) ObjectsFactory.newInstance(theClass);
-			item.initWithJSON(json);
-			result = item;
-		}
+		//TODO implement parsing
 		return result;
 	}
 
+	@Override
+	public Object itemFromResponse(@NotNull String response, @NotNull Type theType) {
+		Object result = null;
+		//TODO implement parsing
+		return result;
+	}
 }
