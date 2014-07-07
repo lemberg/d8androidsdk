@@ -384,6 +384,10 @@ public class DrupalClient implements OnResponseListener {
 		return this.listeners.size();
 	}
 
+	public void setProgressListener(RequestProgressListener progressListener) {
+		this.progressListener = progressListener;
+	}
+
 	private void onNewRequestStarted() {
 		if (this.progressListener != null) {
 
