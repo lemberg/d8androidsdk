@@ -6,6 +6,11 @@ Currently library is [using google volley] and [gson] libraries for communicatio
 
 Main purpose of this library is to make communication with Drupal 8 - based servers as easy and intuitive as possible.
 
+1. Synchronous and asynchronous requests
+2. Flexible object serialization / deserialization
+3. API can calculate object differences to perform patch requests
+4. Simple entities request
+
 ### Wiki
 
 * [Home]
