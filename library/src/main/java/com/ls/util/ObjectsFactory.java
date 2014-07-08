@@ -35,13 +35,13 @@ public final class ObjectsFactory {
 			newInstance.setAccessible(true);
 			return newInstance.invoke(null, theClass, Object.class);
 		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
+			L.w(e);
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			L.w(e);
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
+			L.w(e);
 		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+			L.w(e);
 		}
 		return null;
 	}

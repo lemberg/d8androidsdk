@@ -29,6 +29,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.StringRequest;
+import com.ls.util.L;
 
 import android.net.Uri;
 
@@ -132,9 +133,9 @@ public class BaseRequest extends StringRequest {
 				String response = this.syncLock.get(); // this call will block
 				// thread
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				L.w(e);
 			} catch (ExecutionException e) {
-				e.printStackTrace();
+				L.w(e);
 			}
 		}
 
@@ -302,7 +303,7 @@ public class BaseRequest extends StringRequest {
 				String content = handler.stringBodyFromItem();
 				return content.getBytes(handler.getCharset(this.defaultCharset));
 			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
+				L.w(e);
 				return new byte[0];
 			}
 		} else {

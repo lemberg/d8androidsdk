@@ -28,6 +28,7 @@ import com.android.volley.VolleyError;
 import com.ls.http.base.BaseRequest.RequestMethod;
 import com.ls.http.base.ICharsetItem;
 import com.ls.http.base.ResponseData;
+import com.ls.util.L;
 import com.ls.util.ObjectComparator;
 import com.ls.util.ObjectComparator.Snapshot;
 
@@ -206,9 +207,9 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 					field.set(consumer, value);
 					// }
 				} catch (IllegalAccessException e) {
-					e.printStackTrace();
+					L.w(e);
 				} catch (IllegalArgumentException e) {
-					e.printStackTrace();
+					L.w(e);
 				}
 			}
 			currentClass = currentClass.getSuperclass();
