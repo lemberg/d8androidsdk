@@ -1,5 +1,7 @@
 ### Description
 
+[Drupal 8 iOS & Android SDKs](http://drupalsdk.com)
+
 Lemberg Drupal API is a library for native **Android** applications to communicate with **Drupal** web servers.
 
 Currently library is [using google volley] and [gson] libraries for communication with server and object serialization/deserialization.
