@@ -52,7 +52,7 @@ public abstract class RequestHandler
 		return object instanceof IPostableItem;
 	}
 	
-	String getCharset(@Nullable String defaultCharset)
+	protected String getCharset(@Nullable String defaultCharset)
 	{
 		String charset = null;
 		if(object instanceof ICharsetItem)
