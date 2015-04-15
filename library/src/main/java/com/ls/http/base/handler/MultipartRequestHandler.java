@@ -48,13 +48,15 @@ class MultipartRequestHandler extends RequestHandler
         entity.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
     }
 
-    public void setEntity(Object entity)
-    {
+    @Override
+    public void setObject(Object object) {
+        super.setObject(object);
 //        entity.addTextBody();
 //
 //        //After setting
 //        httpentity = entity.build();
     }
+
 
     @Override
 	public String stringBodyFromItem()
