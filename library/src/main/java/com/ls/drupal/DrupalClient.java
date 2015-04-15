@@ -294,7 +294,7 @@ public class DrupalClient implements OnResponseListener {
      * @return ResponseData object or null if request was asynchronous.
      */
     public ResponseData getObject(AbstractBaseDrupalEntity entity, Object responseClassSpecifier, Object tag, OnResponseListener listener, boolean synchronous) {
-        BaseRequest request = BaseRequest.newBaseRequest(RequestMethod.GET, getURLForEntity(entity), this.requestFormat, responseClassSpecifier);
+        BaseRequest request = new BaseRequest(RequestMethod.GET, getURLForEntity(entity), this.requestFormat, responseClassSpecifier);
         request.setGetParameters(entity.getItemRequestGetParameters(RequestMethod.GET));
         request.setRequestHeaders(entity.getItemRequestHeaders(RequestMethod.GET));
         return this.performRequest(request, tag, listener, synchronous);
@@ -308,7 +308,7 @@ public class DrupalClient implements OnResponseListener {
      * @return ResponseData object or null if request was asynchronous.
      */
     public ResponseData postObject(AbstractBaseDrupalEntity entity, Object responseClassSpecifier, Object tag, OnResponseListener listener, boolean synchronous) {
-        BaseRequest request = BaseRequest.newBaseRequest(RequestMethod.POST, getURLForEntity(entity), this.requestFormat, responseClassSpecifier);
+        BaseRequest request = new BaseRequest(RequestMethod.POST, getURLForEntity(entity), this.requestFormat, responseClassSpecifier);
         Map<String, String> postParams = entity.getItemRequestPostParameters();
         if (postParams == null || postParams.isEmpty()) {
             request.setObjectToPost(entity.getManagedData());
@@ -328,7 +328,7 @@ public class DrupalClient implements OnResponseListener {
      * @return ResponseData object or null if request was asynchronous.
      */
     public ResponseData patchObject(AbstractBaseDrupalEntity entity, Object responseClassSpecifier, Object tag, OnResponseListener listener, boolean synchronous) {
-        BaseRequest request = BaseRequest.newBaseRequest(RequestMethod.PATCH, getURLForEntity(entity), this.requestFormat, responseClassSpecifier);
+        BaseRequest request = new BaseRequest(RequestMethod.PATCH, getURLForEntity(entity), this.requestFormat, responseClassSpecifier);
         request.setGetParameters(entity.getItemRequestGetParameters(RequestMethod.PATCH));
         request.setObjectToPost(entity.getPatchObject());
         request.setRequestHeaders(entity.getItemRequestHeaders(RequestMethod.PATCH));
@@ -344,7 +344,7 @@ public class DrupalClient implements OnResponseListener {
      */
     public ResponseData deleteObject(AbstractBaseDrupalEntity entity, Object responseClassSpecifier, Object tag, OnResponseListener listener,
             boolean synchronous) {
-        BaseRequest request = BaseRequest.newBaseRequest(RequestMethod.DELETE, getURLForEntity(entity), this.requestFormat, responseClassSpecifier);
+        BaseRequest request = new BaseRequest(RequestMethod.DELETE, getURLForEntity(entity), this.requestFormat, responseClassSpecifier);
         request.setGetParameters(entity.getItemRequestGetParameters(RequestMethod.DELETE));
         request.setRequestHeaders(entity.getItemRequestHeaders(RequestMethod.DELETE));
         return this.performRequest(request, tag, listener, synchronous);

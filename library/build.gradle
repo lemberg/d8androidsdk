@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.9.+'
+        classpath 'com.android.tools.build:gradle:1.0.+'
     }
 }
 apply plugin: 'android-library'
@@ -36,4 +36,8 @@ dependencies {
     compile 'com.google.code.gson:gson:2.2.4'
     compile 'org.jetbrains:annotations:13.0'
     compile 'com.android.support:support-annotations:20.0.0'
+    compile('org.apache.httpcomponents:httpmime:4.3.6') {
+        exclude module: 'httpclient'
+    }
+    compile 'org.apache.httpcomponents:httpclient-android:4.3.5'
 }
