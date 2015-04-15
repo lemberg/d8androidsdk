@@ -20,34 +20,63 @@
  *   SOFTWARE.
  */
 
-package com.ls.http.base;
+package com.ls.http.base.handler;
+
+import com.google.gson.Gson;
+
+import com.ls.http.base.IResponseItem;
+import com.ls.http.base.ResponseHandler;
+import com.ls.http.base.SharedGson;
+import com.ls.util.ObjectsFactory;
 
 import android.support.annotation.NonNull;
 
 import java.lang.reflect.Type;
 
-
-public abstract class ResponseHandler
+class JSONResponseHandler extends ResponseHandler
 {
-	abstract Object itemFromResponse(@NonNull String response,@NonNull Class<?> theClass);
-	abstract Object itemFromResponse(@NonNull String response,@NonNull Type theType);
 
-    abstract String getAcceptValueType();
-	
-	Object itemFromResponseWithSpecifier(String response, Object theSpecifier)
+	public Object itemFromResponse(@NonNull String json,@NonNull Class<?> theClass)
 	{
-		Object result = null;
-		if(response != null && theSpecifier != null)
+		Object result = createInstanceByInterface(json, theClass);
+		if (result == null)
 		{
-			if(theSpecifier instanceof Class<?>)
-			{
-                result = itemFromResponse(response, (Class<?>)theSpecifier);
-			}else if(theSpecifier instanceof Type){
-                result = itemFromResponse(response, (Type)theSpecifier);
-			}else{
-				throw new IllegalArgumentException("You have to specify Class<?> or Type instance");
-			}
+			Gson gson = SharedGson.getGson();
+			result = gson.fromJson(json, theClass);			
 		}
 		return result;
 	}
+
+	public Object itemFromResponse(@NonNull String json,@NonNull Type theType)
+	{		
+		Class<?> theClass = theType.getClass();
+
+		Object result = createInstanceByInterface(json, theClass);
+		if (result == null)
+		{
+			Gson gson = SharedGson.getGson();
+			result = gson.fromJson(json, theType);			
+		}
+		return result;
+	}
+
+    @Override
+    String getAcceptValueType() {
+        return Handler.PROTOCOL_REQUEST_APP_TYPE_JSON;
+    }
+
+    private Object createInstanceByInterface(String json, Class<?> theClass)
+	{
+		Object result = null;
+
+		if (IResponseItem.class.isAssignableFrom(theClass))
+		{
+			IResponseItem item;
+			item = (IResponseItem) ObjectsFactory.newInstance(theClass);
+			item.initWithJSON(json);
+			result = item;
+		}
+		return result;
+	}
+
 }

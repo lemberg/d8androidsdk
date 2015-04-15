@@ -20,64 +20,40 @@
  *   SOFTWARE.
  */
 
-package com.ls.http.base;
+package com.ls.http.base.handler;
 
-import com.ls.http.base.ICharsetItem;
+import com.google.gson.Gson;
+
 import com.ls.http.base.IPostableItem;
-
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import com.ls.http.base.RequestHandler;
+import com.ls.http.base.SharedGson;
 
 import java.io.UnsupportedEncodingException;
 
-public abstract class RequestHandler
+
+class JSONRequestHandler extends RequestHandler
 {
-	protected final String DEFAULT_CHARSET = "utf-8";
-	
-	protected Object object;
-	
-	public abstract String stringBodyFromItem();
-
-    public abstract String getBodyContentType(String defaultCharset);
-
-    public abstract byte[]getBody(String defaultCharset) throws UnsupportedEncodingException;
-	
-	public RequestHandler()
+	@Override
+	public String stringBodyFromItem()
 	{
-
-	}
-	
-	protected boolean implementsPostableInterface()
-	{
-		return object instanceof IPostableItem;
-	}
-	
-	String getCharset(@Nullable String defaultCharset)
-	{
-		String charset = null;
-		if(object instanceof ICharsetItem)
+		if(implementsPostableInterface())
 		{
-			charset =  ((ICharsetItem)object).getCharset();
+			IPostableItem item = (IPostableItem)this.object;
+			return item.toJsonString();
+		}else{
+			Gson gson = SharedGson.getGson();
+			return gson.toJson(this.object);
 		}
-		
-		if(charset == null)
-		{		
-			charset = defaultCharset;;
-		}
-		
-		if(charset == null)
-		{		
-			charset = DEFAULT_CHARSET;
-		}
-		return charset;
 	}
 
-    public Object getObject() {
-        return object;
+    @Override
+    public String getBodyContentType(String defaultCharset) {
+        return Handler.PROTOCOL_REQUEST_APP_TYPE_JSON + Handler.CONTENT_TYPE_CHARSET_PREFIX + getCharset(defaultCharset);
     }
 
-    public void setObject(Object object) {
-        this.object = object;
+    @Override
+    public byte[] getBody(String defaultCharset) throws UnsupportedEncodingException {
+        String content = this.stringBodyFromItem();
+        return content.getBytes(getCharset(defaultCharset));
     }
-
 }

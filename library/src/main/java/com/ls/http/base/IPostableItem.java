@@ -29,4 +29,6 @@ public interface IPostableItem {
 	public String toJsonString();
 	
 	public String toXMLString();
+
+    public String toPlainText();
 }

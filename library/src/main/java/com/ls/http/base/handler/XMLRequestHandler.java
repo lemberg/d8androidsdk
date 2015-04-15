@@ -20,64 +20,36 @@
  *   SOFTWARE.
  */
 
-package com.ls.http.base;
+package com.ls.http.base.handler;
 
-import com.ls.http.base.ICharsetItem;
+
 import com.ls.http.base.IPostableItem;
-
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import com.ls.http.base.RequestHandler;
 
 import java.io.UnsupportedEncodingException;
 
-public abstract class RequestHandler
+class XMLRequestHandler extends RequestHandler
 {
-	protected final String DEFAULT_CHARSET = "utf-8";
-	
-	protected Object object;
-	
-	public abstract String stringBodyFromItem();
-
-    public abstract String getBodyContentType(String defaultCharset);
-
-    public abstract byte[]getBody(String defaultCharset) throws UnsupportedEncodingException;
-	
-	public RequestHandler()
+	@Override
+	public String stringBodyFromItem()
 	{
-
-	}
-	
-	protected boolean implementsPostableInterface()
-	{
-		return object instanceof IPostableItem;
-	}
-	
-	String getCharset(@Nullable String defaultCharset)
-	{
-		String charset = null;
-		if(object instanceof ICharsetItem)
-		{
-			charset =  ((ICharsetItem)object).getCharset();
-		}
-		
-		if(charset == null)
-		{		
-			charset = defaultCharset;;
-		}
-		
-		if(charset == null)
-		{		
-			charset = DEFAULT_CHARSET;
-		}
-		return charset;
+        if(implementsPostableInterface())
+        {
+            IPostableItem item = (IPostableItem)this.object;
+            return item.toXMLString();
+        }else{
+            return this.object.toString();
+        }
 	}
 
-    public Object getObject() {
-        return object;
+    @Override
+    public String getBodyContentType(String defaultCharset) {
+        return Handler.PROTOCOL_REQUEST_APP_TYPE_XML +  Handler.CONTENT_TYPE_CHARSET_PREFIX + this.getCharset(defaultCharset);
     }
 
-    public void setObject(Object object) {
-        this.object = object;
+    @Override
+    public byte[] getBody(String defaultCharset) throws UnsupportedEncodingException {
+        String content = this.stringBodyFromItem();
+        return content.getBytes(getCharset(defaultCharset));
     }
-
 }

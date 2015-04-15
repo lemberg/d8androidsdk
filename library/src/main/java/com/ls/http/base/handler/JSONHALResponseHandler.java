@@ -20,22 +20,9 @@
  *   SOFTWARE.
  */
 
-package com.ls.http.base;
+package com.ls.http.base.handler;
 
-
-import android.support.annotation.NonNull;
-
-class XMLRequestHandler extends RequestHandler
+class JSONHALResponseHandler extends JSONResponseHandler
 {
-	
-	public XMLRequestHandler(@NonNull Object theObject)
-	{
-		super(theObject);		
-	}
 
-	@Override
-	public String stringBodyFromItem()
-	{
-		return null;//TODO implementt later
-	}
 }

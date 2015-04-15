@@ -20,64 +20,58 @@
  *   SOFTWARE.
  */
 
-package com.ls.http.base;
+package com.ls.http.base.handler;
 
-import com.ls.http.base.ICharsetItem;
-import com.ls.http.base.IPostableItem;
+import com.ls.http.base.IResponseItem;
+import com.ls.http.base.ResponseHandler;
+import com.ls.util.ObjectsFactory;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
-import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 
-public abstract class RequestHandler
+class TextResponseHandler extends ResponseHandler
 {
-	protected final String DEFAULT_CHARSET = "utf-8";
-	
-	protected Object object;
-	
-	public abstract String stringBodyFromItem();
 
-    public abstract String getBodyContentType(String defaultCharset);
-
-    public abstract byte[]getBody(String defaultCharset) throws UnsupportedEncodingException;
-	
-	public RequestHandler()
+	public Object itemFromResponse(@NonNull String data,@NonNull Class<?> theClass)
 	{
-
-	}
-	
-	protected boolean implementsPostableInterface()
-	{
-		return object instanceof IPostableItem;
-	}
-	
-	String getCharset(@Nullable String defaultCharset)
-	{
-		String charset = null;
-		if(object instanceof ICharsetItem)
+		Object result = createInstanceByInterface(data, theClass);
+		if (result == null)
 		{
-			charset =  ((ICharsetItem)object).getCharset();
+			//TODO: implement some additional handling for that case
 		}
-		
-		if(charset == null)
-		{		
-			charset = defaultCharset;;
-		}
-		
-		if(charset == null)
-		{		
-			charset = DEFAULT_CHARSET;
-		}
-		return charset;
+		return result;
 	}
 
-    public Object getObject() {
-        return object;
+	public Object itemFromResponse(@NonNull String data,@NonNull Type theType)
+	{		
+		Class<?> theClass = theType.getClass();
+
+		Object result = createInstanceByInterface(data, theClass);
+		if (result == null)
+		{
+            //TODO: implement some additional handling for that case
+		}
+		return result;
+	}
+
+    @Override
+    String getAcceptValueType() {
+        return Handler.PROTOCOL_REQUEST_APP_TYPE_TEXT;
     }
 
-    public void setObject(Object object) {
-        this.object = object;
-    }
+    private Object createInstanceByInterface(String string, Class<?> theClass)
+	{
+		Object result = null;
+
+		if (IResponseItem.class.isAssignableFrom(theClass))
+		{
+			IResponseItem item;
+			item = (IResponseItem) ObjectsFactory.newInstance(theClass);
+			item.initWithText(string);
+			result = item;
+		}
+		return result;
+	}
 
 }

@@ -20,28 +20,36 @@
  *   SOFTWARE.
  */
 
-package com.ls.http.base;
+package com.ls.http.base.handler;
 
-import android.support.annotation.NonNull;
+import com.ls.http.base.IPostableItem;
+import com.ls.http.base.RequestHandler;
 
-import java.lang.reflect.Type;
+import java.io.UnsupportedEncodingException;
 
-
-class XMLResponseHandler extends ResponseHandler{
-
-@Override
-public Object itemFromResponse(@NonNull String response, @NonNull Class<?> theClass)
+class TextRequestHandler extends RequestHandler
 {
-    Object result = null;
-    //TODO implement parsing
-    return result;
-}
 
-@Override
-public Object itemFromResponse(@NonNull String json, @NonNull Type theType)
-{
-    Object result = null;
-    //TODO implement parsing
-    return result;
-}
+	@Override
+	public String stringBodyFromItem()
+	{
+		if(implementsPostableInterface())
+		{
+			IPostableItem item = (IPostableItem)this.object;
+			return item.toPlainText();
+		}else{
+			return this.object.toString();
+		}
+	}
+
+    @Override
+    public String getBodyContentType(String defaultCharset) {
+        return Handler.PROTOCOL_REQUEST_APP_TYPE_TEXT + Handler.CONTENT_TYPE_CHARSET_PREFIX + getCharset(defaultCharset);
+    }
+
+    @Override
+    public byte[] getBody(String defaultCharset) throws UnsupportedEncodingException {
+        String content = this.stringBodyFromItem();
+        return content.getBytes(getCharset(defaultCharset));
+    }
 }

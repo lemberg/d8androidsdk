@@ -20,20 +20,15 @@
  *   SOFTWARE.
  */
 
-package com.ls.http.base;
+package com.ls.http.base.handler;
 
-import com.google.gson.Gson;
+import com.ls.http.base.IPostableItem;
+import com.ls.http.base.RequestHandler;
 
-import android.support.annotation.NonNull;
+import java.io.UnsupportedEncodingException;
 
-
-class JSONRequestHandler extends RequestHandler
+class MultipartRequestHandler extends RequestHandler
 {
-	
-	public JSONRequestHandler(@NonNull Object theObject)
-	{
-		super(theObject);		
-	}
 
 	@Override
 	public String stringBodyFromItem()
@@ -41,10 +36,20 @@ class JSONRequestHandler extends RequestHandler
 		if(implementsPostableInterface())
 		{
 			IPostableItem item = (IPostableItem)this.object;
-			return item.toJsonString();
+			return item.toPlainText();
 		}else{
-			Gson gson = SharedGson.getGson();
-			return gson.toJson(this.object);
+			return this.object.toString();
 		}
 	}
+
+    @Override
+    public String getBodyContentType(String defaultCharset) {
+        return Handler.PROTOCOL_REQUEST_APP_TYPE_TEXT + Handler.CONTENT_TYPE_CHARSET_PREFIX + getCharset(defaultCharset);
+    }
+
+    @Override
+    public byte[] getBody(String defaultCharset) throws UnsupportedEncodingException {
+        String content = this.stringBodyFromItem();
+        return content.getBytes(getCharset(defaultCharset));
+    }
 }
