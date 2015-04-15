@@ -36,7 +36,7 @@ import java.lang.reflect.Type;
 class JSONResponseHandler extends ResponseHandler
 {
 
-	public Object itemFromResponse(@NonNull String json,@NonNull Class<?> theClass)
+    protected Object itemFromResponse(@NonNull String json,@NonNull Class<?> theClass)
 	{
 		Object result = createInstanceByInterface(json, theClass);
 		if (result == null)
@@ -47,7 +47,7 @@ class JSONResponseHandler extends ResponseHandler
 		return result;
 	}
 
-	public Object itemFromResponse(@NonNull String json,@NonNull Type theType)
+    protected Object itemFromResponse(@NonNull String json,@NonNull Type theType)
 	{		
 		Class<?> theClass = theType.getClass();
 
@@ -61,7 +61,7 @@ class JSONResponseHandler extends ResponseHandler
 	}
 
     @Override
-    String getAcceptValueType() {
+    protected String getAcceptValueType() {
         return Handler.PROTOCOL_REQUEST_APP_TYPE_JSON;
     }
 

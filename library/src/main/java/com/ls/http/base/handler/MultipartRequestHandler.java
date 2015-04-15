@@ -24,13 +24,39 @@ package com.ls.http.base.handler;
 
 import com.ls.http.base.IPostableItem;
 import com.ls.http.base.RequestHandler;
+import com.ls.util.L;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
 
 class MultipartRequestHandler extends RequestHandler
 {
 
-	@Override
+    private MultipartEntityBuilder entity = MultipartEntityBuilder.create();
+    private HttpEntity httpentity;
+
+
+    public MultipartRequestHandler() {
+        this.entity = MultipartEntityBuilder.create();
+        entity.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+    }
+
+    public void setEntity(Object entity)
+    {
+//        entity.addTextBody();
+//
+//        //After setting
+//        httpentity = entity.build();
+    }
+
+    @Override
 	public String stringBodyFromItem()
 	{
 		if(implementsPostableInterface())
@@ -44,12 +70,17 @@ class MultipartRequestHandler extends RequestHandler
 
     @Override
     public String getBodyContentType(String defaultCharset) {
-        return Handler.PROTOCOL_REQUEST_APP_TYPE_TEXT + Handler.CONTENT_TYPE_CHARSET_PREFIX + getCharset(defaultCharset);
+        return httpentity.getContentType().getValue();
     }
 
     @Override
     public byte[] getBody(String defaultCharset) throws UnsupportedEncodingException {
-        String content = this.stringBodyFromItem();
-        return content.getBytes(getCharset(defaultCharset));
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try {
+            httpentity.writeTo(bos);
+        } catch (IOException e) {
+            L.e("IOException writing to ByteArrayOutputStream");
+        }
+        return bos.toByteArray();
     }
 }

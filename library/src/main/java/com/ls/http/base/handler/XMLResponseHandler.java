@@ -34,7 +34,7 @@ import java.lang.reflect.Type;
 class XMLResponseHandler extends ResponseHandler {
 
     @Override
-    public Object itemFromResponse(@NonNull String response, @NonNull Class<?> theClass) {
+    protected Object itemFromResponse(@NonNull String response, @NonNull Class<?> theClass) {
         Object result = createInstanceByInterface(response, theClass);
         if (result == null)
         {
@@ -44,7 +44,7 @@ class XMLResponseHandler extends ResponseHandler {
     }
 
     @Override
-    public Object itemFromResponse(@NonNull String json, @NonNull Type theType) {
+    protected Object itemFromResponse(@NonNull String json, @NonNull Type theType) {
         Class<?> theClass = theType.getClass();
 
         Object result = createInstanceByInterface(json, theClass);
@@ -56,7 +56,7 @@ class XMLResponseHandler extends ResponseHandler {
     }
 
     @Override
-    String getAcceptValueType() {
+    protected String getAcceptValueType() {
         return Handler.PROTOCOL_REQUEST_APP_TYPE_XML;
     }
 

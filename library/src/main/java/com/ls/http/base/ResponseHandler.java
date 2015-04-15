@@ -29,12 +29,12 @@ import java.lang.reflect.Type;
 
 public abstract class ResponseHandler
 {
-	abstract Object itemFromResponse(@NonNull String response,@NonNull Class<?> theClass);
-	abstract Object itemFromResponse(@NonNull String response,@NonNull Type theType);
+    protected abstract Object itemFromResponse(@NonNull String response, @NonNull Class<?> theClass);
+    protected abstract Object itemFromResponse(@NonNull String response, @NonNull Type theType);
 
-    abstract String getAcceptValueType();
-	
-	Object itemFromResponseWithSpecifier(String response, Object theSpecifier)
+    protected abstract String getAcceptValueType();
+
+    protected Object itemFromResponseWithSpecifier(String response, Object theSpecifier)
 	{
 		Object result = null;
 		if(response != null && theSpecifier != null)

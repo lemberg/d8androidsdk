@@ -33,7 +33,7 @@ import java.lang.reflect.Type;
 class TextResponseHandler extends ResponseHandler
 {
 
-	public Object itemFromResponse(@NonNull String data,@NonNull Class<?> theClass)
+    protected Object itemFromResponse(@NonNull String data,@NonNull Class<?> theClass)
 	{
 		Object result = createInstanceByInterface(data, theClass);
 		if (result == null)
@@ -43,7 +43,7 @@ class TextResponseHandler extends ResponseHandler
 		return result;
 	}
 
-	public Object itemFromResponse(@NonNull String data,@NonNull Type theType)
+    protected Object itemFromResponse(@NonNull String data,@NonNull Type theType)
 	{		
 		Class<?> theClass = theType.getClass();
 
@@ -56,7 +56,7 @@ class TextResponseHandler extends ResponseHandler
 	}
 
     @Override
-    String getAcceptValueType() {
+    protected String getAcceptValueType() {
         return Handler.PROTOCOL_REQUEST_APP_TYPE_TEXT;
     }
 
