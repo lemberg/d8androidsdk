@@ -34,7 +34,7 @@ import com.ls.http.base.BaseRequest.OnResponseListener;
 import com.ls.http.base.BaseRequest.RequestFormat;
 import com.ls.http.base.BaseRequest.RequestMethod;
 import com.ls.http.base.ResponseData;
-import com.ls.util.VolleyResponceUtils;
+import com.ls.util.VolleyResponseUtils;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -198,7 +198,7 @@ public class DrupalClient implements OnResponseListener {
     }
 
     private ResponseData performRequestLoginRestoreAsynchrounous(final BaseRequest request, Object tag, final OnResponseListener listener) {
-        final OnResponseListener loginRestoreResponceListener = new OnResponseListener() {
+        final OnResponseListener loginRestoreResponseListener = new OnResponseListener() {
             @Override
             public void onResponseReceived(ResponseData data, Object tag) {
                 if (listener != null) {
@@ -208,8 +208,8 @@ public class DrupalClient implements OnResponseListener {
 
             @Override
             public void onError(VolleyError error, Object tag) {
-                if (VolleyResponceUtils.isAuthError(error) ||
-                        (loginManager.domainDependsOnLogin() && VolleyResponceUtils.isNotFoundError(error))) {
+                if (VolleyResponseUtils.isAuthError(error) ||
+                        (loginManager.domainDependsOnLogin() && VolleyResponseUtils.isNotFoundError(error))) {
                     if (loginManager.canRestoreLogin()) {
                         new RestoreLoginAttemptTask(request, listener, tag, error).execute();
                     } else {
@@ -233,11 +233,11 @@ public class DrupalClient implements OnResponseListener {
             }
         };
 
-        return performRequestNoLoginRestore(request, tag, loginRestoreResponceListener, false);
+        return performRequestNoLoginRestore(request, tag, loginRestoreResponseListener, false);
     }
 
     private ResponseData performRequestLoginRestoreSynchrounous(final BaseRequest request, Object tag, final OnResponseListener listener) {
-        final OnResponseListener loginRestoreResponceListener = new OnResponseListener() {
+        final OnResponseListener loginRestoreResponseListener = new OnResponseListener() {
             @Override
             public void onResponseReceived(ResponseData data, Object tag) {
                 if (listener != null) {
@@ -247,7 +247,7 @@ public class DrupalClient implements OnResponseListener {
 
             @Override
             public void onError(VolleyError error, Object tag) {
-                if (VolleyResponceUtils.isAuthError(error)) {
+                if (VolleyResponseUtils.isAuthError(error)) {
                     if (!loginManager.canRestoreLogin()) {
                         if (listener != null) {
                             listener.onError(error, tag);
@@ -268,13 +268,13 @@ public class DrupalClient implements OnResponseListener {
             }
         };
 
-        ResponseData result = performRequestNoLoginRestore(request, tag, loginRestoreResponceListener, true);
-        if (VolleyResponceUtils.isAuthError(result.getError()) ||
-                (loginManager.domainDependsOnLogin() && VolleyResponceUtils.isNotFoundError(result.getError()))) {
+        ResponseData result = performRequestNoLoginRestore(request, tag, loginRestoreResponseListener, true);
+        if (VolleyResponseUtils.isAuthError(result.getError()) ||
+                (loginManager.domainDependsOnLogin() && VolleyResponseUtils.isNotFoundError(result.getError()))) {
             if (loginManager.canRestoreLogin()) {
                 boolean restored = loginManager.restoreLoginData(queue);
                 if (restored) {
-                    result = performRequestNoLoginRestore(request, tag, new OnResponceAuthListenerDecorator(listener), true);
+                    result = performRequestNoLoginRestore(request, tag, new OnResponseAuthListenerDecorator(listener), true);
                 } else {
                     listener.onError(result.getError(), tag);
                 }
@@ -319,6 +319,27 @@ public class DrupalClient implements OnResponseListener {
         request.setRequestHeaders(entity.getItemRequestHeaders(RequestMethod.POST));
         return this.performRequest(request, tag, listener, synchronous);
     }
+
+    /**
+     * @param entity                 Object, specifying request parameters
+     * @param responseClassSpecifier Class<?> or Type of the object, returned as data field of ResultData object, can be null if you don't need one.
+     * @param tag                    will be attached to request and returned in listener callback, can be used in order to cancel request
+     * @param synchronous            if true - result will be returned synchronously.
+     * @return ResponseData object or null if request was asynchronous.
+     */
+    public ResponseData putObject(AbstractBaseDrupalEntity entity, Object responseClassSpecifier, Object tag, OnResponseListener listener, boolean synchronous) {
+        BaseRequest request = new BaseRequest(RequestMethod.PUT, getURLForEntity(entity), this.requestFormat, responseClassSpecifier);
+        Map<String, String> postParams = entity.getItemRequestPostParameters();
+        if (postParams == null || postParams.isEmpty()) {
+            request.setObjectToPost(entity.getManagedData());
+        } else {
+            request.setPostParameters(postParams);
+        }
+        request.setGetParameters(entity.getItemRequestGetParameters(RequestMethod.PUT));
+        request.setRequestHeaders(entity.getItemRequestHeaders(RequestMethod.PUT));
+        return this.performRequest(request, tag, listener, synchronous);
+    }
+
 
     /**
      * @param entity                 Object, specifying request parameters, must have "createFootPrint" called before.
@@ -548,11 +569,11 @@ public class DrupalClient implements OnResponseListener {
         }
     }
 
-    private class OnResponceAuthListenerDecorator implements OnResponseListener {
+    private class OnResponseAuthListenerDecorator implements OnResponseListener {
 
         private OnResponseListener listener;
 
-        OnResponceAuthListenerDecorator(OnResponseListener listener) {
+        OnResponseAuthListenerDecorator(OnResponseListener listener) {
             this.listener = listener;
         }
 
@@ -565,7 +586,7 @@ public class DrupalClient implements OnResponseListener {
 
         @Override
         public void onError(VolleyError error, Object tag) {
-            if (VolleyResponceUtils.isAuthError(error)) {
+            if (VolleyResponseUtils.isAuthError(error)) {
                 loginManager.onLoginRestoreFailed();
             }
             if (listener != null) {
@@ -602,7 +623,7 @@ public class DrupalClient implements OnResponseListener {
 
                     boolean restored = loginManager.restoreLoginData(queue);
                     if (restored) {
-                        performRequestNoLoginRestore(request, tag, new OnResponceAuthListenerDecorator(listener), false);
+                        performRequestNoLoginRestore(request, tag, new OnResponseAuthListenerDecorator(listener), false);
                     } else {
                         listener.onError(originError, tag);
                     }

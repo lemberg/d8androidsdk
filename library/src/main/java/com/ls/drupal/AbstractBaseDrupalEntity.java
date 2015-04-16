@@ -32,7 +32,7 @@ import com.ls.http.base.ICharsetItem;
 import com.ls.http.base.ResponseData;
 import com.ls.util.ObjectComparator;
 import com.ls.util.ObjectComparator.Snapshot;
-import com.ls.util.VolleyResponceUtils;
+import com.ls.util.VolleyResponseUtils;
 
 import junit.framework.Assert;
 
@@ -126,6 +126,24 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 		return result;
 	}
 
+    /**
+     * @param synchronous
+     *            if true - request will be performed synchronously.
+     * @param resultClass
+     *            class of result or null if no result needed.
+     * @param tag Object tag, passer to listener after request was finished or failed because of exception
+     * @param listener
+     * @return @class ResponseData entity, containing server response string and
+     *         code or error in case of synchronous request, null otherwise
+     */
+    public ResponseData putToServer(boolean synchronous, Class<?> resultClass, Object tag, OnEntityRequestListener listener)
+    {
+        Assert.assertNotNull("You have to specify drupal client in order to perform requests", this.drupalClient);
+        DrupalEntityTag drupalTag = new DrupalEntityTag(false, tag, listener);
+        ResponseData result = this.drupalClient.putObject(this, resultClass, drupalTag, this, synchronous);
+        return result;
+    }
+
 	/**
 	 * @param synchronous
 	 *            if true - request will be performed synchronously.
@@ -194,7 +212,7 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 			entityTag.listener.onRequestFailed(this,entityTag.requestTag,error);
 		}
 
-        if(VolleyResponceUtils.isNetworkingError(error))
+        if(VolleyResponseUtils.isNetworkingError(error))
         {
             ConnectionManager.instance().setConnected(false);
         }

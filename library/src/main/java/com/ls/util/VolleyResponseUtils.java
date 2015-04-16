@@ -32,7 +32,7 @@ import java.net.HttpURLConnection;
 /**
  * Created by Lemberg-i5 on 07.10.2014.
  */
-public class VolleyResponceUtils {
+public class VolleyResponseUtils {
     public static boolean isNetworkingError(VolleyError volleyError)
     {
         if (volleyError.networkResponse == null) {
