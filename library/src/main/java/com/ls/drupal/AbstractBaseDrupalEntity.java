@@ -107,8 +107,9 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 		this.drupalClient = client;	
 	}
 	
-	
+	@Deprecated
 	/**
+     * Method is deprecated. Use {@link #postToServer(boolean, Class, Object, com.ls.drupal.AbstractBaseDrupalEntity.OnEntityRequestListener)} method. instead
 	 * @param synchronous
 	 *            if true - request will be performed synchronously.
 	 * @param resultClass
@@ -120,11 +121,26 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	 */
 	public ResponseData pushToServer(boolean synchronous, Class<?> resultClass, Object tag, OnEntityRequestListener listener)
 	{
-		Assert.assertNotNull("You have to specify drupal client in order to perform requests", this.drupalClient);
-		DrupalEntityTag drupalTag = new DrupalEntityTag(false, tag, listener);
-		ResponseData result = this.drupalClient.postObject(this, resultClass, drupalTag, this, synchronous);		
-		return result;
+		return postToServer(synchronous,resultClass,tag,listener);
 	}
+
+    /**
+     * @param synchronous
+     *            if true - request will be performed synchronously.
+     * @param resultClass
+     *            class of result or null if no result needed.
+     * @param tag Object tag, passer to listener after request was finished or failed because of exception
+     * @param listener
+     * @return @class ResponseData entity, containing server response string and
+     *         code or error in case of synchronous request, null otherwise
+     */
+    public ResponseData postToServer(boolean synchronous, Class<?> resultClass, Object tag, OnEntityRequestListener listener)
+    {
+        Assert.assertNotNull("You have to specify drupal client in order to perform requests", this.drupalClient);
+        DrupalEntityTag drupalTag = new DrupalEntityTag(false, tag, listener);
+        ResponseData result = this.drupalClient.postObject(this, resultClass, drupalTag, this, synchronous);
+        return result;
+    }
 
     /**
      * @param synchronous
