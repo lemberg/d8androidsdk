@@ -33,6 +33,7 @@ import com.ls.http.base.BaseRequest;
 import com.ls.http.base.BaseRequest.OnResponseListener;
 import com.ls.http.base.BaseRequest.RequestFormat;
 import com.ls.http.base.BaseRequest.RequestMethod;
+import com.ls.http.base.RequestConfig;
 import com.ls.http.base.ResponseData;
 import com.ls.util.VolleyResponseUtils;
 
@@ -293,8 +294,8 @@ public class DrupalClient implements OnResponseListener {
      * @param synchronous            if true - result will be returned synchronously.
      * @return ResponseData object or null if request was asynchronous.
      */
-    public ResponseData getObject(AbstractBaseDrupalEntity entity, Object responseClassSpecifier, Object tag, OnResponseListener listener, boolean synchronous) {
-        BaseRequest request = new BaseRequest(RequestMethod.GET, getURLForEntity(entity), this.requestFormat, responseClassSpecifier);
+    public ResponseData getObject(AbstractBaseDrupalEntity entity, RequestConfig config, Object tag, OnResponseListener listener, boolean synchronous) {
+        BaseRequest request = new BaseRequest(RequestMethod.GET, getURLForEntity(entity), this.requestFormat, config);
         request.setGetParameters(entity.getItemRequestGetParameters(RequestMethod.GET));
         request.setRequestHeaders(entity.getItemRequestHeaders(RequestMethod.GET));
         return this.performRequest(request, tag, listener, synchronous);
@@ -383,6 +384,21 @@ public class DrupalClient implements OnResponseListener {
      */
     public void setRequestTimeout(int requestTimeout) {
         this.requestTimeout = requestTimeout;
+    }
+
+    private RequestConfig applyDefaultFormat(RequestConfig config)
+    {
+        if(config == null)
+        {
+            config = new RequestConfig();
+        }
+
+        if(config.getRequestFormat()==null)
+        {
+            config.setRequestFormat(this.requestFormat);
+        }
+
+        return config;
     }
 
     private String getURLForEntity(AbstractBaseDrupalEntity entity) {
