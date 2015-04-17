@@ -22,19 +22,24 @@
 
 package com.ls.http.base.handler;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import com.ls.http.base.IPostableItem;
 import com.ls.http.base.RequestHandler;
+import com.ls.http.base.handler.multipart.IMultiPartEntityPart;
 import com.ls.util.L;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.ContentBody;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.Map;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 class MultipartRequestHandler extends RequestHandler
 {
@@ -51,12 +56,60 @@ class MultipartRequestHandler extends RequestHandler
     @Override
     public void setObject(Object object) {
         super.setObject(object);
-//        entity.addTextBody();
-//
-//        //After setting
-//        httpentity = entity.build();
+        formMultipartEntity(object);
     }
 
+    private void formMultipartEntity(Object source)
+    {
+        Class<?> currentClass = source.getClass();
+        while (!Object.class.equals(currentClass))
+        {
+            Field[] fields = currentClass.getDeclaredFields();
+            for (int counter = 0; counter < fields.length; counter++)
+            {
+                Field field = fields[counter];
+                Expose expose = field.getAnnotation(Expose.class);
+                if (expose != null && !expose.deserialize() || Modifier.isTransient(field.getModifiers()))
+                {
+                    continue;// We don't have to copy ignored fields.
+                }
+                field.setAccessible(true);
+                Object value;
+
+                String name;
+                SerializedName serializableName = field.getAnnotation(SerializedName.class);
+                if(serializableName != null)
+                {
+                    name = serializableName.value();
+                }else{
+                    name = field.getName();
+                }
+                try
+                {
+                    value = field.get(source);
+                    if(value != null)
+                    {
+                        if(value instanceof IMultiPartEntityPart) {
+                            ContentBody body = ((IMultiPartEntityPart)source).getContentBody();
+                            entity.addPart(name,body);
+                        }else{
+                            entity.addTextBody(name,value.toString());
+                        }
+                    }
+                } catch (IllegalAccessException e)
+                {
+                    e.printStackTrace();
+                } catch (IllegalArgumentException e)
+                {
+                    e.printStackTrace();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            }
+            currentClass = currentClass.getSuperclass();
+        }
+        httpentity = entity.build();
+    }
 
     @Override
 	public String stringBodyFromItem()
