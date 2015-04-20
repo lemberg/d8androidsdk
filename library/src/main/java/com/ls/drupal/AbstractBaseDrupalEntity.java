@@ -27,8 +27,10 @@ package com.ls.drupal;
 import com.google.gson.annotations.Expose;
 
 import com.android.volley.VolleyError;
+import com.ls.http.base.BaseRequest;
 import com.ls.http.base.BaseRequest.RequestMethod;
 import com.ls.http.base.ICharsetItem;
+import com.ls.http.base.RequestConfig;
 import com.ls.http.base.ResponseData;
 import com.ls.util.ObjectComparator;
 import com.ls.util.ObjectComparator.Snapshot;
@@ -77,7 +79,7 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 
 
 	/**	 
-	 * @param method is instance od {@link com.ls.http.base.BaseRequest.RequestMethod} enum, this method is called for. it can be "GET", "POST", "PATCH" or "DELETE".
+	 * @param method is instance od {@link com.ls.http.base.BaseRequest.RequestMethod} enum, this method is called for. it can be "GET", "POST", "PUT" ,"PATCH" or "DELETE".
 	 * @return parameters for the request method specified.
 	 */
 	protected abstract Map<String, String> getItemRequestGetParameters(RequestMethod method);
@@ -89,7 +91,7 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
     Object getManagedData();
 
     /**
-     * @param method is instance od {@link com.ls.http.base.BaseRequest.RequestMethod} enum, this method is called for. it can be "GET", "POST", "PATCH" or "DELETE".
+     * @param method is instance od {@link com.ls.http.base.BaseRequest.RequestMethod} enum, this method is called for. it can be "GET", "POST", "PUT" ,"PATCH" or "DELETE".
      * @return headers for the request method specified.
      */
     protected Map<String, String> getItemRequestHeaders(RequestMethod method){
@@ -138,7 +140,7 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
     {
         Assert.assertNotNull("You have to specify drupal client in order to perform requests", this.drupalClient);
         DrupalEntityTag drupalTag = new DrupalEntityTag(false, tag, listener);
-        ResponseData result = this.drupalClient.postObject(this, resultClass, drupalTag, this, synchronous);
+        ResponseData result = this.drupalClient.postObject(this, getRequestConfig(RequestMethod.POST,resultClass), drupalTag, this, synchronous);
         return result;
     }
 
@@ -156,7 +158,7 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
     {
         Assert.assertNotNull("You have to specify drupal client in order to perform requests", this.drupalClient);
         DrupalEntityTag drupalTag = new DrupalEntityTag(false, tag, listener);
-        ResponseData result = this.drupalClient.putObject(this, resultClass, drupalTag, this, synchronous);
+        ResponseData result = this.drupalClient.putObject(this, getRequestConfig(RequestMethod.PUT,resultClass), drupalTag, this, synchronous);
         return result;
     }
 
@@ -175,9 +177,9 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 		ResponseData result;
         Map postParams = this.getItemRequestPostParameters();
         if(postParams == null || postParams.isEmpty()) {
-            result = this.drupalClient.getObject(this, this.getManagedDataClassSpecifyer(), drupalTag, this, synchronous);
+            result = this.drupalClient.getObject(this, getRequestConfig(RequestMethod.GET,this.getManagedDataClassSpecifyer()), drupalTag, this, synchronous);
         }else{
-            result = this.drupalClient.postObject(this, this.getManagedDataClassSpecifyer(), drupalTag, this, synchronous);
+            result = this.drupalClient.postObject(this, getRequestConfig(RequestMethod.POST,this.getManagedDataClassSpecifyer()), drupalTag, this, synchronous);
         }
 		;		
 		return result;
@@ -197,7 +199,7 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	{
 		Assert.assertNotNull("You have to specify drupal client in order to perform requests", this.drupalClient);
 		DrupalEntityTag drupalTag = new DrupalEntityTag(false, tag, listener);
-		ResponseData result = this.drupalClient.deleteObject(this, resultClass, drupalTag, this, synchronous);		
+		ResponseData result = this.drupalClient.deleteObject(this,getRequestConfig(RequestMethod.DELETE,resultClass), drupalTag, this, synchronous);
 		return result;
 	}
 
@@ -257,6 +259,21 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 		Object consumer = this.getManagedDataChecked();
 		AbstractBaseDrupalEntity.consumeObject(consumer, entity);
 	}
+
+    /**
+     * @param method
+     * @param resultClass
+     *            class of result or null if no result needed.
+
+     */
+    protected RequestConfig getRequestConfig(RequestMethod method,Object resultClass)
+    {
+        RequestConfig config = new RequestConfig(resultClass);
+        config.setRequestFormat(getItemRequestFormat(method));
+        config.setResponseFormat(getItemResponseFormat(method));
+        return config;
+    }
+
 	
 	/**
 	 * Utility method, used to clone all entities non-transient fields to the consumer
@@ -309,6 +326,22 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	{
 		return this.getManagedData().getClass();
 	}
+
+    /**
+     * @param method is instance od {@link com.ls.http.base.BaseRequest.RequestMethod} enum, this method is called for. it can be "GET", "POST", "PUT" ,"PATCH" or "DELETE".
+     * @return the format entity will be serialized to. You can override this method in order to customize return. If null returned - default client format will be performed.
+     */
+    protected BaseRequest.RequestFormat getItemRequestFormat(RequestMethod method){
+        return null;
+    };
+
+    /**
+     * @param method is instance od {@link com.ls.http.base.BaseRequest.RequestMethod} enum, this method is called for. it can be "GET", "POST", "PUT" ,"PATCH" or "DELETE".
+     * @return the format response entity will be formatted to. You can override this method in order to customize return. If null returned - default client format will be performed.
+     */
+    protected BaseRequest.ResponseFormat getItemResponseFormat(RequestMethod method){
+        return null;
+    };
 
 	public DrupalClient getDrupalClient()
 	{
@@ -369,7 +402,7 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	public ResponseData patchServerData(boolean synchronous, Class<?> resultClass, Object tag, OnEntityRequestListener listener) throws IllegalStateException
 	{
 		DrupalEntityTag drupalTag = new DrupalEntityTag(false, tag, listener);
-		ResponseData result = this.drupalClient.patchObject(this, resultClass, drupalTag, this, synchronous);
+		ResponseData result = this.drupalClient.patchObject(this, getRequestConfig(RequestMethod.PATCH,resultClass), drupalTag, this, synchronous);
 		return result;
 	}
 

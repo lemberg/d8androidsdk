@@ -108,7 +108,13 @@ public class BaseRequest extends StringRequest {
     protected BaseRequest(RequestMethod requestMethod, String requestUrl,RequestConfig requestConfig, RequestFuture<String> lock) {
         super(requestMethod.methodCode, requestUrl, lock, lock);
         this.requestFormat = requestConfig.getRequestFormat();
-        this.responseFormat = requestConfig.getResponseFormat();
+
+        ResponseFormat responseFormatL = requestConfig.getResponseFormat();
+        if(responseFormatL == null)
+        {
+            responseFormatL = this.requestFormat.toResponse();
+        }
+        this.responseFormat = responseFormatL;
         this.syncLock = lock;
         this.initRequestHeaders();
         this.responseClasSpecifier = requestConfig.getResponseClassSpecifier();

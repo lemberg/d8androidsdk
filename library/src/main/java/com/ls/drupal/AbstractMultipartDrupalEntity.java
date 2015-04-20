@@ -23,6 +23,7 @@
 
 package com.ls.drupal;
 
+import com.ls.http.base.BaseRequest;
 import com.ls.http.base.ResponseData;
 
 import android.support.annotation.NonNull;
@@ -51,4 +52,14 @@ public abstract class AbstractMultipartDrupalEntity extends AbstractBaseDrupalEn
         throw new UnsupportedOperationException("This operation isn't supported by multipart entity");
     }
 
+    @Override
+    protected BaseRequest.RequestFormat getItemRequestFormat(BaseRequest.RequestMethod method) {
+        switch (method)
+        {
+            case PUT:
+            case POST:
+                return BaseRequest.RequestFormat.MULTIPART;
+        }
+        return null;
+    }
 }

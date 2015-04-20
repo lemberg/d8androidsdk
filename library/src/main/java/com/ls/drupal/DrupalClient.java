@@ -289,13 +289,13 @@ public class DrupalClient implements OnResponseListener {
 
     /**
      * @param entity                 Object, specifying request parameters, retrieved data will be merged to this object.
-     * @param responseClassSpecifier Class<?> or Type of the object, returned as data field of ResultData object, can be null if you don't need one.
+     * @param config                 Entity, containing additional request parameters
      * @param tag                    will be attached to request and returned in listener callback, can be used in order to cancel request
      * @param synchronous            if true - result will be returned synchronously.
      * @return ResponseData object or null if request was asynchronous.
      */
     public ResponseData getObject(AbstractBaseDrupalEntity entity, RequestConfig config, Object tag, OnResponseListener listener, boolean synchronous) {
-        BaseRequest request = new BaseRequest(RequestMethod.GET, getURLForEntity(entity), this.requestFormat, config);
+        BaseRequest request = new BaseRequest(RequestMethod.GET, getURLForEntity(entity), applyDefaultFormat(config));
         request.setGetParameters(entity.getItemRequestGetParameters(RequestMethod.GET));
         request.setRequestHeaders(entity.getItemRequestHeaders(RequestMethod.GET));
         return this.performRequest(request, tag, listener, synchronous);
@@ -303,13 +303,13 @@ public class DrupalClient implements OnResponseListener {
 
     /**
      * @param entity                 Object, specifying request parameters
-     * @param responseClassSpecifier Class<?> or Type of the object, returned as data field of ResultData object, can be null if you don't need one.
+     * @param config                 Entity, containing additional request parameters
      * @param tag                    will be attached to request and returned in listener callback, can be used in order to cancel request
      * @param synchronous            if true - result will be returned synchronously.
      * @return ResponseData object or null if request was asynchronous.
      */
-    public ResponseData postObject(AbstractBaseDrupalEntity entity, Object responseClassSpecifier, Object tag, OnResponseListener listener, boolean synchronous) {
-        BaseRequest request = new BaseRequest(RequestMethod.POST, getURLForEntity(entity), this.requestFormat, responseClassSpecifier);
+    public ResponseData postObject(AbstractBaseDrupalEntity entity, RequestConfig config, Object tag, OnResponseListener listener, boolean synchronous) {
+        BaseRequest request = new BaseRequest(RequestMethod.POST, getURLForEntity(entity),  applyDefaultFormat(config));
         Map<String, String> postParams = entity.getItemRequestPostParameters();
         if (postParams == null || postParams.isEmpty()) {
             request.setObjectToPost(entity.getManagedData());
@@ -323,13 +323,13 @@ public class DrupalClient implements OnResponseListener {
 
     /**
      * @param entity                 Object, specifying request parameters
-     * @param responseClassSpecifier Class<?> or Type of the object, returned as data field of ResultData object, can be null if you don't need one.
+     * @param config                 Entity, containing additional request parameters
      * @param tag                    will be attached to request and returned in listener callback, can be used in order to cancel request
      * @param synchronous            if true - result will be returned synchronously.
      * @return ResponseData object or null if request was asynchronous.
      */
-    public ResponseData putObject(AbstractBaseDrupalEntity entity, Object responseClassSpecifier, Object tag, OnResponseListener listener, boolean synchronous) {
-        BaseRequest request = new BaseRequest(RequestMethod.PUT, getURLForEntity(entity), this.requestFormat, responseClassSpecifier);
+    public ResponseData putObject(AbstractBaseDrupalEntity entity, RequestConfig config, Object tag, OnResponseListener listener, boolean synchronous) {
+        BaseRequest request = new BaseRequest(RequestMethod.PUT, getURLForEntity(entity), applyDefaultFormat(config));
         Map<String, String> postParams = entity.getItemRequestPostParameters();
         if (postParams == null || postParams.isEmpty()) {
             request.setObjectToPost(entity.getManagedData());
@@ -344,13 +344,13 @@ public class DrupalClient implements OnResponseListener {
 
     /**
      * @param entity                 Object, specifying request parameters, must have "createFootPrint" called before.
-     * @param responseClassSpecifier Class<?> or Type of the object, returned as data field of ResultData object, can be null if you don't need one.
+     * @param config                 Entity, containing additional request parameters
      * @param tag                    will be attached to request and returned in listener callback, can be used in order to cancel request
      * @param synchronous            if true - result will be returned synchronously.
      * @return ResponseData object or null if request was asynchronous.
      */
-    public ResponseData patchObject(AbstractBaseDrupalEntity entity, Object responseClassSpecifier, Object tag, OnResponseListener listener, boolean synchronous) {
-        BaseRequest request = new BaseRequest(RequestMethod.PATCH, getURLForEntity(entity), this.requestFormat, responseClassSpecifier);
+    public ResponseData patchObject(AbstractBaseDrupalEntity entity, RequestConfig config, Object tag, OnResponseListener listener, boolean synchronous) {
+        BaseRequest request = new BaseRequest(RequestMethod.PATCH, getURLForEntity(entity), applyDefaultFormat(config));
         request.setGetParameters(entity.getItemRequestGetParameters(RequestMethod.PATCH));
         request.setObjectToPost(entity.getPatchObject());
         request.setRequestHeaders(entity.getItemRequestHeaders(RequestMethod.PATCH));
@@ -359,14 +359,14 @@ public class DrupalClient implements OnResponseListener {
 
     /**
      * @param entity                 Object, specifying request parameters
-     * @param responseClassSpecifier Class<?> or Type of the object, returned as data field of ResultData object, can be null if you don't need one.
+     * @param config                 Entity, containing additional request parameters
      * @param tag                    will be attached to request and returned in listener callback, can be used in order to cancel request
      * @param synchronous            if true - result will be returned synchronously.
      * @return ResponseData object or null if request was asynchronous.
      */
-    public ResponseData deleteObject(AbstractBaseDrupalEntity entity, Object responseClassSpecifier, Object tag, OnResponseListener listener,
+    public ResponseData deleteObject(AbstractBaseDrupalEntity entity, RequestConfig config, Object tag, OnResponseListener listener,
             boolean synchronous) {
-        BaseRequest request = new BaseRequest(RequestMethod.DELETE, getURLForEntity(entity), this.requestFormat, responseClassSpecifier);
+        BaseRequest request = new BaseRequest(RequestMethod.DELETE, getURLForEntity(entity), applyDefaultFormat(config));
         request.setGetParameters(entity.getItemRequestGetParameters(RequestMethod.DELETE));
         request.setRequestHeaders(entity.getItemRequestHeaders(RequestMethod.DELETE));
         return this.performRequest(request, tag, listener, synchronous);
