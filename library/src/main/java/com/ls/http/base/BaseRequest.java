@@ -116,11 +116,11 @@ public class BaseRequest extends StringRequest {
         }
         this.responseFormat = responseFormatL;
         this.syncLock = lock;
+        this.requestHandler = Handler.getRequestHandlerForFormat(this.requestFormat);
+        this.responseHandler = Handler.getResponseHandlerForFormat(this.responseFormat);
         this.initRequestHeaders();
         this.responseClasSpecifier = requestConfig.getResponseClassSpecifier();
         this.result = new ResponseData();
-        this.requestHandler = Handler.getRequestHandlerForFormat(this.requestFormat);
-        this.responseHandler = Handler.getResponseHandlerForFormat(this.responseFormat);
     }
 
 
