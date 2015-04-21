@@ -34,6 +34,8 @@ import com.android.volley.toolbox.StringRequest;
 import com.ls.http.base.handler.Handler;
 import com.ls.util.L;
 
+import org.apache.http.Header;
+
 import android.net.Uri;
 
 import java.io.UnsupportedEncodingException;
@@ -244,6 +246,11 @@ public class BaseRequest extends StringRequest {
 
     public void addRequestHeader(String key, String value) {
         this.requestHeaders.put(key, value);
+    }
+
+    public void addRequestHeader(Header header)
+    {
+        addRequestHeader(header.getName(),header.getValue());
     }
 
     // Post parameters handling

@@ -20,40 +20,57 @@
  *   SOFTWARE.
  */
 
-package com.ls.util;
+package com.ls.drupal8demo.login;
 
-import com.android.volley.NetworkError;
-import com.android.volley.NoConnectionError;
-import com.android.volley.TimeoutError;
-import com.android.volley.VolleyError;
+import com.android.volley.RequestQueue;
+import com.ls.drupal.login.ILoginManager;
+import com.ls.http.base.BaseRequest;
+import com.ls.util.L;
 
-import java.net.HttpURLConnection;
+import org.apache.http.Header;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.impl.auth.BasicScheme;
 
 /**
- * Created by Lemberg-i5 on 07.10.2014.
+ * Created on 20.04.2015.
  */
-public class VolleyResponseUtils {
-    public static boolean isNetworkingError(VolleyError volleyError)
-    {
-        if (volleyError.networkResponse == null) {
-            if (volleyError instanceof TimeoutError) {
-               return true;
-            }
+public class AppLoginManager implements ILoginManager {
 
-            if (volleyError instanceof NoConnectionError) {
-                return true;
-            }
+    @Override
+    public Object login(String userName, String password, RequestQueue queue) {
+        return null;
+    }
 
-            if (volleyError instanceof NetworkError) {
-                return true;
-            }
-
-        }
+    @Override
+    public boolean shouldRestoreLogin() {
         return false;
     }
 
-    public static boolean isAuthError(VolleyError volleyError){
-        return volleyError != null && volleyError.networkResponse != null
-                && volleyError.networkResponse.statusCode == HttpURLConnection.HTTP_UNAUTHORIZED;
+    @Override
+    public boolean canRestoreLogin() {
+        return false;
+    }
+
+    @Override
+    public void applyLoginDataToRequest(BaseRequest request) {
+
+        Header auth = BasicScheme.authenticate(new UsernamePasswordCredentials("d8", "lemberg"),
+                "UTF-8", false);
+        request.addRequestHeader(auth);
+    }
+
+    @Override
+    public boolean restoreLoginData(RequestQueue queue) {
+        return false;
+    }
+
+    @Override
+    public void onLoginRestoreFailed() {
+
+    }
+
+    @Override
+    public Object logout(RequestQueue queue) {
+        return null;
     }
 }

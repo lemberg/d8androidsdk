@@ -48,12 +48,6 @@ public interface ILoginManager {
      */
     boolean canRestoreLogin();
 
-    /**
-     * Return true in case if base URL depends on login. In that case background relogin will be triggered in case of 404 exception
-     * @return
-     */
-    boolean domainDependsOnLogin();
-
 	/**
 	 * Add necessary authentication data to request headers or post/get parameters
 	 * @param request

@@ -41,7 +41,7 @@ public class Page extends AbstractDrupalArrayEntity<ArticlePreview> {
 	}
 
 	@Override
-	protected String getPath() {
+	public String getPath() {
 		if (mCategoryId == null) {
 			return "blog-rest";
 		} else {

@@ -47,11 +47,6 @@ public class AnonymousLoginManager implements ILoginManager
     }
 
     @Override
-    public boolean domainDependsOnLogin() {
-        return false;
-    }
-
-    @Override
 	public void applyLoginDataToRequest(BaseRequest request)
 	{}
 

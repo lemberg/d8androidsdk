@@ -209,8 +209,7 @@ public class DrupalClient implements OnResponseListener {
 
             @Override
             public void onError(VolleyError error, Object tag) {
-                if (VolleyResponseUtils.isAuthError(error) ||
-                        (loginManager.domainDependsOnLogin() && VolleyResponseUtils.isNotFoundError(error))) {
+                if (VolleyResponseUtils.isAuthError(error)) {
                     if (loginManager.canRestoreLogin()) {
                         new RestoreLoginAttemptTask(request, listener, tag, error).execute();
                     } else {
@@ -270,8 +269,7 @@ public class DrupalClient implements OnResponseListener {
         };
 
         ResponseData result = performRequestNoLoginRestore(request, tag, loginRestoreResponseListener, true);
-        if (VolleyResponseUtils.isAuthError(result.getError()) ||
-                (loginManager.domainDependsOnLogin() && VolleyResponseUtils.isNotFoundError(result.getError()))) {
+        if (VolleyResponseUtils.isAuthError(result.getError())) {
             if (loginManager.canRestoreLogin()) {
                 boolean restored = loginManager.restoreLoginData(queue);
                 if (restored) {

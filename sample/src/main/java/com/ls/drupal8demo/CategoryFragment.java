@@ -25,6 +25,8 @@ package com.ls.drupal8demo;
 import com.ls.drupal.DrupalClient;
 import com.ls.drupal8demo.adapters.CategoryArticlesListAdapter;
 import com.ls.drupal8demo.article.ArticlePreview;
+import com.ls.drupal8demo.login.AppLoginManager;
+import com.ls.http.base.BaseRequest;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -57,7 +59,7 @@ public class CategoryFragment extends Fragment implements OnItemClickListener {
 		ListView list = (ListView) result.findViewById(R.id.listView);
 		list.setOnItemClickListener(this);
 
-		mClient = new DrupalClient(AppConstants.SERVER_BASE_URL, getActivity());
+		mClient = new DrupalClient(AppConstants.SERVER_BASE_URL, getActivity(), BaseRequest.RequestFormat.JSON,new AppLoginManager());
 		View noArticlesView = result.findViewById(R.id.emptyView);
 		list.setAdapter(new CategoryArticlesListAdapter(categoryId, mClient, getActivity(), noArticlesView));
 		return result;
