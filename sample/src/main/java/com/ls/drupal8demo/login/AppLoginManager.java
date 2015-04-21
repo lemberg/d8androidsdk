@@ -54,9 +54,9 @@ public class AppLoginManager implements ILoginManager {
     @Override
     public void applyLoginDataToRequest(BaseRequest request) {
 
-        Header auth = BasicScheme.authenticate(new UsernamePasswordCredentials("d8", "lemberg"),
-                "UTF-8", false);
-        request.addRequestHeader(auth);
+//        Header auth = BasicScheme.authenticate(new UsernamePasswordCredentials("d8", "lemberg"),
+//                "UTF-8", false);
+//        request.addRequestHeader(auth);
     }
 
     @Override

@@ -22,6 +22,9 @@
 
 package com.ls.http.base;
 
+import com.android.volley.NetworkResponse;
+import com.android.volley.Response;
+
 import android.support.annotation.NonNull;
 
 import java.lang.reflect.Type;
@@ -29,25 +32,7 @@ import java.lang.reflect.Type;
 
 public abstract class ResponseHandler
 {
-    protected abstract Object itemFromResponse(@NonNull String response, @NonNull Class<?> theClass);
-    protected abstract Object itemFromResponse(@NonNull String response, @NonNull Type theType);
-
     protected abstract String getAcceptValueType();
 
-    protected Object itemFromResponseWithSpecifier(String response, Object theSpecifier)
-	{
-		Object result = null;
-		if(response != null && theSpecifier != null)
-		{
-			if(theSpecifier instanceof Class<?>)
-			{
-                result = itemFromResponse(response, (Class<?>)theSpecifier);
-			}else if(theSpecifier instanceof Type){
-                result = itemFromResponse(response, (Type)theSpecifier);
-			}else{
-				throw new IllegalArgumentException("You have to specify Class<?> or Type instance");
-			}
-		}
-		return result;
-	}
+    protected abstract Response<ResponseData> parseNetworkResponse(NetworkResponse response,Object responseClassSpecifier);
 }

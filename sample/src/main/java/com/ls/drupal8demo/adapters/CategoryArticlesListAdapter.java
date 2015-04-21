@@ -35,6 +35,7 @@ import com.ls.drupal8demo.R;
 import com.ls.drupal8demo.article.ArticlePreview;
 import com.ls.drupal8demo.article.Page;
 import com.ls.http.base.ResponseData;
+import com.ls.util.L;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -175,6 +176,12 @@ public class CategoryArticlesListAdapter extends BaseAdapter implements OnEntity
 	@Override
 	public void onRequestFailed(AbstractBaseDrupalEntity entity, Object tag, VolleyError error) {
 		setCanLoadMore(false);
+        int statusCode = 0;
+        if(error.networkResponse != null) {
+            statusCode =  error.networkResponse.statusCode;
+        }
+
+        L.e("Request "+((Page)entity).getPath()+" failure:" + error.getMessage() + " with code:" + statusCode);
 	}
 
 	@Override

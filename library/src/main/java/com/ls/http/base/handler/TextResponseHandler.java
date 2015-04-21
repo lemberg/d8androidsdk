@@ -22,15 +22,16 @@
 
 package com.ls.http.base.handler;
 
-import com.ls.http.base.IResponseItem;
 import com.ls.http.base.ResponseHandler;
+import com.ls.http.base.IResponseItem;
+import com.ls.http.base.StringResponseHandler;
 import com.ls.util.ObjectsFactory;
 
 import android.support.annotation.NonNull;
 
 import java.lang.reflect.Type;
 
-class TextResponseHandler extends ResponseHandler
+class TextResponseHandler extends StringResponseHandler
 {
 
     protected Object itemFromResponse(@NonNull String data,@NonNull Class<?> theClass)

@@ -31,7 +31,7 @@ public class ResponseData {
 	protected Map<String, String> headers;
 	protected int statusCode;
 	protected VolleyError error;
-	protected String responseString;
+
 	
 	/**	 
 	 * @return Instance of class, specified in response or null if no such class was specified.
@@ -52,18 +52,12 @@ public class ResponseData {
 		return error;
 	}
 
-	public String getResponseString()
-	{
-		return responseString;
-	}
-
     public void cloneTo(ResponseData target)
     {
         target.data = data;
         target.headers = headers;
         target.statusCode = statusCode;
         target.error = error;
-        target.responseString = responseString;
     }
 
 }

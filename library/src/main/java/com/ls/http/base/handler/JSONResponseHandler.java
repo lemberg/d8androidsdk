@@ -24,16 +24,17 @@ package com.ls.http.base.handler;
 
 import com.google.gson.Gson;
 
-import com.ls.http.base.IResponseItem;
 import com.ls.http.base.ResponseHandler;
+import com.ls.http.base.IResponseItem;
 import com.ls.http.base.SharedGson;
+import com.ls.http.base.StringResponseHandler;
 import com.ls.util.ObjectsFactory;
 
 import android.support.annotation.NonNull;
 
 import java.lang.reflect.Type;
 
-class JSONResponseHandler extends ResponseHandler
+class JSONResponseHandler extends StringResponseHandler
 {
 
     protected Object itemFromResponse(@NonNull String json,@NonNull Class<?> theClass)
