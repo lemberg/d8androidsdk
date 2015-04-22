@@ -22,10 +22,15 @@
 
 package com.ls.util.image;
 
+import com.android.volley.VolleyError;
+import com.ls.drupal.AbstractBaseDrupalEntity;
 import com.ls.drupal.DrupalClient;
+import com.ls.drupal.DrupalImageEntity;
+import com.ls.http.base.ResponseData;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
@@ -72,6 +77,30 @@ public class DrupalImageView extends ImageView {
         {
             throw new IllegalStateException("No DrupalClient set. Please provide local or shared DrupalClient to perform loading");
         }
+
+        if(this.imageContainer != null && this.imageContainer.url.equals(imagePath))
+        {
+            return;
+        }
+
+        this.cancelLoading();
+
+        if(TextUtils.isEmpty(imagePath))
+        {
+            this.setImageDrawable(null);
+            this.imageContainer = null;
+            return;
+        }
+
+        this.imageContainer = new ImageContainer(imagePath,client);
+        this.startLoading();
+    }
+
+    @Override
+    public void setImageDrawable(Drawable drawable) {
+        cancelLoading();
+        this.imageContainer = null;
+        super.setImageDrawable(drawable);
     }
 
     private DrupalClient getClient()
@@ -84,7 +113,6 @@ public class DrupalImageView extends ImageView {
         return DrupalImageView.sharedClient;
     }
 
-
     public DrupalClient getLocalClient() {
         return localClient;
     }
@@ -93,14 +121,91 @@ public class DrupalImageView extends ImageView {
         this.localClient = localClient;
     }
 
-    private class ImageContainer
+    public void cancelLoading()
     {
-        Drawable image;
-        String url;
-
-        ImageContainer(String url)
+        if(this.imageContainer != null)
         {
-            this.url = url;
+            this.imageContainer.cancelLoad();
         }
     }
+
+    public void startLoading()
+    {
+        if(this.imageContainer != null)
+        {
+            this.imageContainer.loadImage();
+        }
+    }
+
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        this.cancelLoading();
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        this.startLoading();
+    }
+
+    private class ImageContainer
+    {
+        DrupalImageEntity image;
+        String url;
+        DrupalClient client;
+
+        ImageContainer(String url,DrupalClient client)
+        {
+            this.url = url;
+            this.client = client;
+            DrupalImageEntity entity = new DrupalImageEntity(client);
+            entity.setImagePath(url);
+        }
+
+        void cancelLoad()
+        {
+            image.cancellAllRequests();
+        }
+
+        void loadImage()
+        {
+            ImageLoadingListener listener = new ImageLoadingListener(url);
+            image.pullFromServer(false,url,listener);
+        }
+    }
+
+    private class ImageLoadingListener implements AbstractBaseDrupalEntity.OnEntityRequestListener
+    {
+        private String acceptableURL;
+        ImageLoadingListener(String url)
+        {
+            this.acceptableURL = url;
+        }
+
+        @Override
+        public void onRequestCompleted(AbstractBaseDrupalEntity entity, Object tag, ResponseData data) {
+            if(checkCurrentURL())
+            {
+                DrupalImageView.super.setImageDrawable(((DrupalImageEntity) entity).getManagedData());
+            }
+        }
+
+        @Override
+        public void onRequestFailed(AbstractBaseDrupalEntity entity, Object tag, VolleyError error) {
+
+        }
+
+        @Override
+        public void onRequestCanceled(AbstractBaseDrupalEntity entity, Object tag) {
+
+        }
+
+        private boolean checkCurrentURL()
+        {
+            return imageContainer != null && imageContainer.url != null && imageContainer.url.equals(acceptableURL);
+        }
+    }
+
 }
