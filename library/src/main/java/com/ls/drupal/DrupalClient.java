@@ -182,8 +182,9 @@ public class DrupalClient implements OnResponseListener {
         request.setTag(tag);
         request.setResponseListener(this);
         this.loginManager.applyLoginDataToRequest(request);
+        request.setSmartComparisonEnabled(!this.allowDuplicateRequests);
         boolean wasRegisterred = this.listeners.registerListenerForRequest(request, listener);
-        if(wasRegisterred||synchronous||this.allowDuplicateRequests) {
+        if(wasRegisterred||synchronous) {
             this.onNewRequestStarted();
             return request.performRequest(synchronous, queue);
         }else{

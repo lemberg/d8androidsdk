@@ -28,7 +28,6 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.RequestFuture;
 
 import com.ls.http.base.handler.Handler;
@@ -42,7 +41,6 @@ import android.text.TextUtils;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 public class BaseRequest extends Request<ResponseData> {
     protected static String ACCEPT_HEADER_KEY = "Accept";
@@ -92,6 +90,8 @@ public class BaseRequest extends Request<ResponseData> {
 
     private ResponseHandler responseHandler;
     private ResponseData result;
+
+    private boolean smartComparisonEnabled = false;
 
     /**
      * @param requestConfig Additional request configuration entity, used to provide some additional parameters
@@ -362,6 +362,20 @@ public class BaseRequest extends Request<ResponseData> {
         this.defaultCharset = defaultCharset;
     }
 
+    /**
+     * @return true if comparison, based on request parameters enabled. (Required for duplicate request filtering)
+     */
+    public boolean isSmartComparisonEnabled() {
+        return smartComparisonEnabled;
+    }
+
+    /**
+     * @param smartComparisonEnabled true if comparison, based on request parameters enabled. (Required for duplicate request filtering)
+     */
+    public void setSmartComparisonEnabled(boolean smartComparisonEnabled) {
+        this.smartComparisonEnabled = smartComparisonEnabled;
+    }
+
     @Override
     public void cancel() {
         this.syncLock.onResponse(null);
@@ -389,6 +403,12 @@ public class BaseRequest extends Request<ResponseData> {
 
     @Override
     public boolean equals(Object o) {
+
+        if(!isSmartComparisonEnabled())
+        {
+            return super.equals(o);
+        }
+
         if (this == o) {
             return true;
         }
@@ -409,6 +429,9 @@ public class BaseRequest extends Request<ResponseData> {
             return false;
         }
         if (requestFormat != that.requestFormat) {
+            return false;
+        }
+        if (responseFormat != that.responseFormat) {
             return false;
         }
         if (getParameters != null ? !getParameters.equals(that.getParameters) : that.getParameters != null) {
@@ -435,7 +458,14 @@ public class BaseRequest extends Request<ResponseData> {
 
     @Override
     public int hashCode() {
+
+        if(!isSmartComparisonEnabled())
+        {
+            return super.hashCode();
+        }
+
         int result = requestFormat != null ? requestFormat.hashCode() : 0;
+        result = 31 * result + (responseFormat != null ? responseFormat.hashCode() : 0);
         result = 31 * result + (responseClasSpecifier != null ? responseClasSpecifier.hashCode() : 0);
         result = 31 * result + (defaultCharset != null ? defaultCharset.hashCode() : 0);
         result = 31 * result + (responseListener != null ? responseListener.hashCode() : 0);
