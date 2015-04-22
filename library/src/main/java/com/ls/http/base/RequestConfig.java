@@ -76,4 +76,6 @@ public class RequestConfig {
     public void setResponseClassSpecifier(Object responseClassSpecifier) {
         this.responseClassSpecifier = responseClassSpecifier;
     }
+
+
 }

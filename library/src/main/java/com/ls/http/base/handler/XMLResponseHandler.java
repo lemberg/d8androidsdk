@@ -22,17 +22,16 @@
 
 package com.ls.http.base.handler;
 
-import com.ls.http.base.ResponseHandler;
+import com.ls.http.base.BaseStringResponseHandler;
 import com.ls.http.base.IResponseItem;
-import com.ls.http.base.StringResponseHandler;
-import com.ls.util.ObjectsFactory;
+import com.ls.util.internal.ObjectsFactory;
 
 import android.support.annotation.NonNull;
 
 import java.lang.reflect.Type;
 
 
-class XMLResponseHandler extends StringResponseHandler {
+class XMLResponseHandler extends BaseStringResponseHandler {
 
     @Override
     protected Object itemFromResponse(@NonNull String response, @NonNull Class<?> theClass) {

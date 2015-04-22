@@ -32,9 +32,10 @@ import com.ls.http.base.BaseRequest.RequestMethod;
 import com.ls.http.base.ICharsetItem;
 import com.ls.http.base.RequestConfig;
 import com.ls.http.base.ResponseData;
-import com.ls.util.ObjectComparator;
-import com.ls.util.ObjectComparator.Snapshot;
-import com.ls.util.VolleyResponseUtils;
+import com.ls.util.L;
+import com.ls.util.internal.ObjectComparator;
+import com.ls.util.internal.ObjectComparator.Snapshot;
+import com.ls.util.internal.VolleyResponseUtils;
 
 import junit.framework.Assert;
 
@@ -211,7 +212,7 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 		DrupalEntityTag entityTag = (DrupalEntityTag)tag;
 		if (entityTag.consumeResponse)
 		{
-			this.consumeObject(data.getData());
+			this.consumeObject(data);
 		}
 
 		if(entityTag.listener != null)
@@ -251,13 +252,13 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	 * and clone all fields of object specified to current one You can override this
 	 * method in order to perform custom cloning.
 	 *  
-	 * @param entity
-	 *            object to be consumed
+	 * @param data
+	 *            response data, containing object to be consumed
 	 */
-	protected void consumeObject(Object entity)
+	protected void consumeObject(ResponseData data)
 	{
 		Object consumer = this.getManagedDataChecked();
-		AbstractBaseDrupalEntity.consumeObject(consumer, entity);
+		AbstractBaseDrupalEntity.consumeObject(consumer, data.getData());
 	}
 
     /**
@@ -317,7 +318,7 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 
 	/**
 	 * You can override this method in order to gain custom classes from "GET"
-	 * Note:  you will also have to override {@link AbstractBaseDrupalEntity#consumeObject(Object)} method in order to apply modified response class
+	 * Note:  you will also have to override {@link AbstractBaseDrupalEntity#consumeObject(com.ls.http.base.ResponseData)} method in order to apply modified response class
 	 * request response.
 	 * 
 	 * @return Class or type of managed object.

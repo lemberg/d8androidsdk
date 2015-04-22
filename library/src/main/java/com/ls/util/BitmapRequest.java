@@ -20,40 +20,11 @@
  *   SOFTWARE.
  */
 
-package com.ls.drupal;
-
-import com.ls.http.base.ResponseData;
-
-import android.support.annotation.NonNull;
+package com.ls.util;
 
 /**
- * 
- * @author lemberg
- *
- * @param <T> class of container content
+ * Created on 22.04.2015.
  */
-public abstract class AbstractDrupalEntityContainer<T> extends AbstractBaseDrupalEntity
-{		
-	transient private T data;
-	public AbstractDrupalEntityContainer(DrupalClient client,T theData)
-	{
-		super(client);
-		if(theData == null)
-		{
-			throw new IllegalArgumentException("Data object can't be null");
-		}
-		this.data = theData;
-	}	
+public class BitmapRequest {
 
-	@SuppressWarnings("null")
-	public @NonNull T getManagedData()
-	{
-		return data;
-	}	
-	
-	@Override
-	protected void consumeObject(ResponseData entity)
-	{
-         AbstractBaseDrupalEntity.consumeObject(this.data, entity.getData());
-	}
 }

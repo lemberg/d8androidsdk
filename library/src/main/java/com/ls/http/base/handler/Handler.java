@@ -22,6 +22,7 @@
 
 package com.ls.http.base.handler;
 
+import com.ls.http.base.BaseByteResponseHandler;
 import com.ls.http.base.BaseRequest;
 import com.ls.http.base.ResponseHandler;
 import com.ls.http.base.RequestHandler;
@@ -67,6 +68,8 @@ public class Handler {
                 return new JSONResponseHandler();
             case JSON_HAL:
                 return new JSONHALResponseHandler();
+            case BYTE:
+                return new PlainByteReponseHandler();
             default: {
                 throw new IllegalArgumentException("Unrecognised request responseFormat:"+responseFormat.name());
             }

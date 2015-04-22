@@ -176,12 +176,6 @@ public class CategoryArticlesListAdapter extends BaseAdapter implements OnEntity
 	@Override
 	public void onRequestFailed(AbstractBaseDrupalEntity entity, Object tag, VolleyError error) {
 		setCanLoadMore(false);
-        int statusCode = 0;
-        if(error.networkResponse != null) {
-            statusCode =  error.networkResponse.statusCode;
-        }
-
-        L.e("Request "+((Page)entity).getPath()+" failure:" + error.getMessage() + " with code:" + statusCode);
 	}
 
 	@Override

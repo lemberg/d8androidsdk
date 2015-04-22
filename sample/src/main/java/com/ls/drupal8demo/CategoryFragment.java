@@ -27,6 +27,7 @@ import com.ls.drupal8demo.adapters.CategoryArticlesListAdapter;
 import com.ls.drupal8demo.article.ArticlePreview;
 import com.ls.drupal8demo.login.AppLoginManager;
 import com.ls.http.base.BaseRequest;
+import com.ls.util.L;
 
 import android.content.Intent;
 import android.os.Bundle;

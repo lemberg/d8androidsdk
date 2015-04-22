@@ -24,6 +24,8 @@
 
 package com.ls.drupal;
 
+import com.ls.http.base.ResponseData;
+
 import android.support.annotation.NonNull;
 
 import java.lang.reflect.ParameterizedType;
@@ -172,10 +174,10 @@ public abstract class AbstractDrupalArrayEntity<E> extends AbstractDrupalEntity 
 	}
 
 	@Override
-	protected void consumeObject(Object entity)
+	protected void consumeObject(ResponseData entity)
 	{	
 		@SuppressWarnings("unchecked")
-		E[] items = (E[]) entity;
+		E[] items = (E[]) entity.getData();
 		for (E item : items)
 		{
 			this.add(item);

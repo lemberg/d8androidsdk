@@ -67,52 +67,27 @@ public class Article extends AbstractDrupalEntity {
 	}
 
 	public String getBody() {
-		return getValue(this.body);
+		return DrupalAssistant.getValue(this.body);
 	}
 
 	public String getTitle() {
-		return getValue(this.title);
+		return DrupalAssistant.getValue(this.title);
 	}
 
 	public String getAuthor() {
-		return getTargetId(this.field_blog_author);
+		return DrupalAssistant.getTargetId(this.field_blog_author);
 	}
 
 	public String getDate() {
-		return getTargetId(this.field_blog_date);
+		return DrupalAssistant.getTargetId(this.field_blog_date);
 	}
 
 	public String getNid() {
-		return getValue(this.nid);
+		return DrupalAssistant.getValue(this.nid);
 	}
 
 	public void setBody(String body) {
 		this.body = new DrupalValueArrayWrapper<String>(body);
 	}
 
-	private <T> T getValue(List<DrupalValueContainer<T>> list) {
-		DrupalValueContainer<T> item = getItem(list);
-		if (item != null) {
-			return item.value;
-		} else {
-			return null;
-		}
-	}
-
-	private <T> T getTargetId(List<DrupalValueContainer<T>> list) {
-		DrupalValueContainer<T> item = getItem(list);
-		if (item != null) {
-			return item.target_id;
-		} else {
-			return null;
-		}
-	}
-
-	private <T> DrupalValueContainer<T> getItem(List<DrupalValueContainer<T>> list) {
-		if (list != null && !list.isEmpty()) {
-			return list.get(0);
-		} else {
-			return null;
-		}
-	}
 }

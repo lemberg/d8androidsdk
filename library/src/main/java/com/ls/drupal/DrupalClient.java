@@ -35,7 +35,8 @@ import com.ls.http.base.BaseRequest.RequestFormat;
 import com.ls.http.base.BaseRequest.RequestMethod;
 import com.ls.http.base.RequestConfig;
 import com.ls.http.base.ResponseData;
-import com.ls.util.VolleyResponseUtils;
+import com.ls.util.L;
+import com.ls.util.internal.VolleyResponseUtils;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -181,8 +182,8 @@ public class DrupalClient implements OnResponseListener {
         request.setTag(tag);
         request.setResponseListener(this);
         this.loginManager.applyLoginDataToRequest(request);
-        boolean wasREgisterred = this.listeners.registerListenerForRequest(request, listener);
-        if(wasREgisterred||synchronous||this.allowDuplicateRequests) {
+        boolean wasRegisterred = this.listeners.registerListenerForRequest(request, listener);
+        if(wasRegisterred||synchronous||this.allowDuplicateRequests) {
             this.onNewRequestStarted();
             return request.performRequest(synchronous, queue);
         }else{
@@ -295,7 +296,7 @@ public class DrupalClient implements OnResponseListener {
     public ResponseData getObject(AbstractBaseDrupalEntity entity, RequestConfig config, Object tag, OnResponseListener listener, boolean synchronous) {
         BaseRequest request = new BaseRequest(RequestMethod.GET, getURLForEntity(entity), applyDefaultFormat(config));
         request.setGetParameters(entity.getItemRequestGetParameters(RequestMethod.GET));
-        request.setRequestHeaders(entity.getItemRequestHeaders(RequestMethod.GET));
+        request.addRequestHeaders(entity.getItemRequestHeaders(RequestMethod.GET));
         return this.performRequest(request, tag, listener, synchronous);
     }
 
@@ -315,7 +316,7 @@ public class DrupalClient implements OnResponseListener {
             request.setPostParameters(postParams);
         }
         request.setGetParameters(entity.getItemRequestGetParameters(RequestMethod.POST));
-        request.setRequestHeaders(entity.getItemRequestHeaders(RequestMethod.POST));
+        request.addRequestHeaders(entity.getItemRequestHeaders(RequestMethod.POST));
         return this.performRequest(request, tag, listener, synchronous);
     }
 
@@ -335,7 +336,7 @@ public class DrupalClient implements OnResponseListener {
             request.setPostParameters(postParams);
         }
         request.setGetParameters(entity.getItemRequestGetParameters(RequestMethod.PUT));
-        request.setRequestHeaders(entity.getItemRequestHeaders(RequestMethod.PUT));
+        request.addRequestHeaders(entity.getItemRequestHeaders(RequestMethod.PUT));
         return this.performRequest(request, tag, listener, synchronous);
     }
 
@@ -351,7 +352,7 @@ public class DrupalClient implements OnResponseListener {
         BaseRequest request = new BaseRequest(RequestMethod.PATCH, getURLForEntity(entity), applyDefaultFormat(config));
         request.setGetParameters(entity.getItemRequestGetParameters(RequestMethod.PATCH));
         request.setObjectToPost(entity.getPatchObject());
-        request.setRequestHeaders(entity.getItemRequestHeaders(RequestMethod.PATCH));
+        request.addRequestHeaders(entity.getItemRequestHeaders(RequestMethod.PATCH));
         return this.performRequest(request, tag, listener, synchronous);
     }
 
@@ -366,7 +367,7 @@ public class DrupalClient implements OnResponseListener {
             boolean synchronous) {
         BaseRequest request = new BaseRequest(RequestMethod.DELETE, getURLForEntity(entity), applyDefaultFormat(config));
         request.setGetParameters(entity.getItemRequestGetParameters(RequestMethod.DELETE));
-        request.setRequestHeaders(entity.getItemRequestHeaders(RequestMethod.DELETE));
+        request.addRequestHeaders(entity.getItemRequestHeaders(RequestMethod.DELETE));
         return this.performRequest(request, tag, listener, synchronous);
     }
 

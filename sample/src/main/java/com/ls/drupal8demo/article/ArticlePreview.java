@@ -23,41 +23,45 @@
 package com.ls.drupal8demo.article;
 
 
+import com.ls.drupal8demo.drupal.DrupalValueContainer;
+
+import java.util.List;
+
 public class ArticlePreview {
 
-	private String nid;
-	private String title;
-	private String field_blog_date;
-	private String field_file;
-	private String field_blog_author;
-	private String field_blog_category;
-	private String body;
+	private List<DrupalValueContainer<String>> nid;
+	private List<DrupalValueContainer<String>> title;
+	private List<DrupalValueContainer<String>> field_blog_date;
+	private List<DrupalValueContainer<String>> field_file;
+	private List<DrupalValueContainer<String>> field_blog_author;
+	private List<DrupalValueContainer<String>> field_blog_category;
+	private List<DrupalValueContainer<String>> body;
 
 	public String getNid() {
-		return nid;
+		return DrupalAssistant.getValue(nid);
 	}
 
 	public String getTitle() {
-		return title;
+		return DrupalAssistant.getValue(title);
 	}
 
 	public String getDate() {
-		return field_blog_date;
+		return DrupalAssistant.getValue(field_blog_date);
 	}
 
 	public String getAuthor() {
-		return field_blog_author;
+		return DrupalAssistant.getValue(field_blog_author);
 	}
 
 	public String getBody() {
-		return body;
+		return DrupalAssistant.getValue(body);
 	}
 
 	public String getImage() {
-		return this.field_file;
+		return DrupalAssistant.getValue(this.field_file);
 	}
 
 	public String getCategory() {
-		return field_blog_category;
+		return DrupalAssistant.getValue(field_blog_category);
 	}
 }

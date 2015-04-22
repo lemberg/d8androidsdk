@@ -37,6 +37,7 @@ import com.ls.util.L;
 import org.apache.http.Header;
 
 import android.net.Uri;
+import android.text.TextUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -61,21 +62,17 @@ public class BaseRequest extends Request<ResponseData> {
         private ResponseFormat toResponse() {
             switch (this) {
                 case MULTIPART:
-                    L.e("Multipart response isn't supported. Using JSON");
+                    L.e("Multipart response isn't supported. Using JSON. You can setup custom response type, using RequestOptions");
                     return ResponseFormat.JSON;
                 default:
                     return ResponseFormat.valueOf(this.name());
             }
         }
-    }
-
-    ;
+    } ;
 
     public static enum ResponseFormat {
-        JSON, XML, JSON_HAL, TEXT
-    }
-
-    ;
+        JSON, XML, JSON_HAL, TEXT, BYTE
+    } ;
 
     private final RequestFormat requestFormat;
     private final ResponseFormat responseFormat;
@@ -92,6 +89,7 @@ public class BaseRequest extends Request<ResponseData> {
     private Object objectToPost;
 
     private RequestHandler requestHandler;
+
     private ResponseHandler responseHandler;
     private ResponseData result;
 
@@ -130,12 +128,15 @@ public class BaseRequest extends Request<ResponseData> {
 
     private void initRequestHeaders() {
         this.requestHeaders = new HashMap<String, String>();
-        this.addRequestHeader(ACCEPT_HEADER_KEY,this.responseHandler.getAcceptValueType());
+
+        String acceptValueType = this.responseHandler.getAcceptValueType();
+        if(!TextUtils.isEmpty(acceptValueType)) {
+            this.addRequestHeader(ACCEPT_HEADER_KEY, acceptValueType);
+        }
     }
 
     public ResponseData performRequest(boolean synchronous, RequestQueue theQueque) {
         theQueque.add(this);
-
         if (synchronous) {
             try {
                this.syncLock.get(); // this call will block
@@ -150,7 +151,6 @@ public class BaseRequest extends Request<ResponseData> {
 
     @Override
     protected Response<ResponseData> parseNetworkResponse(NetworkResponse response) {
-
         Response<ResponseData> result = this.responseHandler.parseNetworkResponse(response,responseClasSpecifier);
         this.result = result.result;
         return result;
@@ -367,6 +367,7 @@ public class BaseRequest extends Request<ResponseData> {
         this.syncLock.onResponse(null);
         super.cancel();
     }
+
 
     private String getUnparameterizedURL() {
         return super.getUrl();

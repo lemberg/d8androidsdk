@@ -20,40 +20,45 @@
  *   SOFTWARE.
  */
 
-package com.ls.util;
+package com.ls.util.internal;
 
-import com.android.volley.NetworkError;
-import com.android.volley.NoConnectionError;
-import com.android.volley.TimeoutError;
-import com.android.volley.VolleyError;
+import java.io.ObjectInputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
-import java.net.HttpURLConnection;
-
-/**
- * Created by Lemberg-i5 on 07.10.2014.
- */
-public class VolleyResponseUtils {
-    public static boolean isNetworkingError(VolleyError volleyError)
-    {
-        if (volleyError.networkResponse == null) {
-            if (volleyError instanceof TimeoutError) {
-               return true;
-            }
-
-            if (volleyError instanceof NoConnectionError) {
-                return true;
-            }
-
-            if (volleyError instanceof NetworkError) {
-                return true;
-            }
-
-        }
-        return false;
-    }
-
-    public static boolean isAuthError(VolleyError volleyError){
-        return volleyError != null && volleyError.networkResponse != null
-                && volleyError.networkResponse.statusCode == HttpURLConnection.HTTP_UNAUTHORIZED;
-    }
+public final class ObjectsFactory
+{
+	public static Object newInstance(Class<?> theClass)
+	{
+		Method newInstance;
+		try
+		{
+			newInstance = ObjectInputStream.class.getDeclaredMethod("newInstance", Class.class, Class.class);
+			newInstance.setAccessible(true);
+			Object result =  newInstance.invoke(null, theClass, Object.class);
+			return result;
+		} catch (NoSuchMethodException e)
+		{			
+			e.printStackTrace();
+		} catch (IllegalAccessException e)
+		{			
+			e.printStackTrace();
+		} catch (IllegalArgumentException e)
+		{			
+			e.printStackTrace();
+		} catch (InvocationTargetException e)
+		{
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+//	public static Object newInstance(Class<?> theClass)
+//	{
+//		Objenesis objenesis = new ObjenesisStd();
+//		ObjectInstantiator instantiator = objenesis.getInstantiatorOf(theClass);
+//		Object result = instantiator.newInstance();
+//		Log.d("ObjectsFactory","Created instance:"+result.toString());
+//		return result;
+//	}
 }

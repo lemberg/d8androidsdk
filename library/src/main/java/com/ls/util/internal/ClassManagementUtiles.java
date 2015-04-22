@@ -20,7 +20,7 @@
  *   SOFTWARE.
  */
 
-package com.ls.util;
+package com.ls.util.internal;
 
 import java.lang.reflect.Type;
 

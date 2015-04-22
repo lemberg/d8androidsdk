@@ -20,40 +20,40 @@
  *   SOFTWARE.
  */
 
-package com.ls.drupal;
+package com.ls.drupal8demo.article;
 
-import com.ls.http.base.ResponseData;
+import com.ls.drupal8demo.drupal.DrupalValueContainer;
 
-import android.support.annotation.NonNull;
+import java.util.List;
 
 /**
- * 
- * @author lemberg
- *
- * @param <T> class of container content
+ * Created on 22.04.2015.
  */
-public abstract class AbstractDrupalEntityContainer<T> extends AbstractBaseDrupalEntity
-{		
-	transient private T data;
-	public AbstractDrupalEntityContainer(DrupalClient client,T theData)
-	{
-		super(client);
-		if(theData == null)
-		{
-			throw new IllegalArgumentException("Data object can't be null");
-		}
-		this.data = theData;
-	}	
+public class DrupalAssistant {
 
-	@SuppressWarnings("null")
-	public @NonNull T getManagedData()
-	{
-		return data;
-	}	
-	
-	@Override
-	protected void consumeObject(ResponseData entity)
-	{
-         AbstractBaseDrupalEntity.consumeObject(this.data, entity.getData());
-	}
+    public static <T> T getValue(List<DrupalValueContainer<T>> list) {
+        DrupalValueContainer<T> item = getItem(list);
+        if (item != null) {
+            return item.value;
+        } else {
+            return null;
+        }
+    }
+
+    public static  <T> T getTargetId(List<DrupalValueContainer<T>> list) {
+        DrupalValueContainer<T> item = getItem(list);
+        if (item != null) {
+            return item.target_id;
+        } else {
+            return null;
+        }
+    }
+
+    public static  <T> DrupalValueContainer<T> getItem(List<DrupalValueContainer<T>> list) {
+        if (list != null && !list.isEmpty()) {
+            return list.get(0);
+        } else {
+            return null;
+        }
+    }
 }

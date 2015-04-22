@@ -20,40 +20,40 @@
  *   SOFTWARE.
  */
 
-package com.ls.drupal;
+package com.ls.util.internal;
 
-import com.ls.http.base.ResponseData;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
 
-import android.support.annotation.NonNull;
+import java.net.HttpURLConnection;
 
 /**
- * 
- * @author lemberg
- *
- * @param <T> class of container content
+ * Created by Lemberg-i5 on 07.10.2014.
  */
-public abstract class AbstractDrupalEntityContainer<T> extends AbstractBaseDrupalEntity
-{		
-	transient private T data;
-	public AbstractDrupalEntityContainer(DrupalClient client,T theData)
-	{
-		super(client);
-		if(theData == null)
-		{
-			throw new IllegalArgumentException("Data object can't be null");
-		}
-		this.data = theData;
-	}	
+public class VolleyResponseUtils {
+    public static boolean isNetworkingError(VolleyError volleyError)
+    {
+        if (volleyError.networkResponse == null) {
+            if (volleyError instanceof TimeoutError) {
+               return true;
+            }
 
-	@SuppressWarnings("null")
-	public @NonNull T getManagedData()
-	{
-		return data;
-	}	
-	
-	@Override
-	protected void consumeObject(ResponseData entity)
-	{
-         AbstractBaseDrupalEntity.consumeObject(this.data, entity.getData());
-	}
+            if (volleyError instanceof NoConnectionError) {
+                return true;
+            }
+
+            if (volleyError instanceof NetworkError) {
+                return true;
+            }
+
+        }
+        return false;
+    }
+
+    public static boolean isAuthError(VolleyError volleyError){
+        return volleyError != null && volleyError.networkResponse != null
+                && volleyError.networkResponse.statusCode == HttpURLConnection.HTTP_UNAUTHORIZED;
+    }
 }
