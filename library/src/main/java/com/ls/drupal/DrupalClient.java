@@ -41,6 +41,7 @@ import com.ls.util.internal.VolleyResponseUtils;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -403,7 +404,7 @@ public class DrupalClient implements OnResponseListener {
 
     private String getURLForEntity(AbstractBaseDrupalEntity entity) {
         String path = entity.getPath();
-        if (!path.isEmpty() && path.charAt(0) == '/') {
+        if (!TextUtils.isEmpty(path) && path.charAt(0) == '/') {
             path = path.substring(1);
         }
         return this.baseURL + path;
@@ -558,7 +559,7 @@ public class DrupalClient implements OnResponseListener {
     }
 
     public void setBaseURL(String theBaseURL) {
-        if (theBaseURL.charAt(theBaseURL.length() - 1) != '/') {
+        if (!TextUtils.isEmpty(theBaseURL) && theBaseURL.charAt(theBaseURL.length() - 1) != '/') {
             theBaseURL += '/';
         }
         ;

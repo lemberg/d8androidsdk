@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="DrupalImageView">
+        <attr name="srcPath" format="string"/>
+        <attr name="noImageResource" format="reference"/>
+    </declare-styleable>
+</resources>
