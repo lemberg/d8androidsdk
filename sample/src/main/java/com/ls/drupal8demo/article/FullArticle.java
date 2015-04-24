@@ -22,38 +22,54 @@
 
 package com.ls.drupal8demo.article;
 
-import com.ls.drupal8demo.drupal.DrupalValueContainer;
+import com.ls.drupal.AbstractDrupalEntity;
+import com.ls.drupal.DrupalClient;
+import com.ls.drupal8demo.util.ModelUtils;
+import com.ls.http.base.BaseRequest.RequestMethod;
 
-import java.util.List;
+import junit.framework.Assert;
 
-/**
- * Created on 22.04.2015.
- */
-public class DrupalAssistant {
+import java.util.Map;
 
-    public static <T> T getValue(List<DrupalValueContainer<T>> list) {
-        DrupalValueContainer<T> item = getItem(list);
-        if (item != null) {
-            return item.value;
-        } else {
-            return null;
-        }
+public class FullArticle {
+
+	/**
+	 * Such complicated structures are just a workaround to map all server data to objects. Server can be configured to
+	 * get rid of them.
+	 */
+	private String nid;
+	private String body;
+	private String title;
+	private String field_blog_date;
+	private String field_blog_author;
+    private String field_image;
+
+	public FullArticle(String nodeId) {
+		this.nid = nodeId;
+	}
+
+	public String getBody() {
+		return this.body;
+	}
+
+	public String getTitle() {
+		return this.title;
+	}
+
+	public String getAuthor() {
+		return this.field_blog_author;
+	}
+
+	public String getDate() {
+		return this.field_blog_date;
+	}
+
+	public String getNid() {
+		return this.nid;
+	}
+
+    public String getImage() {
+        return field_image;
     }
 
-    public static  <T> T getTargetId(List<DrupalValueContainer<T>> list) {
-        DrupalValueContainer<T> item = getItem(list);
-        if (item != null) {
-            return item.target_id;
-        } else {
-            return null;
-        }
-    }
-
-    public static  <T> DrupalValueContainer<T> getItem(List<DrupalValueContainer<T>> list) {
-        if (list != null && !list.isEmpty()) {
-            return list.get(0);
-        } else {
-            return null;
-        }
-    }
 }

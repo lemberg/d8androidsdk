@@ -26,7 +26,7 @@ import com.android.volley.VolleyError;
 import com.ls.drupal.AbstractBaseDrupalEntity;
 import com.ls.drupal.AbstractBaseDrupalEntity.OnEntityRequestListener;
 import com.ls.drupal.DrupalClient;
-import com.ls.drupal8demo.article.Article;
+import com.ls.drupal8demo.article.ArticleWrapper;
 import com.ls.http.base.ResponseData;
 
 import android.os.Bundle;
@@ -50,7 +50,7 @@ public class ArticleFragment extends Fragment implements OnEntityRequestListener
 
 	private final static String PAGE_ID_KEY = "page_id";
 	private final static String BLOG_IMAGE_KEY = "blog_image";
-	private Article mPage;
+	private ArticleWrapper mPage;
 	private DrupalClient mClient;
 
 	private WebView mContent;
@@ -70,7 +70,7 @@ public class ArticleFragment extends Fragment implements OnEntityRequestListener
 		super.onCreate(savedInstanceState);
 		String pageId = getArguments().getString(PAGE_ID_KEY);
 		mClient = new DrupalClient(AppConstants.SERVER_BASE_URL, getActivity());
-		mPage = new Article(mClient, pageId);
+		mPage = new ArticleWrapper(mClient, pageId);
 		mPage.pullFromServer(false, null, this);
 	}
 

@@ -22,6 +22,7 @@
 
 package com.ls.drupal8demo.article;
 
+import com.ls.drupal.AbstractDrupalArrayEntity;
 import com.ls.drupal.AbstractDrupalEntity;
 import com.ls.drupal.DrupalClient;
 import com.ls.drupal8demo.util.ModelUtils;
@@ -31,28 +32,21 @@ import junit.framework.Assert;
 
 import java.util.Map;
 
-public class Article extends AbstractDrupalEntity {
+public class ArticleWrapper extends AbstractDrupalArrayEntity<FullArticle> {
 
-	/**
-	 * Such complicated structures are just a workaround to map all server data to objects. Server can be configured to
-	 * get rid of them.
-	 */
+    private static FullArticle STUB_ARTICLE = new FullArticle("");
+
 	private String nid;
-	private String body;
-	private String title;
-	private String field_blog_date;
-	private String field_blog_author;
-    private String field_image;
 
-	public Article(DrupalClient client, String nodeId) {
-		super(client);
+	public ArticleWrapper(DrupalClient client, String nodeId) {
+		super(client,1);
 		this.nid = nodeId;
 	}
 
 	@Override
 	protected String getPath() {
 		Assert.assertNotNull("Node id can't be null while requesting item", this.nid);
-		return "node" + "/" + this.getNid()+"/rest";
+		return "node" + "/" + this.getNid();
 	}
 
 	@Override
@@ -66,19 +60,19 @@ public class Article extends AbstractDrupalEntity {
 	}
 
 	public String getBody() {
-		return this.body;
+		return getItem().getBody();
 	}
 
 	public String getTitle() {
-		return this.title;
+		return getItem().getTitle();
 	}
 
 	public String getAuthor() {
-		return this.field_blog_author;
+		return getItem().getAuthor();
 	}
 
 	public String getDate() {
-		return this.field_blog_date;
+		return getItem().getDate();
 	}
 
 	public String getNid() {
@@ -86,7 +80,16 @@ public class Article extends AbstractDrupalEntity {
 	}
 
     public String getImage() {
-        return ModelUtils.trimImageURL(field_image);
+        return getItem().getImage();
     }
 
+    private FullArticle getItem()
+    {
+        if(!this.isEmpty())
+        {
+            return this.get(0);
+        }
+
+        return STUB_ARTICLE;
+    }
 }
