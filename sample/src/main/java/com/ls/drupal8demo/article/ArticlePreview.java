@@ -23,45 +23,43 @@
 package com.ls.drupal8demo.article;
 
 
-import com.ls.drupal8demo.drupal.DrupalValueContainer;
-
-import java.util.List;
+import com.ls.drupal8demo.util.ModelUtils;
 
 public class ArticlePreview {
 
-	private List<DrupalValueContainer<String>> nid;
-	private List<DrupalValueContainer<String>> title;
-	private List<DrupalValueContainer<String>> field_blog_date;
-	private List<DrupalValueContainer<String>> field_file;
-	private List<DrupalValueContainer<String>> field_blog_author;
-	private List<DrupalValueContainer<String>> field_blog_category;
-	private List<DrupalValueContainer<String>> body;
+	private String nid;
+	private String title;
+	private String field_blog_date;
+	private String field_image;
+	private String field_blog_author;
+	private String field_blog_category;
+	private String body;
 
 	public String getNid() {
-		return DrupalAssistant.getValue(nid);
+		return nid;
 	}
 
 	public String getTitle() {
-		return DrupalAssistant.getValue(title);
+		return title;
 	}
 
 	public String getDate() {
-		return DrupalAssistant.getValue(field_blog_date);
+		return field_blog_date;
 	}
 
 	public String getAuthor() {
-		return DrupalAssistant.getValue(field_blog_author);
+		return field_blog_author;
 	}
 
 	public String getBody() {
-		return DrupalAssistant.getValue(body);
+		return body;
 	}
 
 	public String getImage() {
-		return DrupalAssistant.getValue(this.field_file);
+		return ModelUtils.trimImageURL(this.field_image);
 	}
 
 	public String getCategory() {
-		return DrupalAssistant.getValue(field_blog_category);
+		return field_blog_category;
 	}
 }

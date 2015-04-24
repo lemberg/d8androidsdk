@@ -24,6 +24,7 @@ package com.ls.drupal8demo;
 
 import com.ls.drupal8demo.article.ArticlePreview;
 import com.ls.http.base.SharedGson;
+import com.ls.util.L;
 
 import android.content.Context;
 import android.content.Intent;
@@ -61,7 +62,6 @@ public class ArticleActivity extends ActionBarActivity {
 		View content = new FrameLayout(this);
 		content.setId(contentId);
 		setContentView(content);
-
 		ArticleFragment articleFragment = ArticleFragment.newInstance(preview.getNid(), preview.getImage());
 		FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
 		trans.add(contentId, articleFragment);

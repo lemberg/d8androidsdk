@@ -24,13 +24,11 @@ package com.ls.drupal8demo.article;
 
 import com.ls.drupal.AbstractDrupalEntity;
 import com.ls.drupal.DrupalClient;
-import com.ls.drupal8demo.drupal.DrupalValueArrayWrapper;
-import com.ls.drupal8demo.drupal.DrupalValueContainer;
+import com.ls.drupal8demo.util.ModelUtils;
 import com.ls.http.base.BaseRequest.RequestMethod;
 
 import junit.framework.Assert;
 
-import java.util.List;
 import java.util.Map;
 
 public class Article extends AbstractDrupalEntity {
@@ -39,21 +37,22 @@ public class Article extends AbstractDrupalEntity {
 	 * Such complicated structures are just a workaround to map all server data to objects. Server can be configured to
 	 * get rid of them.
 	 */
-	private List<DrupalValueContainer<String>> nid;
-	private List<DrupalValueContainer<String>> body;
-	private List<DrupalValueContainer<String>> title;
-	private List<DrupalValueContainer<String>> field_blog_date;
-	private List<DrupalValueContainer<String>> field_blog_author;
+	private String nid;
+	private String body;
+	private String title;
+	private String field_blog_date;
+	private String field_blog_author;
+    private String field_image;
 
 	public Article(DrupalClient client, String nodeId) {
 		super(client);
-		this.nid = new DrupalValueArrayWrapper<String>(nodeId);
+		this.nid = nodeId;
 	}
 
 	@Override
 	protected String getPath() {
 		Assert.assertNotNull("Node id can't be null while requesting item", this.nid);
-		return "node" + "/" + this.getNid();
+		return "node" + "/" + this.getNid()+"/rest";
 	}
 
 	@Override
@@ -67,27 +66,27 @@ public class Article extends AbstractDrupalEntity {
 	}
 
 	public String getBody() {
-		return DrupalAssistant.getValue(this.body);
+		return this.body;
 	}
 
 	public String getTitle() {
-		return DrupalAssistant.getValue(this.title);
+		return this.title;
 	}
 
 	public String getAuthor() {
-		return DrupalAssistant.getTargetId(this.field_blog_author);
+		return this.field_blog_author;
 	}
 
 	public String getDate() {
-		return DrupalAssistant.getTargetId(this.field_blog_date);
+		return this.field_blog_date;
 	}
 
 	public String getNid() {
-		return DrupalAssistant.getValue(this.nid);
+		return this.nid;
 	}
 
-	public void setBody(String body) {
-		this.body = new DrupalValueArrayWrapper<String>(body);
-	}
+    public String getImage() {
+        return ModelUtils.trimImageURL(field_image);
+    }
 
 }

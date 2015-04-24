@@ -146,9 +146,16 @@ public class CategoryArticlesListAdapter extends BaseAdapter implements OnEntity
 			date.setText(item.getDate());
 
 			TextView description = (TextView) convertView.findViewById(R.id.description);
-			description.setText(Html.fromHtml(item.getBody()));
+            String body = item.getBody();
+            CharSequence spannedBody = null;
+            if(body != null)
+            {
+                spannedBody = Html.fromHtml(body);
+            }
+			description.setText(spannedBody);
 
 			NetworkImageView imageView = (NetworkImageView) convertView.findViewById(R.id.image);
+            L.e("Preview image path:" + item.getImage());
 			imageView.setImageUrl(item.getImage(), mImageLoader);
 		}
 		return convertView;
