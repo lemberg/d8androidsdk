@@ -419,21 +419,12 @@ public class BaseRequest extends Request<ResponseData> {
         BaseRequest that = (BaseRequest) o;
 
         String url = getUnparameterizedURL();
-        String otherUrl = getUnparameterizedURL();
+        String otherUrl = that.getUnparameterizedURL();
 
         if (url != null ? !url.equals(otherUrl) : otherUrl != null) {
             return false;
         }
 
-        if (defaultCharset != null ? !defaultCharset.equals(that.defaultCharset) : that.defaultCharset != null) {
-            return false;
-        }
-        if (requestFormat != that.requestFormat) {
-            return false;
-        }
-        if (responseFormat != that.responseFormat) {
-            return false;
-        }
         if (getParameters != null ? !getParameters.equals(that.getParameters) : that.getParameters != null) {
             return false;
         }
@@ -449,7 +440,14 @@ public class BaseRequest extends Request<ResponseData> {
         if (responseClasSpecifier != null ? !responseClasSpecifier.equals(that.responseClasSpecifier) : that.responseClasSpecifier != null) {
             return false;
         }
-        if (responseListener != null ? !responseListener.equals(that.responseListener) : that.responseListener != null) {
+
+        if (defaultCharset != null ? !defaultCharset.equals(that.defaultCharset) : that.defaultCharset != null) {
+            return false;
+        }
+        if (requestFormat != that.requestFormat) {
+            return false;
+        }
+        if (responseFormat != that.responseFormat) {
             return false;
         }
 
@@ -468,7 +466,6 @@ public class BaseRequest extends Request<ResponseData> {
         result = 31 * result + (responseFormat != null ? responseFormat.hashCode() : 0);
         result = 31 * result + (responseClasSpecifier != null ? responseClasSpecifier.hashCode() : 0);
         result = 31 * result + (defaultCharset != null ? defaultCharset.hashCode() : 0);
-        result = 31 * result + (responseListener != null ? responseListener.hashCode() : 0);
         result = 31 * result + (requestHeaders != null ? requestHeaders.hashCode() : 0);
         result = 31 * result + (postParameters != null ? postParameters.hashCode() : 0);
         result = 31 * result + (getParameters != null ? getParameters.hashCode() : 0);

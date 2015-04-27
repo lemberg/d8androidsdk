@@ -56,6 +56,11 @@ public abstract class AbstractDrupalByteEntity<T> extends AbstractBaseDrupalEnti
         throw new UnsupportedOperationException("This operation isn't supported by byte entity");
     }
 
+    @Override
+    protected Object getManagedDataClassSpecifyer() {
+        return byte[].class;
+    }
+
     protected void setManagedData(T data)
     {
         this.data = data;
@@ -65,5 +70,6 @@ public abstract class AbstractDrupalByteEntity<T> extends AbstractBaseDrupalEnti
     {
         return data;
     }
+
 
 }

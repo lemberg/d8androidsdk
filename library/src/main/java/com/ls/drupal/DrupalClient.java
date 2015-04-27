@@ -64,7 +64,7 @@ public class DrupalClient implements OnResponseListener {
 
     private int requestTimeout = 1500;
 
-    private boolean allowDuplicateRequests = false;
+    private boolean allowDuplicateRequests = true;
 
     public static interface OnResponseListener {
 
@@ -189,6 +189,7 @@ public class DrupalClient implements OnResponseListener {
             this.onNewRequestStarted();
             return request.performRequest(synchronous, queue);
         }else{
+            L.e("Request was rejected:"+request.getUrl());
             return null;
         }
     }
@@ -404,10 +405,16 @@ public class DrupalClient implements OnResponseListener {
 
     private String getURLForEntity(AbstractBaseDrupalEntity entity) {
         String path = entity.getPath();
-        if (!TextUtils.isEmpty(path) && path.charAt(0) == '/') {
-            path = path.substring(1);
+
+        if(TextUtils.isEmpty(baseURL))
+        {
+            return path;
+        }else {
+            if (!TextUtils.isEmpty(path) && path.charAt(0) == '/') {
+                path = path.substring(1);
+            }
+            return this.baseURL + path;
         }
-        return this.baseURL + path;
     }
 
     /**

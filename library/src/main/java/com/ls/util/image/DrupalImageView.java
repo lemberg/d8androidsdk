@@ -28,6 +28,7 @@ import com.ls.drupal.DrupalClient;
 import com.ls.drupal.DrupalImageEntity;
 import com.ls.drupal.R;
 import com.ls.http.base.ResponseData;
+import com.ls.util.L;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -35,6 +36,10 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.widget.ImageView;
+
+import java.lang.ref.WeakReference;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created on 22.04.2015.
@@ -101,12 +106,12 @@ public class DrupalImageView extends ImageView {
 
         String imagePath = array.getString(R.styleable.DrupalImageView_srcPath);
         if (!TextUtils.isEmpty(imagePath)) {
-            this.setImageWithPath(imagePath);
+            this.setImageWithURL(imagePath);
         }
         array.recycle();
     }
 
-    public void setImageWithPath(String imagePath)
+    public void setImageWithURL(String imagePath)
     {
         if (this.isInEditMode()) {
             return;
@@ -123,12 +128,10 @@ public class DrupalImageView extends ImageView {
             return;
         }
 
-        this.cancelLoading();
+        this.setImageDrawable(null);
 
         if(TextUtils.isEmpty(imagePath))
         {
-            this.setImageDrawable(null);
-            this.imageContainer = null;
             return;
         }
 
@@ -164,10 +167,9 @@ public class DrupalImageView extends ImageView {
         if(this.noImageDrawable != noImageDrawable) {
             if(this.getDrawable()==this.noImageDrawable)
             {
-                superSetImageDrawable(null);
+                superSetImageDrawable(noImageDrawable);
             }
             this.noImageDrawable = noImageDrawable;
-            applyNoImageDrawableIfNeeded();
         }
     }
 
@@ -200,7 +202,7 @@ public class DrupalImageView extends ImageView {
     {
         if(this.imageContainer != null)
         {
-            this.imageContainer.loadImage();
+            this.imageContainer.loadImage(getInternalImageLoadingListenerForContainer(this.imageContainer));
         }
     }
 
@@ -209,12 +211,12 @@ public class DrupalImageView extends ImageView {
         super.onDetachedFromWindow();
         this.cancelLoading();
     }
-
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        this.startLoading();
-    }
+//
+//    @Override
+//    protected void onAttachedToWindow() {
+//        super.onAttachedToWindow();
+//        this.startLoading();
+//    }
 
     protected void applyNoImageDrawableIfNeeded()
     {
@@ -234,7 +236,12 @@ public class DrupalImageView extends ImageView {
         return DrupalImageView.getSharedClient(this.getContext());
     }
 
-    private class ImageContainer
+    private InternalImageLoadingListener getInternalImageLoadingListenerForContainer(ImageContainer container)
+    {
+        return new InternalImageLoadingListener(container.url);
+    }
+
+    private static class ImageContainer
     {
         DrupalImageEntity image;
         String url;
@@ -244,8 +251,8 @@ public class DrupalImageView extends ImageView {
         {
             this.url = url;
             this.client = client;
-            DrupalImageEntity entity = new DrupalImageEntity(client);
-            entity.setImagePath(url);
+            image = new DrupalImageEntity(client);
+            image.setImagePath(url);
         }
 
         void cancelLoad()
@@ -253,10 +260,9 @@ public class DrupalImageView extends ImageView {
             image.cancellAllRequests();
         }
 
-        void loadImage()
+        void loadImage(InternalImageLoadingListener listener)
         {
             if(image.getManagedData() == null) {
-                InternalImageLoadingListener listener = new InternalImageLoadingListener(url);
                 image.pullFromServer(false, url, listener);
             }
         }
@@ -277,7 +283,8 @@ public class DrupalImageView extends ImageView {
             {
                 superSetImageDrawable(image);
             }
-
+            applyNoImageDrawableIfNeeded();
+            L.e("Request completed for:"+tag);
             if(imageLoadingListener != null)
             {
                 imageLoadingListener.onImageLoadingComplete(DrupalImageView.this,image);

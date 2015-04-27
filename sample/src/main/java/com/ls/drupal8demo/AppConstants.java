@@ -28,9 +28,9 @@ public class AppConstants {
 
 	public static enum CATEGORY {
 		ALL_POSTS("All Posts", null),
-		INDUSTRY_NEWS("Industry News", "1"),
-		OUR_POSTS("Our Posts", "2"),
-		TECH_NOTES("Tech notes", "3");
+		INDUSTRY_NEWS("Industry News", "3"),
+		OUR_POSTS("Our Posts", "4"),
+		TECH_NOTES("Tech notes", "5");
 
 		public final String name;
 		public final String id;

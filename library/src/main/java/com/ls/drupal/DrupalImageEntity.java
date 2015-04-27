@@ -22,8 +22,6 @@
 
 package com.ls.drupal;
 
-import com.ls.drupal.AbstractDrupalByteEntity;
-import com.ls.drupal.DrupalClient;
 import com.ls.http.base.BaseRequest;
 import com.ls.http.base.ResponseData;
 
@@ -73,6 +71,5 @@ public class DrupalImageEntity extends AbstractDrupalByteEntity<Drawable> {
             Drawable imageDrawable = new BitmapDrawable(Resources.getSystem(),imageBitmap);
             this.setManagedData(imageDrawable);
         }
-
     }
 }

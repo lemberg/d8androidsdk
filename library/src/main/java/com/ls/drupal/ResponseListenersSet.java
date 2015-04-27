@@ -23,6 +23,7 @@
 package com.ls.drupal;
 
 import com.android.volley.Request;
+import com.ls.util.L;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -45,10 +46,15 @@ public class ResponseListenersSet {
      * @param listener listener to register for request
      * @return true if new request was registered, false otherwise
      */
-    public boolean registerListenerForRequest(Request request,DrupalClient.OnResponseListener listener)
+    public synchronized boolean registerListenerForRequest(Request request,DrupalClient.OnResponseListener listener)
     {
         boolean result = false;
         List<DrupalClient.OnResponseListener> listenersList = listeners.get(request);
+        for(Request requestKey:listeners.keySet()) {
+            if(request.equals(requestKey)) {
+                L.e("Request "+request.getUrl()+" was present as:" + requestKey.getUrl());
+            }
+        }
         if(listenersList == null)
         {
             listenersList = new LinkedList<DrupalClient.OnResponseListener>();
@@ -74,12 +80,12 @@ public class ResponseListenersSet {
      * Remove all listeners for request
      * @param request
      */
-    public void removeListenersForRequest(Request request)
+    public synchronized void  removeListenersForRequest(Request request)
     {
         listeners.remove(request);
     }
 
-    public void removeAllListeners()
+    public synchronized void removeAllListeners()
     {
         listeners.clear();
     }

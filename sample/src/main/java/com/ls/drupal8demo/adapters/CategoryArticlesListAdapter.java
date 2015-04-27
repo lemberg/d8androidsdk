@@ -26,7 +26,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.ImageLoader.ImageCache;
-import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.Volley;
 import com.ls.drupal.AbstractBaseDrupalEntity;
 import com.ls.drupal.AbstractBaseDrupalEntity.OnEntityRequestListener;
@@ -36,6 +35,7 @@ import com.ls.drupal8demo.article.ArticlePreview;
 import com.ls.drupal8demo.article.Page;
 import com.ls.http.base.ResponseData;
 import com.ls.util.L;
+import com.ls.util.image.DrupalImageView;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -154,9 +154,8 @@ public class CategoryArticlesListAdapter extends BaseAdapter implements OnEntity
             }
 			description.setText(spannedBody);
 
-			NetworkImageView imageView = (NetworkImageView) convertView.findViewById(R.id.image);
-            L.e("Preview image path:" + item.getImage());
-			imageView.setImageUrl(item.getImage(), mImageLoader);
+            DrupalImageView imageView = (DrupalImageView) convertView.findViewById(R.id.image);
+			imageView.setImageWithURL(item.getImage());
 		}
 		return convertView;
 	}
