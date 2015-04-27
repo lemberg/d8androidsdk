@@ -34,10 +34,10 @@ import java.util.Map;
  * Created on 27.03.2015.
  */
 public class ResponseListenersSet {
-    private Map<Request, List<DrupalClient.OnResponseListener>> listeners;
+    private Map<Request, List<ListenerHolder>> listeners;
     public ResponseListenersSet()
     {
-        listeners = new HashMap<Request, List<DrupalClient.OnResponseListener>>();
+        listeners = new HashMap<Request, List<ListenerHolder>>();
     }
 
     /**
@@ -46,23 +46,18 @@ public class ResponseListenersSet {
      * @param listener listener to register for request
      * @return true if new request was registered, false otherwise
      */
-    public synchronized boolean registerListenerForRequest(Request request,DrupalClient.OnResponseListener listener)
+    public boolean registerListenerForRequest(Request request,DrupalClient.OnResponseListener listener,Object tag)
     {
         boolean result = false;
-        List<DrupalClient.OnResponseListener> listenersList = listeners.get(request);
-//        for(Request requestKey:listeners.keySet()) {
-//            if(request.equals(requestKey)) {
-//                L.e("Request "+request.getUrl()+" was present as:" + requestKey.getUrl());
-//            }
-//        }
+        List<ListenerHolder> listenersList = listeners.get(request);
         if(listenersList == null)
         {
-            listenersList = new LinkedList<DrupalClient.OnResponseListener>();
+            listenersList = new LinkedList<ListenerHolder>();
             listeners.put(request,listenersList);
             result = true;
         }
 
-        listenersList.add(listener);
+        listenersList.add(new ListenerHolder(listener,tag));
         return result;
     }
 
@@ -71,7 +66,7 @@ public class ResponseListenersSet {
      * @param request
      * @return Listeners, registered for this request
      */
-    public List<DrupalClient.OnResponseListener> getListenersForRequest(Request request)
+    protected List<ListenerHolder> getListenersForRequest(Request request)
     {
         return listeners.get(request);
     }
@@ -80,7 +75,7 @@ public class ResponseListenersSet {
      * Remove all listeners for request
      * @param request
      */
-    public synchronized void  removeListenersForRequest(Request request)
+    public void  removeListenersForRequest(Request request)
     {
         listeners.remove(request);
     }
@@ -93,5 +88,24 @@ public class ResponseListenersSet {
     public int registeredRequestCount()
     {
         return listeners.size();
+    }
+
+    public static class ListenerHolder
+    {
+        private DrupalClient.OnResponseListener listener;
+        private Object tag;
+        public ListenerHolder(DrupalClient.OnResponseListener listener, Object tag)
+        {
+            this.listener = listener;
+            this.tag = tag;
+        }
+
+        public DrupalClient.OnResponseListener getListener() {
+            return listener;
+        }
+
+        public Object getTag() {
+            return tag;
+        }
     }
 }

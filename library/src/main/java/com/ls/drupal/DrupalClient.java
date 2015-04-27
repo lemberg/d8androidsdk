@@ -184,7 +184,12 @@ public class DrupalClient implements OnResponseListener {
         request.setResponseListener(this);
         this.loginManager.applyLoginDataToRequest(request);
         request.setSmartComparisonEnabled(!this.allowDuplicateRequests);
-        boolean wasRegisterred = this.listeners.registerListenerForRequest(request, listener);
+
+        boolean wasRegisterred ;
+        synchronized (listeners) {
+            wasRegisterred = this.listeners.registerListenerForRequest(request, listener,tag);
+        }
+
         if(wasRegisterred||synchronous) {
             this.onNewRequestStarted();
             return request.performRequest(synchronous, queue);
@@ -460,24 +465,28 @@ public class DrupalClient implements OnResponseListener {
 
     @Override
     public void onResponseReceived(ResponseData data, BaseRequest request) {
-        List<OnResponseListener> listenerList = this.listeners.getListenersForRequest(request);
-        this.listeners.removeListenersForRequest(request);
-        this.onRequestComplete();
-        if (listenerList != null) {
-            for(OnResponseListener list:listenerList) {
-                list.onResponseReceived(data, request.getTag());
+        synchronized (listeners) {
+            List<ResponseListenersSet.ListenerHolder> listenerList = this.listeners.getListenersForRequest(request);
+            this.listeners.removeListenersForRequest(request);
+            this.onRequestComplete();
+            if (listenerList != null) {
+                for (ResponseListenersSet.ListenerHolder holder : listenerList) {
+                    holder.getListener().onResponseReceived(data, holder.getTag());
+                }
             }
         }
     }
 
     @Override
     public void onError(VolleyError error, BaseRequest request) {
-        List<OnResponseListener> listenerList = this.listeners.getListenersForRequest(request);
-        this.listeners.removeListenersForRequest(request);
-        this.onRequestComplete();
-        if (listenerList != null) {
-            for(OnResponseListener list:listenerList) {
-                list.onError(error, request.getTag());
+        synchronized (listeners) {
+            List<ResponseListenersSet.ListenerHolder> listenerList = this.listeners.getListenersForRequest(request);
+            this.listeners.removeListenersForRequest(request);
+            this.onRequestComplete();
+            if (listenerList != null) {
+                for (ResponseListenersSet.ListenerHolder holder : listenerList) {
+                    holder.getListener().onError(error, holder.getTag());
+                }
             }
         }
     }
@@ -537,17 +546,19 @@ public class DrupalClient implements OnResponseListener {
             @Override
             public boolean apply(Request<?> request) {
                 if (theTag == null || theTag.equals(request.getTag())) {
-                    List<OnResponseListener> listenerList = listeners.getListenersForRequest(request);
+                    synchronized (listeners) {
+                        List<ResponseListenersSet.ListenerHolder> listenerList = listeners.getListenersForRequest(request);
 
-                    if (theListener == null || listenerList.equals(theListener)) {
-                        if (listenerList != null) {
-                            listeners.removeListenersForRequest(request);
-                           for(OnResponseListener list:listenerList) {
-                               list.onCancel(request.getTag());
-                           }
-                            DrupalClient.this.onRequestComplete();
+                        if (theListener == null || listenerList.equals(theListener)) {
+                            if (listenerList != null) {
+                                listeners.removeListenersForRequest(request);
+                                for (ResponseListenersSet.ListenerHolder holder : listenerList) {
+                                    holder.getListener().onCancel(holder.getTag());
+                                }
+                                DrupalClient.this.onRequestComplete();
+                            }
+                            return true;
                         }
-                        return true;
                     }
                 }
 
@@ -562,7 +573,17 @@ public class DrupalClient implements OnResponseListener {
      * @return number of requests pending
      */
     public int getActiveRequestsCount() {
-        return this.listeners.registeredRequestCount();
+        synchronized (listeners) {
+            return this.listeners.registeredRequestCount();
+        }
+    }
+
+    public RequestProgressListener getProgressListener() {
+        return progressListener;
+    }
+
+    public void setProgressListener(RequestProgressListener progressListener) {
+        this.progressListener = progressListener;
     }
 
     public void setBaseURL(String theBaseURL) {
@@ -576,6 +597,7 @@ public class DrupalClient implements OnResponseListener {
     public String getBaseURL() {
         return baseURL;
     }
+
 
     private void onNewRequestStarted() {
         if (this.progressListener != null) {
