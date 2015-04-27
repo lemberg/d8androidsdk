@@ -50,11 +50,11 @@ public class ResponseListenersSet {
     {
         boolean result = false;
         List<DrupalClient.OnResponseListener> listenersList = listeners.get(request);
-        for(Request requestKey:listeners.keySet()) {
-            if(request.equals(requestKey)) {
-                L.e("Request "+request.getUrl()+" was present as:" + requestKey.getUrl());
-            }
-        }
+//        for(Request requestKey:listeners.keySet()) {
+//            if(request.equals(requestKey)) {
+//                L.e("Request "+request.getUrl()+" was present as:" + requestKey.getUrl());
+//            }
+//        }
         if(listenersList == null)
         {
             listenersList = new LinkedList<DrupalClient.OnResponseListener>();

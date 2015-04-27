@@ -37,10 +37,6 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
-import java.lang.ref.WeakReference;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Created on 22.04.2015.
  */
@@ -78,6 +74,8 @@ public class DrupalImageView extends ImageView {
 
     private ImageLoadingListener imageLoadingListener;
 
+    private boolean fixedBounds;
+
     public DrupalImageView(Context context) {
         super(context);
         initView(context,null);
@@ -108,6 +106,9 @@ public class DrupalImageView extends ImageView {
         if (!TextUtils.isEmpty(imagePath)) {
             this.setImageWithURL(imagePath);
         }
+
+        this.fixedBounds = array.getBoolean(R.styleable.DrupalImageView_fixedBounds,false);
+
         array.recycle();
     }
 
@@ -144,6 +145,35 @@ public class DrupalImageView extends ImageView {
         cancelLoading();
         this.imageContainer = null;
         superSetImageDrawable(drawable);
+    }
+
+
+    /**
+     * Layout update skipping workaround
+     */
+    private boolean skipLayoutUpdate = false;
+    /**
+     * Layout update skipping workaround
+     */
+    protected void superSetDrawableSkippingLayoutUpdate(Drawable drawable)
+    {
+        if(fixedBounds) {
+            skipLayoutUpdate = true;
+            superSetImageDrawable(drawable);
+            skipLayoutUpdate = false;
+        }else{
+            superSetImageDrawable(drawable);
+        }
+    }
+
+    /**
+     * Layout update skipping workaround
+     */
+    @Override
+    public void requestLayout() {
+        if(!skipLayoutUpdate) {
+            super.requestLayout();
+        }
     }
 
     /**
@@ -206,6 +236,20 @@ public class DrupalImageView extends ImageView {
         }
     }
 
+    /**
+     * @return true if drawable bounds are predefined and there is no need in onLayout call after drawable loading is complete
+     */
+    public boolean isFixedBounds() {
+        return fixedBounds;
+    }
+
+    /**
+     * @param fixedBounds if true drawable bounds are predefined and there is no need in onLayout call after drawable loading is complete
+     */
+    public void setFixedBounds(boolean fixedBounds) {
+        this.fixedBounds = fixedBounds;
+    }
+
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
@@ -222,7 +266,7 @@ public class DrupalImageView extends ImageView {
     {
         if(this.getDrawable()==null)
         {
-            superSetImageDrawable(noImageDrawable);
+            superSetDrawableSkippingLayoutUpdate(noImageDrawable);
         }
     }
 
@@ -281,10 +325,11 @@ public class DrupalImageView extends ImageView {
             Drawable image = ((DrupalImageEntity) entity).getManagedData();
             if(checkCurrentURL())
             {
-                superSetImageDrawable(image);
+                superSetDrawableSkippingLayoutUpdate(image);
+                applyNoImageDrawableIfNeeded();
             }
-            applyNoImageDrawableIfNeeded();
-            L.e("Request completed for:"+tag);
+
+//            L.e("Request completed for:"+tag);
             if(imageLoadingListener != null)
             {
                 imageLoadingListener.onImageLoadingComplete(DrupalImageView.this,image);
@@ -293,7 +338,9 @@ public class DrupalImageView extends ImageView {
 
         @Override
         public void onRequestFailed(AbstractBaseDrupalEntity entity, Object tag, VolleyError error) {
-            applyNoImageDrawableIfNeeded();
+            if(checkCurrentURL()) {
+                applyNoImageDrawableIfNeeded();
+            }
             if(imageLoadingListener != null)
             {
                 imageLoadingListener.onImageLoadingFailed(DrupalImageView.this, error);
@@ -302,7 +349,9 @@ public class DrupalImageView extends ImageView {
 
         @Override
         public void onRequestCanceled(AbstractBaseDrupalEntity entity, Object tag) {
-            applyNoImageDrawableIfNeeded();
+            if(checkCurrentURL()) {
+                applyNoImageDrawableIfNeeded();
+            }
             if(imageLoadingListener != null)
             {
                 imageLoadingListener.onImageLoadingCancelled(DrupalImageView.this, this.acceptableURL);
