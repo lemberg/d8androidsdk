@@ -194,7 +194,6 @@ public class DrupalClient implements OnResponseListener {
             this.onNewRequestStarted();
             return request.performRequest(synchronous, queue);
         }else{
-//            L.e("Request was rejected:"+request.getUrl());
             return null;
         }
     }

@@ -329,7 +329,6 @@ public class DrupalImageView extends ImageView {
                 applyNoImageDrawableIfNeeded();
             }
 
-//            L.e("Request completed for:"+tag);
             if(imageLoadingListener != null)
             {
                 imageLoadingListener.onImageLoadingComplete(DrupalImageView.this,image);

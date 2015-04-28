@@ -90,7 +90,7 @@ class MultipartRequestHandler extends RequestHandler
                     if(value != null)
                     {
                         if(value instanceof IMultiPartEntityPart) {
-                            ContentBody body = ((IMultiPartEntityPart)source).getContentBody();
+                            ContentBody body = ((IMultiPartEntityPart)value).getContentBody();
                             entity.addPart(name,body);
                         }else{
                             entity.addTextBody(name,value.toString());
