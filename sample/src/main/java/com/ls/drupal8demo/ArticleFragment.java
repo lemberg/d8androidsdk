@@ -149,7 +149,7 @@ public class ArticleFragment extends Fragment implements OnEntityRequestListener
 	}
 
 	@Override
-	public void onRequestFailed(AbstractBaseDrupalEntity entity, Object tag, VolleyError error) {
+	public void onRequestFailed(AbstractBaseDrupalEntity entity, Object tag, ResponseData data) {
 		Toast.makeText(getActivity(), "Page fetch failed", Toast.LENGTH_SHORT).show();
 		resetPageContent();
 	}

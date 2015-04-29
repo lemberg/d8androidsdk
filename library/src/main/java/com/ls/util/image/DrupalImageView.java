@@ -336,13 +336,13 @@ public class DrupalImageView extends ImageView {
         }
 
         @Override
-        public void onRequestFailed(AbstractBaseDrupalEntity entity, Object tag, VolleyError error) {
+        public void onRequestFailed(AbstractBaseDrupalEntity entity, Object tag, ResponseData data) {
             if(checkCurrentURL()) {
                 applyNoImageDrawableIfNeeded();
             }
             if(imageLoadingListener != null)
             {
-                imageLoadingListener.onImageLoadingFailed(DrupalImageView.this, error);
+                imageLoadingListener.onImageLoadingFailed(DrupalImageView.this, data);
             }
         }
 
@@ -365,7 +365,7 @@ public class DrupalImageView extends ImageView {
 
     public static interface ImageLoadingListener{
         void onImageLoadingComplete(DrupalImageView view, Drawable image);
-        void onImageLoadingFailed(DrupalImageView view,VolleyError error);
+        void onImageLoadingFailed(DrupalImageView view,ResponseData data);
         void onImageLoadingCancelled(DrupalImageView view,String path);
     }
 

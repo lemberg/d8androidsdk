@@ -70,7 +70,7 @@ public class DrupalClient implements OnResponseListener {
 
         void onResponseReceived(ResponseData data, Object tag);
 
-        void onError(VolleyError error, Object tag);
+        void onError(ResponseData data, Object tag);
 
         void onCancel(Object tag);
     }
@@ -216,19 +216,19 @@ public class DrupalClient implements OnResponseListener {
             }
 
             @Override
-            public void onError(VolleyError error, Object tag) {
-                if (VolleyResponseUtils.isAuthError(error)) {
+            public void onError(ResponseData data, Object tag) {
+                if (VolleyResponseUtils.isAuthError(data.getError())) {
                     if (loginManager.canRestoreLogin()) {
-                        new RestoreLoginAttemptTask(request, listener, tag, error).execute();
+                        new RestoreLoginAttemptTask(request, listener, tag, data).execute();
                     } else {
                         loginManager.onLoginRestoreFailed();
                         if (listener != null) {
-                            listener.onError(error, tag);
+                            listener.onError(data, tag);
                         }
                     }
                 } else {
                     if (listener != null) {
-                        listener.onError(error, tag);
+                        listener.onError(data, tag);
                     }
                 }
             }
@@ -254,16 +254,16 @@ public class DrupalClient implements OnResponseListener {
             }
 
             @Override
-            public void onError(VolleyError error, Object tag) {
-                if (VolleyResponseUtils.isAuthError(error)) {
+            public void onError(ResponseData data, Object tag) {
+                if (VolleyResponseUtils.isAuthError(data.getError())) {
                     if (!loginManager.canRestoreLogin()) {
                         if (listener != null) {
-                            listener.onError(error, tag);
+                            listener.onError(data, tag);
                         }
                     }
                 } else {
                     if (listener != null) {
-                        listener.onError(error, tag);
+                        listener.onError(data, tag);
                     }
                 }
             }
@@ -283,7 +283,7 @@ public class DrupalClient implements OnResponseListener {
                 if (restored) {
                     result = performRequestNoLoginRestore(request, tag, new OnResponseAuthListenerDecorator(listener), true);
                 } else {
-                    listener.onError(result.getError(), tag);
+                    listener.onError(result, tag);
                 }
             } else {
                 loginManager.onLoginRestoreFailed();
@@ -477,14 +477,14 @@ public class DrupalClient implements OnResponseListener {
     }
 
     @Override
-    public void onError(VolleyError error, BaseRequest request) {
+    public void onError(ResponseData data, BaseRequest request) {
         synchronized (listeners) {
             List<ResponseListenersSet.ListenerHolder> listenerList = this.listeners.getListenersForRequest(request);
             this.listeners.removeListenersForRequest(request);
             this.onRequestComplete();
             if (listenerList != null) {
                 for (ResponseListenersSet.ListenerHolder holder : listenerList) {
-                    holder.getListener().onError(error, holder.getTag());
+                    holder.getListener().onError(data, holder.getTag());
                 }
             }
         }
@@ -630,12 +630,12 @@ public class DrupalClient implements OnResponseListener {
         }
 
         @Override
-        public void onError(VolleyError error, Object tag) {
-            if (VolleyResponseUtils.isAuthError(error)) {
+        public void onError(ResponseData data, Object tag) {
+            if (VolleyResponseUtils.isAuthError(data.getError())) {
                 loginManager.onLoginRestoreFailed();
             }
             if (listener != null) {
-                this.listener.onError(error, tag);
+                this.listener.onError(data, tag);
             }
         }
 
@@ -652,13 +652,13 @@ public class DrupalClient implements OnResponseListener {
         private final BaseRequest request;
         private final OnResponseListener listener;
         private final Object tag;
-        private final VolleyError originError;
+        private final ResponseData originData;
 
-        RestoreLoginAttemptTask(BaseRequest request, OnResponseListener listener, Object tag, VolleyError originError) {
+        RestoreLoginAttemptTask(BaseRequest request, OnResponseListener listener, Object tag, ResponseData originData) {
             this.request = request;
             this.listener = listener;
             this.tag = tag;
-            this.originError = originError;
+            this.originData = originData;
         }
 
         public void execute() {
@@ -670,7 +670,7 @@ public class DrupalClient implements OnResponseListener {
                     if (restored) {
                         performRequestNoLoginRestore(request, tag, new OnResponseAuthListenerDecorator(listener), false);
                     } else {
-                        listener.onError(originError, tag);
+                        listener.onError(originData, tag);
                     }
                 }
             }.start();

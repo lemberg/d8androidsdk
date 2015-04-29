@@ -31,6 +31,7 @@ public class ResponseData {
 	protected Map<String, String> headers;
 	protected int statusCode;
 	protected VolleyError error;
+    protected Object parsedErrorResponse;
 
 	
 	/**	 
@@ -52,12 +53,21 @@ public class ResponseData {
 		return error;
 	}
 
+    /**
+     *
+     * @return parsed error response is errorResponseSpecifier was provided and error received.
+     */
+    public Object getParsedErrorResponse() {
+        return parsedErrorResponse;
+    }
+
     public void cloneTo(ResponseData target)
     {
         target.data = data;
         target.headers = headers;
         target.statusCode = statusCode;
         target.error = error;
+        target.parsedErrorResponse = parsedErrorResponse;
     }
 
 }

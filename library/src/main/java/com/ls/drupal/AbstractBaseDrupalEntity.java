@@ -61,7 +61,7 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	public interface OnEntityRequestListener
 	{
 		void onRequestCompleted(AbstractBaseDrupalEntity entity, Object tag, ResponseData data);
-		void onRequestFailed(AbstractBaseDrupalEntity entity, Object tag, VolleyError error);
+		void onRequestFailed(AbstractBaseDrupalEntity entity, Object tag, ResponseData data);
 		void onRequestCanceled(AbstractBaseDrupalEntity entity, Object tag);
 	}	
 			
@@ -223,15 +223,15 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	}
 	
 	@Override
-	public void onError(VolleyError error, Object tag)
+	public void onError(ResponseData data, Object tag)
 	{
 		DrupalEntityTag entityTag = (DrupalEntityTag)tag;
 		if(entityTag.listener != null)
 		{
-			entityTag.listener.onRequestFailed(this,entityTag.requestTag,error);
+			entityTag.listener.onRequestFailed(this,entityTag.requestTag,data);
 		}
 
-        if(VolleyResponseUtils.isNetworkingError(error))
+        if(VolleyResponseUtils.isNetworkingError(data.getError()))
         {
             ConnectionManager.instance().setConnected(false);
         }
@@ -262,6 +262,16 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	}
 
     /**
+     * Method is used in order to apply server error response result object to current instance
+     * You can override this method in order to perform custom cloning. Default implementation does nothing
+     * @param data
+     */
+    protected void consumeError(ResponseData data)
+    {
+           //Just a method stub to be overriden with children.
+    }
+
+    /**
      * @param method
      * @param resultClass
      *            class of result or null if no result needed.
@@ -272,6 +282,7 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
         RequestConfig config = new RequestConfig(resultClass);
         config.setRequestFormat(getItemRequestFormat(method));
         config.setResponseFormat(getItemResponseFormat(method));
+        config.setErrorResponseClassSpecifier(getItemErrorResponseClassSpecifier(method));
         return config;
     }
 
@@ -329,7 +340,7 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	}
 
     /**
-     * @param method is instance od {@link com.ls.http.base.BaseRequest.RequestMethod} enum, this method is called for. it can be "GET", "POST", "PUT" ,"PATCH" or "DELETE".
+     * @param method is instance of {@link com.ls.http.base.BaseRequest.RequestMethod} enum, this method is called for. it can be "GET", "POST", "PUT" ,"PATCH" or "DELETE".
      * @return the format entity will be serialized to. You can override this method in order to customize return. If null returned - default client format will be performed.
      */
     protected BaseRequest.RequestFormat getItemRequestFormat(RequestMethod method){
@@ -337,10 +348,18 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
     };
 
     /**
-     * @param method is instance od {@link com.ls.http.base.BaseRequest.RequestMethod} enum, this method is called for. it can be "GET", "POST", "PUT" ,"PATCH" or "DELETE".
+     * @param method is instance of {@link com.ls.http.base.BaseRequest.RequestMethod} enum, this method is called for. it can be "GET", "POST", "PUT" ,"PATCH" or "DELETE".
      * @return the format response entity will be formatted to. You can override this method in order to customize return. If null returned - default client format will be performed.
      */
     protected BaseRequest.ResponseFormat getItemResponseFormat(RequestMethod method){
+        return null;
+    };
+
+    /**
+     * @param method is instance of {@link com.ls.http.base.BaseRequest.RequestMethod} enum, this method is called for. it can be "GET", "POST", "PUT" ,"PATCH" or "DELETE".
+     * @return Class or Type, returned as parsedError field of ResultData object, can be null if you don't need one.
+     */
+    protected Object getItemErrorResponseClassSpecifier(RequestMethod method){
         return null;
     };
 

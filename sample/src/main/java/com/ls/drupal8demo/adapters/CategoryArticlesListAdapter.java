@@ -180,7 +180,7 @@ public class CategoryArticlesListAdapter extends BaseAdapter implements OnEntity
 	}
 
 	@Override
-	public void onRequestFailed(AbstractBaseDrupalEntity entity, Object tag, VolleyError error) {
+	public void onRequestFailed(AbstractBaseDrupalEntity entity, Object tag, ResponseData data) {
 		setCanLoadMore(false);
 	}
 

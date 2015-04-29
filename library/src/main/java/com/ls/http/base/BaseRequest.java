@@ -75,22 +75,25 @@ public class BaseRequest extends Request<ResponseData> {
     private final RequestFormat requestFormat;
     private final ResponseFormat responseFormat;
 
-    private final RequestFuture<ResponseData> syncLock;
-    private final Object responseClasSpecifier;
     private String defaultCharset;
 
-    private OnResponseListener responseListener;
 
     private Map<String, String> requestHeaders;
     private Map<String, String> postParameters;
     private Map<String, String> getParameters;
     private Object objectToPost;
 
+
+    //Do not use during comparison
+
+    private final RequestFuture<ResponseData> syncLock;
+    private final Object responseClasSpecifier;
+    private final Object errorResponseClasSpecifier;
     private RequestHandler requestHandler;
-
     private ResponseHandler responseHandler;
+    private ResponseHandler errorResponseHandler;
     private ResponseData result;
-
+    private OnResponseListener responseListener;
     private boolean smartComparisonEnabled = false;
 
     /**
@@ -119,6 +122,7 @@ public class BaseRequest extends Request<ResponseData> {
         this.responseHandler = Handler.getResponseHandlerForFormat(this.responseFormat);
         this.initRequestHeaders();
         this.responseClasSpecifier = requestConfig.getResponseClassSpecifier();
+        this.errorResponseClasSpecifier = requestConfig.getErrorResponseClassSpecifier();
     }
 
 
@@ -163,8 +167,14 @@ public class BaseRequest extends Request<ResponseData> {
         if (volleyError.networkResponse != null) {
             this.result.headers = new HashMap<String, String>(volleyError.networkResponse.headers);
             this.result.statusCode = volleyError.networkResponse.statusCode;
+            if(this.errorResponseClasSpecifier!= null)
+            {
+                Response<ResponseData> result = this.responseHandler.parseNetworkResponse(volleyError.networkResponse,responseClasSpecifier);
+                this.result.parsedErrorResponse = result.result;
+            }
         }
         this.result.error = error;
+
         return error;
     }
 
@@ -180,7 +190,7 @@ public class BaseRequest extends Request<ResponseData> {
     public void deliverError(VolleyError error) {
         this.syncLock.onErrorResponse(error);
         if (this.responseListener != null) {
-            this.responseListener.onError(error, this);
+            this.responseListener.onError(result, this);
         }
     }
 
@@ -188,7 +198,7 @@ public class BaseRequest extends Request<ResponseData> {
 
         void onResponseReceived(ResponseData data, BaseRequest request);
 
-        void onError(VolleyError error, BaseRequest request);
+        void onError(ResponseData data, BaseRequest request);
     }
 
     public OnResponseListener getResponseListener() {

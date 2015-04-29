@@ -29,6 +29,7 @@ public class RequestConfig {
     private BaseRequest.RequestFormat requestFormat;
     private BaseRequest.ResponseFormat responseFormat;
     private Object responseClassSpecifier;
+    private Object errorResponseClassSpecifier;
 
     public RequestConfig()
     {
@@ -77,5 +78,11 @@ public class RequestConfig {
         this.responseClassSpecifier = responseClassSpecifier;
     }
 
+    public Object getErrorResponseClassSpecifier() {
+        return errorResponseClassSpecifier;
+    }
 
+    public void setErrorResponseClassSpecifier(Object errorResponseClassSpecifier) {
+        this.errorResponseClassSpecifier = errorResponseClassSpecifier;
+    }
 }
