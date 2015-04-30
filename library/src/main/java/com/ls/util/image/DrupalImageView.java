@@ -140,6 +140,15 @@ public class DrupalImageView extends ImageView {
         this.startLoading();
     }
 
+    public String getImageURL()
+    {
+        if(this.imageContainer!= null)
+        {
+            return this.imageContainer.url;
+        }
+        return null;
+    }
+
     @Override
     public void setImageDrawable(Drawable drawable) {
         cancelLoading();

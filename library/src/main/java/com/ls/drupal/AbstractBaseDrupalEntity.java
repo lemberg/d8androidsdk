@@ -117,7 +117,9 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	 *            if true - request will be performed synchronously.
 	 * @param resultClass
 	 *            class of result or null if no result needed.
-	 * @param tag Object tag, passer to listener after request was finished or failed because of exception
+	 * @param tag Object tag, passer to listener after request was finished or failed because of exception.
+     *            Tag object can contain some additional data you may require while handling response and may appear useful in case if you are using same listener for multiple requests.
+     *            You can pass null if no tag is needed
 	 * @param listener 
 	 * @return @class ResponseData entity, containing server response string and
 	 *         code or error in case of synchronous request, null otherwise
@@ -132,7 +134,9 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
      *            if true - request will be performed synchronously.
      * @param resultClass
      *            class of result or null if no result needed.
-     * @param tag Object tag, passer to listener after request was finished or failed because of exception
+     * @param tag Object tag, passer to listener after request was finished or failed because of exception.
+     *            Tag object can contain some additional data you may require while handling response and may appear useful in case if you are using same listener for multiple requests.
+     *            You can pass null if no tag is needed
      * @param listener
      * @return @class ResponseData entity, containing server response string and
      *         code or error in case of synchronous request, null otherwise
@@ -150,7 +154,9 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
      *            if true - request will be performed synchronously.
      * @param resultClass
      *            class of result or null if no result needed.
-     * @param tag Object tag, passer to listener after request was finished or failed because of exception
+     * @param tag Object tag, passer to listener after request was finished or failed because of exception.
+     *            Tag object can contain some additional data you may require while handling response and may appear useful in case if you are using same listener for multiple requests.
+     *            You can pass null if no tag is needed
      * @param listener
      * @return @class ResponseData entity, containing server response string and
      *         code or error in case of synchronous request, null otherwise
@@ -166,7 +172,9 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	/**
 	 * @param synchronous
 	 *            if true - request will be performed synchronously.
-	 * @param tag Object tag, passer to listener after request was finished or failed because of exception
+     * @param tag Object tag, passer to listener after request was finished or failed because of exception.
+     *            Tag object can contain some additional data you may require while handling response and may appear useful in case if you are using same listener for multiple requests.
+     *            You can pass null if no tag is needed
 	 * @param listener 
 	 * @return @class ResponseData entity, containing server response or error
 	 *         in case of synchronous request, null otherwise
@@ -191,7 +199,9 @@ public abstract class AbstractBaseDrupalEntity implements DrupalClient.OnRespons
 	 *            if true - request will be performed synchronously.
 	 * @param resultClass
 	 *            class of result or null if no result needed. 
-	 * @param tag Object tag, passer to listener after request was finished or failed because of exception
+     * @param tag Object tag, passer to listener after request was finished or failed because of exception.
+     *            Tag object can contain some additional data you may require while handling response and may appear useful in case if you are using same listener for multiple requests.
+     *            You can pass null if no tag is needed
 	 * @param listener 
 	 * @return @class ResponseData entity, containing server response or error
 	 *         in case of synchronous request, null otherwise

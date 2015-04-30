@@ -30,6 +30,12 @@ import android.support.annotation.NonNull;
 
 public abstract class AbstractMultipartDrupalEntity extends AbstractBaseDrupalEntity
 {
+
+    /**
+     * Note: Multipart entity serializer is checking if non-transient field implements {@link com.ls.http.base.handler.multipart.IMultiPartEntityPart} interface if so
+     * - {@link com.ls.http.base.handler.multipart.IMultiPartEntityPart@getContentBody()} method is called and `toString` otherwise
+     * @param client
+     */
 	public AbstractMultipartDrupalEntity(DrupalClient client)
 	{
 		super(client);		
