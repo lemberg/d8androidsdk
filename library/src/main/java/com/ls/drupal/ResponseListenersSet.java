@@ -46,15 +46,22 @@ public class ResponseListenersSet {
      * @param listener listener to register for request
      * @return true if new request was registered, false otherwise
      */
-    public boolean registerListenerForRequest(Request request,DrupalClient.OnResponseListener listener,Object tag)
+    public boolean registerListenerForRequest(Request request,DrupalClient.OnResponseListener listener,Object tag,boolean skipDuplicateRequestListeners)
     {
         boolean result = false;
         List<ListenerHolder> listenersList = listeners.get(request);
+
         if(listenersList == null)
         {
             listenersList = new LinkedList<ListenerHolder>();
             listeners.put(request,listenersList);
             result = true;
+        }else{
+            if(!listenersList.isEmpty() && skipDuplicateRequestListeners)
+            {
+                //We don't add duplicate listners in case of reject policy
+                return result;
+            }
         }
 
         listenersList.add(new ListenerHolder(listener,tag));

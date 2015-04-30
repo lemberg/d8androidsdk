@@ -25,7 +25,6 @@ package com.ls.drupal;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.ls.drupal.login.AnonymousLoginManager;
 import com.ls.drupal.login.ILoginManager;
@@ -35,7 +34,6 @@ import com.ls.http.base.BaseRequest.RequestFormat;
 import com.ls.http.base.BaseRequest.RequestMethod;
 import com.ls.http.base.RequestConfig;
 import com.ls.http.base.ResponseData;
-import com.ls.util.L;
 import com.ls.util.internal.VolleyResponseUtils;
 
 import android.content.Context;
@@ -52,6 +50,7 @@ import java.util.Map;
  * @author lemberg
  */
 public class DrupalClient implements OnResponseListener {
+    public enum DuplicateRequestPolicy {ALLOW,ATTACH,REJECT}
 
     private final RequestFormat requestFormat;
     private String baseURL;
@@ -64,7 +63,7 @@ public class DrupalClient implements OnResponseListener {
 
     private int requestTimeout = 1500;
 
-    private boolean allowDuplicateRequests = true;
+    private DuplicateRequestPolicy duplicateRequestPolicy = DuplicateRequestPolicy.ATTACH;
 
     public static interface OnResponseListener {
 
@@ -183,17 +182,22 @@ public class DrupalClient implements OnResponseListener {
         request.setTag(tag);
         request.setResponseListener(this);
         this.loginManager.applyLoginDataToRequest(request);
-        request.setSmartComparisonEnabled(!this.allowDuplicateRequests);
+        request.setSmartComparisonEnabled(this.duplicateRequestPolicy !=DuplicateRequestPolicy.ALLOW);
 
         boolean wasRegisterred ;
+        boolean skipDuplicateRequestListeners = this.duplicateRequestPolicy == DrupalClient.DuplicateRequestPolicy.REJECT;
         synchronized (listeners) {
-            wasRegisterred = this.listeners.registerListenerForRequest(request, listener,tag);
+            wasRegisterred = this.listeners.registerListenerForRequest(request, listener,tag,skipDuplicateRequestListeners);
         }
 
         if(wasRegisterred||synchronous) {
             this.onNewRequestStarted();
             return request.performRequest(synchronous, queue);
         }else{
+            if(skipDuplicateRequestListeners && listener != null)
+            {
+                listener.onCancel(tag);
+            }
             return null;
         }
     }
@@ -519,19 +523,22 @@ public class DrupalClient implements OnResponseListener {
     }
 
     /**
-     * If true - duplicate simultaneous requests will be ignored (all response listeners will be triggered after first unique request instance completes). Similarity is defined based on requests "equals" value
-     * @return
+     * @return current duplicate request policy
      */
-    public boolean isAllowDuplicateRequests() {
-        return allowDuplicateRequests;
+    public DuplicateRequestPolicy getDuplicateRequestPolicy() {
+        return duplicateRequestPolicy;
     }
 
     /**
-     *  If true - duplicate simultaneous requests will be ignored (all response listeners will be triggered after first unique request instance completes).  Similarity is defined based on requests "equals" value
-     * @param allowDuplicateRequests
+     * Sets duplicate request handling policy according to parameter provided. Only simultaneous requests are compared (executing at the same time).
+     * @param duplicateRequestPolicy in case if
+     *      "ALLOW" - all requests are performed
+     *      "ATTACH" - only first unique request from queue will be performed all other listeners will be attached to this request and triggered.
+     *      "REJECT" - only first unique request from queue will be performed and it's listener triggered. "onCancel()" listener method will be called for all requests skipped.
+     * Default value is "ALLOW"
      */
-    public void setAllowDuplicateRequests(boolean allowDuplicateRequests) {
-        this.allowDuplicateRequests = allowDuplicateRequests;
+    public void setDuplicateRequestPolicy(DuplicateRequestPolicy duplicateRequestPolicy) {
+        this.duplicateRequestPolicy = duplicateRequestPolicy;
     }
 
     /**
