@@ -128,6 +128,7 @@ public class BaseRequest extends Request<ResponseData> {
         this.initRequestHeaders();
         this.responseClasSpecifier = requestConfig.getResponseClassSpecifier();
         this.errorResponseClasSpecifier = requestConfig.getErrorResponseClassSpecifier();
+        this.result = new ResponseData();
     }
 
 
@@ -193,6 +194,7 @@ public class BaseRequest extends Request<ResponseData> {
 
     @Override
     public void deliverError(VolleyError error) {
+        this.result.error = error;
         this.syncLock.onErrorResponse(error);
         if (this.responseListener != null) {
             this.responseListener.onError(result, this);
