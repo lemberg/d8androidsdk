@@ -72,6 +72,6 @@ public class ByteMultipartEntityPart implements IMultiPartEntityPart {
 
     @Override
     public ContentBody getContentBody() {
-        return new ByteArrayBody(value,fileName,mimeType);
+        return new ByteArrayBody(value,mimeType,fileName);
     }
 }
