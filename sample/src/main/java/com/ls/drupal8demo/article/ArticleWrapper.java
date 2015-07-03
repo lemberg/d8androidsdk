@@ -55,7 +55,7 @@ public class ArticleWrapper extends AbstractDrupalArrayEntity<FullArticle> {
 	}
 
 	@Override
-	protected Map<String, String> getItemRequestGetParameters(RequestMethod method) {
+	protected Map<String, Object> getItemRequestGetParameters(RequestMethod method) {
 		return null;
 	}
 

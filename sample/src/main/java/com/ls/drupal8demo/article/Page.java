@@ -55,10 +55,10 @@ public class Page extends AbstractDrupalArrayEntity<ArticlePreview> {
 	}
 
 	@Override
-	protected Map<String, String> getItemRequestGetParameters(RequestMethod method) {
+	protected Map<String, Object> getItemRequestGetParameters(RequestMethod method) {
 		switch (method) {
 			case GET:
-				Map<String, String> result = new HashMap<String, String>();
+				Map<String, Object> result = new HashMap<String, Object>();
 				result.put("page", Integer.toString(mPageNumber));
 				return result;
 			default:
