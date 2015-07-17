@@ -555,7 +555,7 @@ public class DrupalClient implements OnResponseListener {
                     synchronized (listeners) {
                         List<ResponseListenersSet.ListenerHolder> listenerList = listeners.getListenersForRequest(request);
 
-                        if (theListener == null || listenerList.equals(theListener)) {
+                        if (theListener == null || (listenerList != null && listenerList.contains(theListener))) {
                             if (listenerList != null) {
                                 listeners.removeListenersForRequest(request);
                                 for (ResponseListenersSet.ListenerHolder holder : listenerList) {
