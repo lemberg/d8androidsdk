@@ -350,7 +350,7 @@ public class BaseRequest extends Request<ResponseData> {
                         {
                             builder.appendQueryParameter(entryKey, null);
                         }else{
-                            builder.appendQueryParameter(entryKey, entryValue.toString());
+                            builder.appendQueryParameter(entryKey, item.toString());
                         }
                     }
                 }else {
